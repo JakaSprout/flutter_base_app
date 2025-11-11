@@ -1,0 +1,43 @@
+flutter_gen:
+  # Output directory for generated files
+  output: lib/gen/
+
+  # Line length for generated code
+  line_length: 80
+
+  # Integrations with other packages
+  integrations:
+    # Enable flutter_svg untuk SVG icons dari Figma (Outline, Solid, Bulk variants)
+    flutter_svg: true
+    flare_flutter: false
+    rive: false
+    lottie: false
+
+  # Assets configuration
+  assets:
+    enabled: true
+    outputs:
+      # Enable package parameter for better organization
+      package_parameter_enabled: false
+    # Paths untuk assets dari design system Figma
+    # - assets/icons/ - untuk SVG icons (Outline, Solid, Bulk)
+    # - assets/images/ - untuk images (splash, illustrations, dll)
+    # - assets/fonts/ - untuk custom fonts (jika ada)
+
+  # Fonts configuration
+  # Enable untuk typography system dari Figma
+  fonts:
+    enabled: true
+    # Fonts akan di-generate dari pubspec.yaml fonts section
+
+  # Colors configuration
+  # Enable untuk color system dari Figma (Gray, Neutral, Destructive variants)
+  colors:
+    enabled: true
+    # Colors akan di-generate dari:
+    # - Android: android/app/src/main/res/values/colors.xml
+    # - iOS: Assets.xcassets/Colors/
+    # Atau bisa define manual di assets/colors/colors.json
+
+  # Additional configuration untuk design system
+  # Note: generate_helpers is not a valid option, removed

@@ -1,0 +1,51 @@
+flutter_native_splash:
+  # Background color putih full screen
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
+
+  # Image/logo splash di center (tidak full screen)
+  # Logo akan ditampilkan di center dengan ukuran asli/aspect ratio terjaga
+  image: assets/images/splash.png
+  image_dark: assets/images/splash.png
+
+  # Android configuration
+  android: true
+  # Android gravity: center agar logo di center, tidak terpotong
+  android_gravity: center
+
+  # iOS configuration
+  ios: true
+  # iOS content mode: center atau scaleAspectFit agar logo tidak terpotong
+  ios_content_mode: center
+
+  # Android 12+ configuration (different handling)
+  android_12:
+    # Background color for Android 12+
+    color: "#FFFFFF"
+    color_dark: "#FFFFFF"
+
+    # Image untuk Android 12+ (akan di-clip menjadi circle di center)
+    # Image saat ini: 1024×1024 px
+    #
+    # ⚠️ PENTING - Android 12+ Behavior:
+    # - Icon SELALU di-clip menjadi circle (tidak bisa diubah)
+    # - 1/3 bagian ATAS akan di-MASK (tidak terlihat)
+    # - Elemen penting harus berada di CENTER atau 2/3 bagian BAWAH
+    #
+    # 📐 Spesifikasi dengan icon_background_color:
+    # - Recommended: 960×960 px (fit dalam circle 640px diameter)
+    # - Safe Zone: Center circle 640px, elemen penting di 2/3 bawah
+    #
+    # 💡 Solusi jika masih terpotong:
+    # 1. Buat image 960×960 px dengan padding di bagian atas
+    # 2. Letakkan logo di center atau 2/3 bagian bawah
+    # 3. Pastikan logo berada dalam safe zone (tidak di 1/3 atas)
+    image: assets/images/splash.png
+    image_dark: assets/images/splash.png
+
+    # Icon background color (untuk circle background)
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#FFFFFF"
+
+  # Full screen mode (hide notification bar)
+  fullscreen: true

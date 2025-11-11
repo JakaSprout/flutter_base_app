@@ -1,0 +1,19 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    # Generated files
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+    - "**/generated/**"
+    - "**/gen/**"
+    - "**/build/**"
+    # Platform-specific files (mobile only)
+    - "**/android/**"
+    - "**/ios/**"
+
+linter:
+  rules:
+    # Allow comments in pubspec.yaml for better organization
+    sort_pub_dependencies: false

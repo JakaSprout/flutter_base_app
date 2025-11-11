@@ -1,0 +1,108 @@
+name: flutter_base_app
+description: "Flutter offline-first app with Riverpod + Hooks, Clean Architecture, and Material Design 3"
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=3.35.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management & DI
+  flutter_hooks: ^0.20.5
+  hooks_riverpod: ^2.4.10
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.0.2
+
+  # Networking
+  dio: ^5.4.3
+  eventsource: ^0.4.0
+
+  # Connectivity
+  connectivity_plus: ^6.0.5
+
+  # Security
+  flutter_secure_storage: ^9.2.2
+
+  # Local Database
+  drift: ^2.14.0
+  drift_flutter: ^0.2.7
+  sqlite3_flutter_libs: ^0.5.21
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
+  # Logging
+  talker_flutter: ^4.2.3
+
+  # Functional Programming
+  dartz: ^0.10.1
+
+  # Data Model
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+  # Utilities
+  intl: ^0.19.0
+  uuid: ^4.5.2
+
+  # UI Components (Design System)
+  flutter_svg: ^1.1.6 # SVG icons from Figma (Outline, Solid, Bulk variants) - compatible with eventsource
+  flutter_screenutil: ^5.9.3 # Responsive design utilities - match Figma design size
+  table_calendar: ^3.1.2 # Calendar/Date picker component
+  reactive_forms: ^17.0.0 # Form management with validation
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code Generation
+  build_runner: ^2.4.10
+  freezed: ^2.4.7
+  json_serializable: ^6.8.0
+  drift_dev: ^2.14.0
+  riverpod_generator: ^2.6.1
+
+  # Testing
+  mocktail: ^1.0.4
+
+  # Linter
+  very_good_analysis: ^6.0.0
+
+  # Temporary: Flavor setup (will be removed after initialization)
+  flutter_flavorizr: ^2.2.1
+
+  # App Configuration Tools
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.13.1
+
+  # Asset Code Generation
+  flutter_gen_runner: ^5.4.0 # Type-safe asset code generation
+
+  # Optional Developer Tooling (uncomment if needed)
+  # slang: ^3.30.0               # Type-safe internationalization
+  # slang_build_runner: ^3.30.0  # Required for slang
+  # data_table_2: ^2.5.15        # Advanced tables (optional)
+  # flutter_staggered_grid_view: ^0.7.0  # Grid layouts (optional)
+
+flutter:
+  uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/icons/outline/ # Outline variant icons (SVG)
+    - assets/icons/solid/ # Solid variant icons (SVG)
+    - assets/icons/bulk/ # Bulk variant icons (SVG)
+
+
+  # Fonts will be added as needed
+  # fonts:
+  #   - family: CustomFont
+  #     fonts:
+  #       - asset: assets/fonts/CustomFont-Regular.ttf

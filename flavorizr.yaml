@@ -1,0 +1,22 @@
+flavors:
+  dev:
+    app:
+      name: "Flutter Base App Dev"
+    android:
+      applicationId: "com.japfa.flutter_base_app.dev"
+    ios:
+      bundleId: "com.japfa.flutterBaseApp.dev"
+  staging:
+    app:
+      name: "Flutter Base App Staging"
+    android:
+      applicationId: "com.japfa.flutter_base_app.staging"
+    ios:
+      bundleId: "com.japfa.flutterBaseApp.staging"
+  prod:
+    app:
+      name: "Flutter Base App"
+    android:
+      applicationId: "com.japfa.flutter_base_app"
+    ios:
+      bundleId: "com.japfa.flutterBaseApp"
