@@ -68,4 +68,9 @@ class AppConstants {
 
   /// Maximum page size
   static const int maxPageSize = 100;
+
+  // Typography
+  /// Default font family for the application
+  /// Based on Figma design: Open Sans
+  static const String fontFamily = 'Open Sans';
 }

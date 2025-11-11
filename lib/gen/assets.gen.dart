@@ -20,6 +20,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/app_icon.png
   AssetGenImage get appIcon => const AssetGenImage('assets/icons/app_icon.png');
 
+  /// Directory path: assets/icons/outline
+  $AssetsIconsOutlineGen get outline => const $AssetsIconsOutlineGen();
+
+  /// Directory path: assets/icons/solid
+  $AssetsIconsSolidGen get solid => const $AssetsIconsSolidGen();
+
   /// List of all assets
   List<dynamic> get values => [readme, appIcon];
 }
@@ -32,6 +38,44 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [splash];
+}
+
+class $AssetsIconsOutlineGen {
+  const $AssetsIconsOutlineGen();
+
+  /// File path: assets/icons/outline/chart.svg
+  String get chart => 'assets/icons/outline/chart.svg';
+
+  /// File path: assets/icons/outline/grid.svg
+  String get grid => 'assets/icons/outline/grid.svg';
+
+  /// File path: assets/icons/outline/home.svg
+  String get home => 'assets/icons/outline/home.svg';
+
+  /// File path: assets/icons/outline/profile.svg
+  String get profile => 'assets/icons/outline/profile.svg';
+
+  /// List of all assets
+  List<String> get values => [chart, grid, home, profile];
+}
+
+class $AssetsIconsSolidGen {
+  const $AssetsIconsSolidGen();
+
+  /// File path: assets/icons/solid/chart.svg
+  String get chart => 'assets/icons/solid/chart.svg';
+
+  /// File path: assets/icons/solid/grid.svg
+  String get grid => 'assets/icons/solid/grid.svg';
+
+  /// File path: assets/icons/solid/home.svg
+  String get home => 'assets/icons/solid/home.svg';
+
+  /// File path: assets/icons/solid/profile.svg
+  String get profile => 'assets/icons/solid/profile.svg';
+
+  /// List of all assets
+  List<String> get values => [chart, grid, home, profile];
 }
 
 class Assets {
