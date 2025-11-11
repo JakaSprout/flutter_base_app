@@ -7,8 +7,16 @@ plugins {
 
 android {
     namespace = "com.example.flutter_base_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Compile SDK: Must be >= targetSdk
+    // API 36 = Android 15+ (required by some plugins like path_provider_android)
+    // API 35 = Android 15 (required by Google Play starting Nov 2025)
+    compileSdk = 36
+    
+    // NDK Version: Use latest installed NDK (28.1.13356709) for 16KB page size support
+    // NDK r28+ supports 16KB page size by default
+    // Using explicit version to ensure 16KB page size support
+    // If flutter.ndkVersion is available, it will be used; otherwise use latest installed NDK
+    ndkVersion = if (flutter.ndkVersion != null) flutter.ndkVersion else "28.1.13356709"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -24,10 +32,26 @@ android {
         applicationId = "com.example.flutter_base_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        
+        // Min SDK: API 24 = Android 7.0 (Nougat)
+        // Recommended minimum for modern apps and AndroidX libraries
+        minSdk = 24
+        
+        // Target SDK: API 35 = Android 15
+        // Required by Google Play Store starting November 2025
+        targetSdk = 35
+        
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        // 16KB Page Size Support
+        // AGP 8.5.1+ automatically applies 16KB alignment for native libraries
+        // NDK r28+ compiles with 16KB alignment by default
+        // This ensures compatibility with devices using 16KB page size
+        ndk {
+            // Specify ABI filters if needed (optional)
+            // abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
