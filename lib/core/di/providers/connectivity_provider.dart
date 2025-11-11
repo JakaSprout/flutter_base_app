@@ -1,6 +1,5 @@
 import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
 import 'package:flutter_base_app/core/connectivity/connectivity_service.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'connectivity_provider.g.dart';
@@ -46,4 +45,3 @@ bool isConnected(IsConnectedRef ref) {
   final status = ref.watch(connectivityStatusSyncProvider);
   return status?.isConnected ?? false;
 }
-

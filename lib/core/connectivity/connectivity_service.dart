@@ -1,16 +1,14 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart' as connectivity_plus;
-
 import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
 
 /// Service for monitoring network connectivity.
 class ConnectivityService {
   /// Creates a new instance of [ConnectivityService].
-  ConnectivityService({
-    connectivity_plus.Connectivity? connectivity,
-  }) : _connectivity = connectivity ?? connectivity_plus.Connectivity() {
+  ConnectivityService({connectivity_plus.Connectivity? connectivity})
+    : _connectivity = connectivity ?? connectivity_plus.Connectivity() {
     _init();
   }
 
@@ -105,9 +103,7 @@ class ConnectivityService {
   void _updateStatus(AppConnectivityResult result) {
     if (_currentStatus?.status != result.status) {
       _currentStatus = result;
-      AppLogger.info(
-        'Connectivity status changed: ${result.status}',
-      );
+      AppLogger.info('Connectivity status changed: ${result.status}');
       _statusController.add(result);
     }
   }
@@ -117,4 +113,3 @@ class ConnectivityService {
     _statusController.close();
   }
 }
-

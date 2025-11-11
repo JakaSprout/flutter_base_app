@@ -30,6 +30,9 @@ class AppConstants {
   /// Secure storage key for user data
   static const String storageUserData = 'user_data';
 
+  /// Secure storage key for theme mode preference
+  static const String storageThemeMode = 'theme_mode';
+
   // Network Configuration
   /// Maximum number of concurrent network requests
   static const int maxConcurrentRequests = 5;

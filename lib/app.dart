@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
 import 'package:flutter_base_app/design_system/theme/app_theme.dart';
+import 'package:flutter_base_app/design_system/theme/theme_provider.dart';
 import 'package:flutter_base_app/router/app_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Root widget of the application.
-class App extends StatelessWidget {
+class App extends HookConsumerWidget {
   /// Creates a new instance of [App].
   const App({required this.config, super.key});
 
@@ -14,7 +16,10 @@ class App extends StatelessWidget {
   final AppConfig config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch theme mode from provider
+    final themeMode = ref.watch(currentThemeModeProvider);
+
     return ScreenUtilInit(
       // Design size from Figma (adjust according to design system)
       // Default: iPhone 14 Pro (390 x 844)
@@ -26,6 +31,7 @@ class App extends StatelessWidget {
           title: config.appName,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
+          themeMode: themeMode, // Use theme mode from provider
           routerConfig: AppRouter.router,
           builder: (context, widget) {
             // Show flavor banner in debug mode
