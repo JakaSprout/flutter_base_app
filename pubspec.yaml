@@ -69,6 +69,8 @@ dev_dependencies:
 
   # Testing
   mocktail: ^1.0.4
+  integration_test:
+    sdk: flutter
 
   # Linter
   very_good_analysis: ^6.0.0
