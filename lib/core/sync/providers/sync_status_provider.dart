@@ -1,6 +1,5 @@
 import 'package:flutter_base_app/core/sync/models/sync_status.dart';
 import 'package:flutter_base_app/core/sync/providers/sync_queue_provider.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sync_status_provider.g.dart';

@@ -123,7 +123,8 @@ class BatchSyncService {
           final response = await _syncSingleBatch(batch, module);
           batchIds.add(response.batchId);
           AppLogger.info(
-            'Module $module batch ${i + 1} accepted with ID: ${response.batchId}',
+            'Module $module batch ${i + 1} accepted with ID: '
+            '${response.batchId}',
           );
         } catch (e, stackTrace) {
           AppLogger.error(
@@ -196,14 +197,18 @@ class BatchSyncService {
       // Optional: Backend might return immediate results if processing is fast
       List<BatchSyncItemResult>? results;
       if (data['results'] != null) {
-        results = (data['results'] as List<dynamic>)
+        final resultsList = data['results'] as List<dynamic>;
+        results = resultsList
             .map(
-              (r) => BatchSyncItemResult(
-                id: r['id'] as String,
-                success: r['success'] as bool? ?? false,
-                entityId: r['entityId'] as String?,
-                error: r['error'] as String?,
-              ),
+              (r) {
+                final resultMap = r as Map<String, dynamic>;
+                return BatchSyncItemResult(
+                  id: resultMap['id'] as String,
+                  success: resultMap['success'] as bool? ?? false,
+                  entityId: resultMap['entityId'] as String?,
+                  error: resultMap['error'] as String?,
+                );
+              },
             )
             .toList();
       }

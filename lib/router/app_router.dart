@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/design_system/components/navigation/bottom_nav_bar.dart';
+import 'package:flutter_base_app/design_system/components/navigation/stp_bottom_nav_bar.dart';
 import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter_base_app/features/input_data/presentation/screens/input_data_screen.dart';
 import 'package:flutter_base_app/features/monitoring/presentation/screens/monitoring_screen.dart';
@@ -21,8 +21,10 @@ class AppRouter {
         builder: (context, state, child) {
           return Scaffold(
             body: child,
-            bottomNavigationBar: BottomNavBar(currentLocation: state.uri.path),
-            floatingActionButton: BottomNavBar.buildFAB(context),
+            bottomNavigationBar: STPBottomNavBar(
+              currentLocation: state.uri.path,
+            ),
+            floatingActionButton: STPBottomNavBar.buildFAB(context),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
           );

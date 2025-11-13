@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Connectivity status models.
 enum ConnectivityStatus {
   /// Device is connected to internet
@@ -11,6 +13,7 @@ enum ConnectivityStatus {
 }
 
 /// App connectivity result model.
+@immutable
 class AppConnectivityResult {
   /// Creates a new instance of [AppConnectivityResult].
   const AppConnectivityResult({required this.status, this.type, this.message});

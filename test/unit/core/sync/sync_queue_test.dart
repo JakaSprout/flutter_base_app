@@ -54,8 +54,9 @@ void main() {
         );
 
         // Act
-        queue.add(normalItem);
-        queue.add(highItem);
+        queue
+          ..add(normalItem)
+          ..add(highItem);
 
         // Assert
         final items = queue.getAllItems();
@@ -121,9 +122,10 @@ void main() {
           priority: SyncPriority.low,
         );
 
-        queue.add(normalItem);
-        queue.add(highItem);
-        queue.add(lowItem);
+        queue
+          ..add(normalItem)
+          ..add(highItem)
+          ..add(lowItem);
 
         // Act
         final items = queue.getAllItems();
@@ -138,12 +140,11 @@ void main() {
 
     group('clear', () {
       test('should clear all items from queue', () {
-        // Arrange
-        queue.add(createTestSyncItem(id: '1'));
-        queue.add(createTestSyncItem(id: '2'));
-
-        // Act
-        queue.clear();
+        // Arrange & Act
+        queue
+          ..add(createTestSyncItem(id: '1'))
+          ..add(createTestSyncItem(id: '2'))
+          ..clear();
 
         // Assert
         expect(queue.size, equals(0));

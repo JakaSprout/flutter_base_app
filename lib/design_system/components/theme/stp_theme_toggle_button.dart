@@ -6,9 +6,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///
 /// A button that allows users to toggle between light and dark themes.
 /// Displays an icon representing the current theme mode.
-class ThemeToggleButton extends HookConsumerWidget {
-  /// Creates a new instance of [ThemeToggleButton].
-  const ThemeToggleButton({super.key});
+class STPThemeToggleButton extends HookConsumerWidget {
+  /// Creates a new instance of [STPThemeToggleButton].
+  const STPThemeToggleButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,9 +43,9 @@ class ThemeToggleButton extends HookConsumerWidget {
 ///
 /// A more comprehensive widget that allows users to select from
 /// Light, Dark, or System theme modes.
-class ThemeModeSelector extends HookConsumerWidget {
-  /// Creates a new instance of [ThemeModeSelector].
-  const ThemeModeSelector({super.key});
+class STPThemeModeSelector extends HookConsumerWidget {
+  /// Creates a new instance of [STPThemeModeSelector].
+  const STPThemeModeSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

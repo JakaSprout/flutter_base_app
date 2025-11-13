@@ -100,21 +100,20 @@ void main() {
       test('should clear all items from sync queue', () {
         // Arrange
         final syncService = container.read(syncServiceProvider);
-        syncService.addToQueue(
-          operationType: SyncOperationType.create,
-          entityType: 'test_entity',
-          entityId: 'test-id-1',
-          data: {'test': 'data'},
-        );
-        syncService.addToQueue(
-          operationType: SyncOperationType.update,
-          entityType: 'test_entity',
-          entityId: 'test-id-2',
-          data: {'test': 'data'},
-        );
-
-        // Act
-        syncService.clearQueue();
+        syncService
+          ..addToQueue(
+            operationType: SyncOperationType.create,
+            entityType: 'test_entity',
+            entityId: 'test-id-1',
+            data: {'test': 'data'},
+          )
+          ..addToQueue(
+            operationType: SyncOperationType.update,
+            entityType: 'test_entity',
+            entityId: 'test-id-2',
+            data: {'test': 'data'},
+          )
+          ..clearQueue();
 
         // Assert
         expect(syncService.queue.size, equals(0));
@@ -139,7 +138,8 @@ void main() {
           data: {'test': 'data'},
         );
 
-        // Wait for status update (addToQueue may trigger sync which updates status)
+        // Wait for status update
+        // (addToQueue may trigger sync which updates status)
         await Future<void>.delayed(const Duration(milliseconds: 200));
 
         // Assert - Status should have been emitted (at least initial status)

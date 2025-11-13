@@ -51,7 +51,7 @@ dependencies:
   uuid: ^4.5.2
 
   # UI Components (Design System)
-  flutter_svg: ^1.1.6 # SVG icons from Figma (Outline, Solid, Bulk variants) - compatible with eventsource
+  flutter_svg: ^1.1.6 # SVG icons from Figma (Outline, Solid variants) - compatible with eventsource
   flutter_screenutil: ^5.9.3 # Responsive design utilities - match Figma design size
   table_calendar: ^3.1.2 # Calendar/Date picker component
   reactive_forms: ^17.0.0 # Form management with validation
@@ -100,7 +100,7 @@ flutter:
     - assets/icons/
     - assets/icons/outline/ # Outline variant icons (SVG)
     - assets/icons/solid/ # Solid variant icons (SVG)
-    - assets/icons/bulk/ # Bulk variant icons (SVG)
+    - assets/icons/general/ # General icons without outline/solid variants (SVG)
 
   # Fonts
   fonts:

@@ -13,11 +13,11 @@ import 'package:go_router/go_router.dart';
 /// - Center button (Input Data) with special styling
 /// - Active state indication
 /// - Material 3 design
-class BottomNavBar extends StatelessWidget {
-  /// Creates a new instance of [BottomNavBar].
+class STPBottomNavBar extends StatelessWidget {
+  /// Creates a new instance of [STPBottomNavBar].
   ///
   /// [currentLocation] is the current route path to determine active state.
-  const BottomNavBar({required this.currentLocation, super.key});
+  const STPBottomNavBar({required this.currentLocation, super.key});
 
   /// Current route location path.
   final String currentLocation;
@@ -76,7 +76,8 @@ class BottomNavBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Text aligned with other nav items - exact Figma: fontSize 12px, lineHeight 18px (1.5em)
+                    // Text aligned with other nav items
+                    // Exact Figma: fontSize 12px, lineHeight 18px (1.5em)
                     SizedBox(
                       width: double.infinity,
                       child: Text(

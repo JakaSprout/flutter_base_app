@@ -98,16 +98,15 @@ class SyncService {
               'items=${results.length}',
             );
 
-            final batchResults = results
-                .map(
-                  (r) => BatchSyncItemResult(
-                    id: r['id'] as String,
-                    success: r['success'] as bool? ?? false,
-                    entityId: r['entityId'] as String?,
-                    error: r['error'] as String?,
-                  ),
-                )
-                .toList();
+            final batchResults = results.map((r) {
+              final resultMap = r as Map<String, dynamic>;
+              return BatchSyncItemResult(
+                id: resultMap['id'] as String,
+                success: resultMap['success'] as bool? ?? false,
+                entityId: resultMap['entityId'] as String?,
+                error: resultMap['error'] as String?,
+              );
+            }).toList();
 
             _processBatchResults(batchResults);
           }
@@ -235,7 +234,8 @@ class SyncService {
 
       // Backend is processing the batch asynchronously
       // Results will be received via SSE events
-      // For now, mark items as "syncing" (they will be removed when SSE confirms)
+      // For now, mark items as "syncing"
+      // (they will be removed when SSE confirms)
       _updateStatus(
         _currentStatus.copyWith(
           status: SyncStatus.syncing,
@@ -345,6 +345,6 @@ class SyncService {
   /// Dispose resources.
   Future<void> dispose() async {
     await _sseService.dispose();
-    _statusController.close();
+    await _statusController.close();
   }
 }

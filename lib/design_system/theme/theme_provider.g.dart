@@ -28,7 +28,7 @@ final currentThemeModeProvider = AutoDisposeProvider<ThemeMode>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentThemeModeRef = AutoDisposeProviderRef<ThemeMode>;
-String _$themeModeNotifierHash() => r'0c916aa4cf423e15610a59204cdb992b8055df2e';
+String _$themeModeNotifierHash() => r'179542f5f329fe7ed9dde00761a4961c2578a440';
 
 /// Theme mode provider that manages theme preference.
 ///

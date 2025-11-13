@@ -64,18 +64,11 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
     ThemeMode themeMode,
   ) async {
     try {
-      String value;
-      switch (themeMode) {
-        case ThemeMode.light:
-          value = 'light';
-          break;
-        case ThemeMode.dark:
-          value = 'dark';
-          break;
-        case ThemeMode.system:
-          value = 'system';
-          break;
-      }
+      final value = switch (themeMode) {
+        ThemeMode.light => 'light',
+        ThemeMode.dark => 'dark',
+        ThemeMode.system => 'system',
+      };
 
       await secureStorage.write(
         key: AppConstants.storageThemeMode,
@@ -108,19 +101,11 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
     final currentMode = await future;
     ThemeMode newMode;
 
-    switch (currentMode) {
-      case ThemeMode.light:
-        newMode = ThemeMode.dark;
-        break;
-      case ThemeMode.dark:
-        newMode = ThemeMode.light;
-        break;
-      case ThemeMode.system:
-        // If system, check actual brightness and toggle
-        // For simplicity, switch to light
-        newMode = ThemeMode.light;
-        break;
-    }
+    newMode = switch (currentMode) {
+      ThemeMode.light => ThemeMode.dark,
+      ThemeMode.dark => ThemeMode.light,
+      ThemeMode.system => ThemeMode.light,
+    };
 
     await setThemeMode(newMode);
   }
@@ -139,4 +124,3 @@ ThemeMode currentThemeMode(CurrentThemeModeRef ref) {
     error: (_, __) => ThemeMode.system, // Default on error
   );
 }
-
