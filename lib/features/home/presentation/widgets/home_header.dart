@@ -10,7 +10,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// - Refresh & notification icons (right)
 class HomeHeader extends StatelessWidget {
   /// Creates a new instance of [HomeHeader].
-  const HomeHeader({super.key, this.onRefresh, this.onNotificationTap});
+  const HomeHeader({
+    super.key,
+    this.onRefresh,
+    this.onNotificationTap,
+    this.notificationCount,
+  });
 
   /// Callback when refresh icon is tapped.
   final VoidCallback? onRefresh;
@@ -18,13 +23,21 @@ class HomeHeader extends StatelessWidget {
   /// Callback when notification icon is tapped.
   final VoidCallback? onNotificationTap;
 
+  /// Number of unread notifications (optional, shows badge if > 0)
+  final int? notificationCount;
+
   // Design tokens - using shared colors from design system
   static const Color _black = AppColors.black;
 
   // Widget-specific spacing constants
   static const double _iconSize = 24; // Figma: 24x24px
-  static const double _spacingMedium = 0;
+  static const double _spacingMedium = 12; // Figma: gap 12px between icons
   static const double _logoHeight = 28; // Figma: logo height 28px
+  static const double _badgeSize = 16; // Badge size for notification count
+  static const double _badgeFontSize = 10; // Font size for badge text
+  static const Color _badgeColor = Color(
+    0xFFD84639,
+  ); // Red badge color (same as inputDataKematianIcon)
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +83,8 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
-              width: _spacingMedium,
-            ), // Figma: gap 12px between icons
-            // Notification Icon - with tap feedback
+            const SizedBox(width: _spacingMedium),
+            // Notification Icon - with tap feedback and badge
             Material(
               color: Colors.transparent,
               child: InkWell(
@@ -81,21 +92,53 @@ class HomeHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20), // Circular tap area
                 child: Padding(
                   padding: const EdgeInsets.all(8), // Tap padding area
-                  child: ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                      _black,
-                      BlendMode.srcIn,
-                    ),
-                    child: SvgPicture.asset(
-                      Assets.icons.outline.notification,
-                      width: _iconSize,
-                      height: _iconSize,
-                      placeholderBuilder: (context) => const Icon(
-                        Icons.notifications_outlined,
-                        size: _iconSize,
-                        color: _black,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                          _black,
+                          BlendMode.srcIn,
+                        ),
+                        child: SvgPicture.asset(
+                          Assets.icons.outline.notification,
+                          width: _iconSize,
+                          height: _iconSize,
+                          placeholderBuilder: (context) => const Icon(
+                            Icons.notifications_outlined,
+                            size: _iconSize,
+                            color: _black,
+                          ),
+                        ),
                       ),
-                    ),
+                      // Notification badge
+                      if (notificationCount != null && notificationCount! > 0)
+                        Positioned(
+                          right: -4,
+                          top: -4,
+                          child: Container(
+                            width: _badgeSize,
+                            height: _badgeSize,
+                            decoration: const BoxDecoration(
+                              color: _badgeColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                notificationCount! > 9
+                                    ? '9+'
+                                    : '${notificationCount!}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: _badgeFontSize,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),

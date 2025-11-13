@@ -39,9 +39,9 @@ class FlavorConfig {
   static int getMockApiDelay(AppFlavor flavor) {
     switch (flavor) {
       case AppFlavor.dev:
-        return 500; // Simulate network delay
+        return 2000; // Simulate network delay
       case AppFlavor.staging:
-        return 200;
+        return 1000;
       case AppFlavor.prod:
         return 0; // No delay in prod
     }

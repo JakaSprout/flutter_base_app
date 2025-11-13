@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/banner_section.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/company_selection_section.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/dashboard_summary_grid.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/home_header.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/input_data_section.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_section.dart';
+import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/banner_section_shimmer.dart';
+import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/company_selection_shimmer.dart';
+import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/dashboard_summary_shimmer.dart';
+import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/pond_list_shimmer.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Home screen (Beranda).
 ///
@@ -17,64 +23,126 @@ import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_se
 /// - Dashboard summary cards
 /// - Input data section
 /// - Pond list
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends HookConsumerWidget {
   /// Creates a new instance of [HomeScreen].
   const HomeScreen({super.key});
 
   // Spacing constants - exact Figma specs
-  static const double _screenPadding = 20; // Figma: padding 20px
   static const double _sectionSpacing = 24; // Figma: gap 24px
 
   @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch providers per section
+    final headerAsync = ref.watch(headerDataProvider);
+    final bannerListAsync = ref.watch(bannerListDataProvider);
+    final dashboardSummaryAsync = ref.watch(dashboardSummaryDataProvider);
+    final pondListAsync = ref.watch(pondListDataProvider);
+    final companyListAsync = ref.watch(companyListDataProvider);
+
+    return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: ColoredBox(
           color: AppColors.white,
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(_screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Header Section (redesigned)
-                HomeHeader(
-                  onRefresh: _handleRefresh,
-                  onNotificationTap: _handleNotificationTap,
+                // Header doesn't need shimmer - logo and icons are static
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: HomeHeader(
+                    onRefresh: () {
+                      // Refresh all sections including header
+                      ref.invalidate(headerDataProvider);
+                      ref.invalidate(bannerListDataProvider);
+                      ref.invalidate(dashboardSummaryDataProvider);
+                      ref.invalidate(pondListDataProvider);
+                      ref.invalidate(companyListDataProvider);
+                      ref.invalidate(inputDataListDataProvider);
+                    },
+                    onNotificationTap: _handleNotificationTap,
+                    notificationCount:
+                        headerAsync.valueOrNull?.notificationCount,
+                  ),
                 ),
-                SizedBox(height: _sectionSpacing),
-                // 2. Banner Section (NEW)
-                BannerSection(onCardTap: _handleBannerTap),
-                SizedBox(height: _sectionSpacing),
+                const SizedBox(height: _sectionSpacing),
+                // 2. Banner Section (NEW) - Data from API
+                bannerListAsync.when(
+                  data: (data) =>
+                      const BannerSection(onCardTap: _handleBannerTap),
+                  loading: () => const BannerSectionShimmer(),
+                  error: (error, stackTrace) => const SizedBox.shrink(),
+                  skipLoadingOnRefresh: false,
+                ),
+                const SizedBox(height: _sectionSpacing),
                 // 3. Company Selection Section (NEW - moved from header)
-                CompanySelectionSection(
-                  selectedCompany: HomeConstants.defaultCompanyName,
-                  companies: [
-                    HomeConstants.defaultCompanyName,
-                    'PT. Company Lain',
-                    'PT. Company Lain Lagi',
-                  ],
-                  onCompanyChanged: _handleCompanyChanged,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: companyListAsync.when(
+                    data: (data) => CompanySelectionSection(
+                      selectedCompany: data.selectedCompany,
+                      companies: data.companies,
+                      onCompanyChanged: (company) {
+                        ref
+                            .read(companyListNotifierProvider.notifier)
+                            .updateCompany(company);
+                      },
+                    ),
+                    loading: () => const CompanySelectionShimmer(),
+                    error: (error, stackTrace) => const SizedBox.shrink(),
+                    skipLoadingOnRefresh:
+                        false, // Show loading state on refresh
+                  ),
                 ),
-                SizedBox(height: _sectionSpacing),
-                // 4. Dashboard Summary Cards (UNCHANGED)
-                DashboardSummaryGrid(
-                  activePonds: HomeConstants.defaultActivePonds,
-                  onShowAllTap: _handleShowAllTap,
+                const SizedBox(height: _sectionSpacing),
+                // 4. Dashboard Summary Cards
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: dashboardSummaryAsync.when(
+                    data: (data) => DashboardSummaryGrid(
+                      activePonds: data.activePonds,
+                      estimasiBiomassa: data.estimasiBiomassa,
+                      totalPakan: data.totalPakan,
+                      biayaPakan: data.biayaPakan,
+                      estimasiSR: data.estimasiSR,
+                      onShowAllTap: _handleShowAllTap,
+                    ),
+                    loading: () => const DashboardSummaryShimmer(),
+                    error: (error, stackTrace) => const SizedBox.shrink(),
+                    skipLoadingOnRefresh:
+                        false, // Show loading state on refresh
+                  ),
                 ),
-                SizedBox(height: _sectionSpacing),
-                // 5. Input Data Section (UNCHANGED)
-                InputDataSection(
-                  onSeeAllTap: _handleInputDataSeeAllTap,
-                  onItemTap: _handleInputDataItemTap,
+                const SizedBox(height: _sectionSpacing),
+                // 5. Input Data Section - Data from API (with custom order)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: InputDataSection(
+                    onSeeAllTap: _handleInputDataSeeAllTap,
+                    onItemTap: _handleInputDataItemTap,
+                  ),
                 ),
-                SizedBox(height: _sectionSpacing),
-                // 6. Pond List Section (UNCHANGED - redesign later)
-                PondListSection(
-                  onSeeAllTap: _handlePondListSeeAllTap,
-                  onPondTap: _handlePondTap,
+                const SizedBox(height: _sectionSpacing),
+                // 6. Pond List Section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: pondListAsync.when(
+                    data: (data) => PondListSection(
+                      ponds: data.ponds
+                          .map((pond) => PondData(id: pond.id, name: pond.name))
+                          .toList(),
+                      onSeeAllTap: _handlePondListSeeAllTap,
+                      onPondTap: _handlePondTap,
+                    ),
+                    loading: () => const PondListShimmer(),
+                    error: (error, stackTrace) => const SizedBox.shrink(),
+                    skipLoadingOnRefresh:
+                        false, // Show loading state on refresh
+                  ),
                 ),
-                SizedBox(height: _sectionSpacing),
+                const SizedBox(height: _sectionSpacing),
               ],
             ),
           ),
@@ -84,12 +152,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Handler methods
-  static void _handleRefresh() {
-    // TODO: Handle refresh tap
-    // This will refresh the home screen data
-    debugPrint('Refresh tapped');
-  }
-
   static void _handleNotificationTap() {
     // TODO: Handle notification tap
     // This will navigate to notification screen
@@ -100,12 +162,6 @@ class HomeScreen extends StatelessWidget {
     // TODO: Handle banner card tap
     // This will navigate to specific screen based on card ID
     debugPrint('Banner card tapped: $cardId');
-  }
-
-  static void _handleCompanyChanged(String selectedCompany) {
-    // TODO: Handle company change
-    // This will be implemented when state management is added
-    debugPrint('Selected company: $selectedCompany');
   }
 
   static void _handleShowAllTap() {
