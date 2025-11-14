@@ -22,7 +22,7 @@ void main() {
       expect(find.text(NavigationConstants.placeholderHome), findsOneWidget);
     });
 
-    testWidgets('should navigate to monitoring screen', (tester) async {
+    testWidgets('should navigate to graph screen', (tester) async {
       // Arrange
       const config = AppConfig.dev;
 
@@ -30,19 +30,13 @@ void main() {
       await tester.pumpWidget(const ProviderScope(child: App(config: config)));
       await tester.pumpAndSettle();
 
-      // Navigate to monitoring
-      await tester.tap(find.text(NavigationConstants.navMonitoring));
+      // Navigate to graph
+      await tester.tap(find.text(NavigationConstants.navGraph));
       await tester.pumpAndSettle();
 
       // Assert
-      expect(
-        find.text(NavigationConstants.screenMonitoringTitle),
-        findsOneWidget,
-      );
-      expect(
-        find.text(NavigationConstants.placeholderMonitoring),
-        findsOneWidget,
-      );
+      expect(find.text(NavigationConstants.screenGraphTitle), findsOneWidget);
+      expect(find.text(NavigationConstants.placeholderGraph), findsOneWidget);
     });
 
     testWidgets('should navigate to input data screen', (tester) async {
@@ -112,7 +106,7 @@ void main() {
 
       // Assert
       expect(find.text(NavigationConstants.navHome), findsOneWidget);
-      expect(find.text(NavigationConstants.navMonitoring), findsOneWidget);
+      expect(find.text(NavigationConstants.navGraph), findsOneWidget);
       expect(find.text(NavigationConstants.navInputData), findsOneWidget);
       expect(find.text(NavigationConstants.navPond), findsOneWidget);
       expect(find.text(NavigationConstants.navProfile), findsOneWidget);

@@ -6,8 +6,8 @@ class Routes {
   /// Home route path.
   static const String home = '/';
 
-  /// Monitoring route path.
-  static const String monitoring = '/monitoring';
+  /// Graph route path.
+  static const String graph = '/graph';
 
   /// Input Data route path.
   static const String inputData = '/input-data';
@@ -24,8 +24,8 @@ class Routes {
   /// Home route name.
   static const String homeName = 'home';
 
-  /// Monitoring route name.
-  static const String monitoringName = 'monitoring';
+  /// Graph route name.
+  static const String graphName = 'graph';
 
   /// Input Data route name.
   static const String inputDataName = 'input-data';

@@ -83,7 +83,6 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: _spacingMedium),
             // Notification Icon - with tap feedback and badge
             Material(
               color: Colors.transparent,

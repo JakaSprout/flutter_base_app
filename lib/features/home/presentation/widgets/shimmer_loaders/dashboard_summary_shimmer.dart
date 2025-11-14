@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for DashboardSummaryGrid.
 ///
@@ -18,11 +18,14 @@ class DashboardSummaryShimmer extends StatelessWidget {
   static const double _iconSize = 16; // Figma: 16x16px
   static const double _spacingTiny = 4; // Figma: gap 4px
   static const double _spacingSmall = 8; // Figma: gap 8px
-  static const double _titleHeight = 18; // Approximate title height (fontSize 12 * lineHeight 1.5)
+  static const double _titleHeight =
+      18; // Approximate title height (fontSize 12 * lineHeight 1.5)
   static const double _titleWidth = 80; // Approximate title width
-  static const double _valueHeight = 28; // Approximate value height (fontSize 20 * lineHeight 1.4)
+  static const double _valueHeight =
+      28; // Approximate value height (fontSize 20 * lineHeight 1.4)
   static const double _valueWidth = 60; // Approximate value width
-  static const double _subtitleHeight = 14; // Approximate subtitle height (fontSize 10 * lineHeight 1.4)
+  static const double _subtitleHeight =
+      14; // Approximate subtitle height (fontSize 10 * lineHeight 1.4)
   static const double _subtitleWidth = 100; // Approximate subtitle width
   static const int _cardCount = 4; // 2x2 grid
 
@@ -35,9 +38,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
         i + 2 <= _cardCount ? 2 : _cardCount - i,
         (index) => Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: index == 0 ? _cardSpacing : 0,
-            ),
+            padding: EdgeInsets.only(right: index == 0 ? _cardSpacing : 0),
             child: _buildCardShimmer(),
           ),
         ),
@@ -54,9 +55,9 @@ class DashboardSummaryShimmer extends StatelessWidget {
   /// Builds a single card shimmer that mimics STPMetricCard structure
   Widget _buildCardShimmer() {
     return Shimmer(
-      duration: const Duration(seconds: 2),
-      color: AppColors.white,
-      colorOpacity: 0.3,
+      duration: const Duration(seconds: 1),
+      color: AppColors.primary20,
+      colorOpacity: 0.35,
       child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: _cardPaddingVertical,
@@ -127,4 +128,3 @@ class DashboardSummaryShimmer extends StatelessWidget {
     );
   }
 }
-

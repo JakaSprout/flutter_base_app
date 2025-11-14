@@ -10,8 +10,8 @@ class NavigationConstants {
   /// Home navigation label
   static const String navHome = 'Beranda';
 
-  /// Monitoring navigation label
-  static const String navMonitoring = 'Monitoring';
+  /// Graph navigation label
+  static const String navGraph = 'Grafik';
 
   /// Input Data navigation label
   static const String navInputData = 'Input Data';
@@ -26,8 +26,8 @@ class NavigationConstants {
   /// Home screen title
   static const String screenHomeTitle = 'Beranda';
 
-  /// Monitoring screen title
-  static const String screenMonitoringTitle = 'Monitoring';
+  /// Graph screen title
+  static const String screenGraphTitle = 'Graph';
 
   /// Input Data screen title
   static const String screenInputDataTitle = 'Input Data';
@@ -42,9 +42,8 @@ class NavigationConstants {
   /// Home screen placeholder message
   static const String placeholderHome = 'Home screen - TODO: Implement';
 
-  /// Monitoring screen placeholder message
-  static const String placeholderMonitoring =
-      'Monitoring screen - TODO: Implement';
+  /// Graph screen placeholder message
+  static const String placeholderGraph = 'Graph screen - TODO: Implement';
 
   /// Input Data screen placeholder message
   static const String placeholderInputData =

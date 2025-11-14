@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for PondListSection.
 ///
@@ -14,14 +14,17 @@ class PondListShimmer extends StatelessWidget {
   // Design tokens - matching PondListSection and PondListItem
   static const double _headerSpacing = 24; // Spacing between header and list
   static const double _itemSpacing = 12; // Figma: gap 12px between list items
-  static const double _itemPaddingHorizontal = 16; // Figma: padding horizontal 16px
+  static const double _itemPaddingHorizontal =
+      16; // Figma: padding horizontal 16px
   static const double _itemPaddingVertical = 12; // Figma: padding vertical 12px
   static const double _borderRadius = 12; // Figma: borderRadius 12px
   static const double _gap = 8; // Gap between name and ID
   static const double _iconSize = 24; // Chevron icon size
-  static const double _nameHeight = 20; // Approximate name height (fontSize 14 * lineHeight 1.4)
+  static const double _nameHeight =
+      20; // Approximate name height (fontSize 14 * lineHeight 1.4)
   static const double _nameWidth = 120; // Approximate name width
-  static const double _idHeight = 17; // Approximate ID height (fontSize 12 * lineHeight 1.4)
+  static const double _idHeight =
+      17; // Approximate ID height (fontSize 12 * lineHeight 1.4)
   static const double _idWidth = 100; // Approximate ID width
   static const int _itemCount = 4; // Number of items to show
 
@@ -39,9 +42,9 @@ class PondListShimmer extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Shimmer(
-                  duration: const Duration(seconds: 2),
-                  color: AppColors.white,
-                  colorOpacity: 0.3,
+                  duration: const Duration(seconds: 1),
+                  color: AppColors.primary20,
+                  colorOpacity: 0.35,
                   child: Container(
                     width: 120,
                     height: 24,
@@ -54,9 +57,9 @@ class PondListShimmer extends StatelessWidget {
                 const SizedBox(width: 4),
                 // Count placeholder
                 Shimmer(
-                  duration: const Duration(seconds: 2),
-                  color: AppColors.white,
-                  colorOpacity: 0.3,
+                  duration: const Duration(seconds: 1),
+                  color: AppColors.primary20,
+                  colorOpacity: 0.35,
                   child: Container(
                     width: 40,
                     height: 24,
@@ -70,9 +73,9 @@ class PondListShimmer extends StatelessWidget {
             ),
             // "Lihat Semua" placeholder
             Shimmer(
-              duration: const Duration(seconds: 2),
-              color: AppColors.white,
-              colorOpacity: 0.3,
+              duration: const Duration(seconds: 1),
+              color: AppColors.primary20,
+              colorOpacity: 0.35,
               child: Container(
                 width: 80,
                 height: 18,
@@ -102,9 +105,9 @@ class PondListShimmer extends StatelessWidget {
   /// Builds a single item shimmer that mimics PondListItem structure
   Widget _buildItemShimmer() {
     return Shimmer(
-      duration: const Duration(seconds: 2),
-      color: AppColors.white,
-      colorOpacity: 0.3,
+      duration: const Duration(seconds: 1),
+      color: AppColors.primary20,
+      colorOpacity: 0.35,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(
@@ -161,4 +164,3 @@ class PondListShimmer extends StatelessWidget {
     );
   }
 }
-

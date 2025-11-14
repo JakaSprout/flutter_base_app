@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for InputDataSection.
 ///
@@ -13,15 +13,21 @@ class InputDataShimmer extends StatelessWidget {
   // Design tokens - matching InputDataSection and STPInputDataItem
   static const double _gridSpacing = 8; // Figma: gap 8px
   static const double _headerSpacing = 24; // Spacing between header and grid
-  static const double _containerSize = 81.5; // Figma: 81.5x81.5px (total container)
-  static const double _iconContainerSize = 48; // Figma: 48x48px (icon container)
+  static const double _containerSize =
+      81.5; // Figma: 81.5x81.5px (total container)
+  static const double _iconContainerSize =
+      48; // Figma: 48x48px (icon container)
   static const double _gap = 8; // Figma: gap 8px between icon and label
-  static const double _labelHeight = 14; // Approximate label height (fontSize 10 * lineHeight 1.4)
+  static const double _labelHeight =
+      14; // Approximate label height (fontSize 10 * lineHeight 1.4)
   static const double _labelWidth = 50; // Approximate label width
-  static const double _headerTitleHeight = 24; // Approximate header title height (fontSize 16 * lineHeight 1.5)
+  static const double _headerTitleHeight =
+      24; // Approximate header title height (fontSize 16 * lineHeight 1.5)
   static const double _headerTitleWidth = 100; // Approximate header title width
-  static const double _headerSeeAllHeight = 18; // Approximate "Lihat Semua" height (fontSize 12 * lineHeight 1.5)
-  static const double _headerSeeAllWidth = 80; // Approximate "Lihat Semua" width
+  static const double _headerSeeAllHeight =
+      18; // Approximate "Lihat Semua" height (fontSize 12 * lineHeight 1.5)
+  static const double _headerSeeAllWidth =
+      80; // Approximate "Lihat Semua" width
   static const int _itemCount = 8; // 2 rows x 4 columns
 
   @override
@@ -35,9 +41,9 @@ class InputDataShimmer extends StatelessWidget {
           children: [
             // Title shimmer
             Shimmer(
-              duration: const Duration(seconds: 2),
-              color: AppColors.white,
-              colorOpacity: 0.3,
+              duration: const Duration(seconds: 1),
+              color: AppColors.primary20,
+              colorOpacity: 0.35,
               child: Container(
                 width: _headerTitleWidth,
                 height: _headerTitleHeight,
@@ -49,9 +55,9 @@ class InputDataShimmer extends StatelessWidget {
             ),
             // "Lihat Semua" shimmer
             Shimmer(
-              duration: const Duration(seconds: 2),
-              color: AppColors.white,
-              colorOpacity: 0.3,
+              duration: const Duration(seconds: 1),
+              color: AppColors.primary20,
+              colorOpacity: 0.35,
               child: Container(
                 width: _headerSeeAllWidth,
                 height: _headerSeeAllHeight,
@@ -79,9 +85,7 @@ class InputDataShimmer extends StatelessWidget {
         i + 4 <= _itemCount ? 4 : _itemCount - i,
         (index) => Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: index < 3 ? _gridSpacing : 0,
-            ),
+            padding: EdgeInsets.only(right: index < 3 ? _gridSpacing : 0),
             child: SizedBox(
               width: _containerSize,
               height: _containerSize,
@@ -89,25 +93,20 @@ class InputDataShimmer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Icon container shimmer
-                  Shimmer(
-                    duration: const Duration(seconds: 2),
-                    color: AppColors.white,
-                    colorOpacity: 0.3,
-                    child: Container(
-                      width: _iconContainerSize,
-                      height: _iconContainerSize,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray05,
-                        shape: BoxShape.circle,
-                      ),
+                  Container(
+                    width: _iconContainerSize,
+                    height: _iconContainerSize,
+                    decoration: const BoxDecoration(
+                      color: AppColors.gray05,
+                      shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(height: _gap),
                   // Label shimmer
                   Shimmer(
-                    duration: const Duration(seconds: 2),
-                    color: AppColors.white,
-                    colorOpacity: 0.3,
+                    duration: const Duration(seconds: 1),
+                    color: AppColors.primary20,
+                    colorOpacity: 0.35,
                     child: Container(
                       width: _labelWidth,
                       height: _labelHeight,
@@ -142,4 +141,3 @@ class InputDataShimmer extends StatelessWidget {
     );
   }
 }
-

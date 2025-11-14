@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for CompanySelectionSection.
 ///
@@ -12,8 +12,10 @@ class CompanySelectionShimmer extends StatelessWidget {
   const CompanySelectionShimmer({super.key});
 
   // Design tokens - matching CompanySelectionSection
-  static const double _labelSpacing = 8; // Figma: gap 8px between label and dropdown
-  static const double _labelHeight = 18; // Approximate label height (12px font * 1.5 line height)
+  static const double _labelSpacing =
+      8; // Figma: gap 8px between label and dropdown
+  static const double _labelHeight =
+      18; // Approximate label height (12px font * 1.5 line height)
   static const double _dropdownHeight = 48; // Standard dropdown height
 
   @override
@@ -23,9 +25,9 @@ class CompanySelectionShimmer extends StatelessWidget {
       children: [
         // Label placeholder
         Shimmer(
-          duration: const Duration(seconds: 2),
-          color: AppColors.white,
-          colorOpacity: 0.3,
+          duration: const Duration(seconds: 1),
+          color: AppColors.primary20,
+          colorOpacity: 0.35,
           child: Container(
             width: 60, // Approximate label width
             height: _labelHeight,
@@ -38,9 +40,9 @@ class CompanySelectionShimmer extends StatelessWidget {
         const SizedBox(height: _labelSpacing),
         // Dropdown placeholder
         Shimmer(
-          duration: const Duration(seconds: 2),
-          color: AppColors.white,
-          colorOpacity: 0.3,
+          duration: const Duration(seconds: 1),
+          color: AppColors.primary20,
+          colorOpacity: 0.35,
           child: Container(
             width: double.infinity,
             height: _dropdownHeight,
@@ -55,4 +57,3 @@ class CompanySelectionShimmer extends StatelessWidget {
     );
   }
 }
-

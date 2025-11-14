@@ -55,12 +55,13 @@ class HomeScreen extends HookConsumerWidget {
                   child: HomeHeader(
                     onRefresh: () {
                       // Refresh all sections including header
-                      ref.invalidate(headerDataProvider);
-                      ref.invalidate(bannerListDataProvider);
-                      ref.invalidate(dashboardSummaryDataProvider);
-                      ref.invalidate(pondListDataProvider);
-                      ref.invalidate(companyListDataProvider);
-                      ref.invalidate(inputDataListDataProvider);
+                      ref
+                        ..invalidate(headerDataProvider)
+                        ..invalidate(bannerListDataProvider)
+                        ..invalidate(dashboardSummaryDataProvider)
+                        ..invalidate(pondListDataProvider)
+                        ..invalidate(companyListDataProvider)
+                        ..invalidate(inputDataListDataProvider);
                     },
                     onNotificationTap: _handleNotificationTap,
                     notificationCount:
@@ -153,44 +154,37 @@ class HomeScreen extends HookConsumerWidget {
 
   // Handler methods
   static void _handleNotificationTap() {
-    // TODO: Handle notification tap
-    // This will navigate to notification screen
+    // TODO(sproutdigital): Handle notification tap and navigate accordingly.
     debugPrint('Notification tapped');
   }
 
   static void _handleBannerTap(String cardId) {
-    // TODO: Handle banner card tap
-    // This will navigate to specific screen based on card ID
+    // TODO(sproutdigital): Handle banner card tap navigation.
     debugPrint('Banner card tapped: $cardId');
   }
 
   static void _handleShowAllTap() {
-    // TODO: Handle show all tap
-    // This will be implemented when navigation is added
+    // TODO(sproutdigital): Handle show all tap when navigation is added.
     debugPrint('Show all tapped');
   }
 
   static void _handleInputDataSeeAllTap() {
-    // TODO: Handle see all tap
-    // This will navigate to Input Data screen
+    // TODO(sproutdigital): Handle see all tap to navigate to Input Data screen.
     debugPrint('See all input data tapped');
   }
 
   static void _handleInputDataItemTap(String itemLabel) {
-    // TODO: Handle item tap
-    // This will navigate to specific input data form
+    // TODO(sproutdigital): Handle item tap to navigate to specific input form.
     debugPrint('Input data item tapped: $itemLabel');
   }
 
   static void _handlePondListSeeAllTap() {
-    // TODO: Handle see all tap
-    // This will navigate to Pond screen
+    // TODO(sproutdigital): Handle see all tap to navigate to Pond screen.
     debugPrint('See all ponds tapped');
   }
 
   static void _handlePondTap(String pondId) {
-    // TODO: Handle pond tap
-    // This will navigate to pond detail screen
+    // TODO(sproutdigital): Handle pond tap to navigate to pond detail screen.
     debugPrint('Pond tapped: $pondId');
   }
 }

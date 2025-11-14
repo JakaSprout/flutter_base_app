@@ -3,7 +3,7 @@ import 'package:flutter_base_app/core/logging/logger.dart';
 import 'package:flutter_base_app/design_system/components/navigation/stp_bottom_nav_bar.dart';
 import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter_base_app/features/input_data/presentation/screens/input_data_screen.dart';
-import 'package:flutter_base_app/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:flutter_base_app/features/graph/presentation/screens/graph_screen.dart';
 import 'package:flutter_base_app/features/pond/presentation/screens/pond_screen.dart';
 import 'package:flutter_base_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter_base_app/router/routes.dart';
@@ -36,9 +36,9 @@ class AppRouter {
             builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
-            path: Routes.monitoring,
-            name: Routes.monitoringName,
-            builder: (context, state) => const MonitoringScreen(),
+            path: Routes.graph,
+            name: Routes.graphName,
+            builder: (context, state) => const GraphScreen(),
           ),
           GoRoute(
             path: Routes.inputData,

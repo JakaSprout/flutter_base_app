@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/navigation_constants.dart';
 
-/// Monitoring screen.
+/// Graph screen.
 ///
 /// This is a placeholder screen that will be implemented based on Figma design.
-class MonitoringScreen extends StatelessWidget {
-  /// Creates a new instance of [MonitoringScreen].
-  const MonitoringScreen({super.key});
+class GraphScreen extends StatelessWidget {
+  /// Creates a new instance of [GraphScreen].
+  const GraphScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class MonitoringScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              NavigationConstants.screenMonitoringTitle,
+              NavigationConstants.screenGraphTitle,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
-              NavigationConstants.placeholderMonitoring,
+              NavigationConstants.placeholderGraph,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

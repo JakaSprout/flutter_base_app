@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for BannerSection.
 ///
@@ -26,9 +26,11 @@ class BannerSectionShimmer extends StatelessWidget {
   static const double _imageWidth = 52; // Figma: image width 52px
   static const double _imageHeight = 52; // Figma: image height 52px
   static const double _gap = 12; // Figma: gap 12px between image and text
-  static const double _titleHeight = 20; // Approximate title height (fontSize 14 * lineHeight)
+  static const double _titleHeight =
+      20; // Approximate title height (fontSize 14 * lineHeight)
   static const double _titleWidth = 120; // Approximate title width
-  static const double _descriptionHeight = 16; // Approximate description height (fontSize 12 * lineHeight)
+  static const double _descriptionHeight =
+      16; // Approximate description height (fontSize 12 * lineHeight)
   static const double _descriptionWidth = 150; // Approximate description width
 
   @override
@@ -41,7 +43,7 @@ class BannerSectionShimmer extends StatelessWidget {
           height: _cardHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 20, // Left padding for first card
               right: _peekWidth + 20, // Right padding + peek width
             ),
@@ -51,10 +53,7 @@ class BannerSectionShimmer extends StatelessWidget {
                 padding: EdgeInsets.only(
                   right: index < _cardCount - 1 ? _cardSpacing : 0,
                 ),
-                child: SizedBox(
-                  width: _cardWidth,
-                  child: _buildCardShimmer(),
-                ),
+                child: SizedBox(width: _cardWidth, child: _buildCardShimmer()),
               );
             },
           ),
@@ -71,7 +70,7 @@ class BannerSectionShimmer extends StatelessWidget {
                 margin: const EdgeInsets.only(right: _indicatorSpacing),
                 width: _indicatorSize,
                 height: _indicatorSize,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.gray20,
                 ),
@@ -86,9 +85,9 @@ class BannerSectionShimmer extends StatelessWidget {
   /// Builds a single card shimmer that mimics BannerCard structure
   Widget _buildCardShimmer() {
     return Shimmer(
-      duration: const Duration(seconds: 2),
-      color: AppColors.white,
-      colorOpacity: 0.3,
+      duration: const Duration(seconds: 1),
+      color: AppColors.primary20,
+      colorOpacity: 0.35,
       child: Container(
         height: _cardHeight,
         decoration: BoxDecoration(
@@ -144,4 +143,3 @@ class BannerSectionShimmer extends StatelessWidget {
     );
   }
 }
-

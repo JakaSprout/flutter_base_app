@@ -65,9 +65,9 @@ class STPBottomNavBar extends StatelessWidget {
                   context: context,
                   outlinePath: Assets.icons.outline.chart,
                   solidPath: Assets.icons.solid.chart,
-                  label: NavigationConstants.navMonitoring,
-                  route: Routes.monitoring,
-                  isActive: currentLocation == Routes.monitoring,
+                  label: NavigationConstants.navGraph,
+                  route: Routes.graph,
+                  isActive: currentLocation == Routes.graph,
                 ),
               ),
               // Input Data text below FAB
