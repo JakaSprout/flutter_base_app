@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/components/cards/stp_metric_card.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 import 'package:flutter_base_app/gen/assets.gen.dart';
 
 /// Dashboard summary cards grid container.
@@ -48,15 +49,14 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
 
-  // Maximum cards to show when collapsed
-  static const int _maxVisibleCards = 4;
-
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(
+        milliseconds: HomeDesignConstants.dashboardAnimationDurationMs,
+      ),
     );
     _expandAnimation = CurvedAnimation(
       parent: _animationController,
@@ -83,17 +83,6 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
     widget.onShowAllTap?.call();
   }
 
-  // Design tokens
-  static const Color _secondaryColor = Color(
-    0xFFFA6619,
-  ); // Secondary/60 (Base) from Figma
-
-  // Spacing constants - exact Figma specs
-  static const double _gridSpacing = 8; // Figma: gap 8px
-  static const double _fontSizeSmall = 12;
-  static const double _lineHeight = 1.5; // Figma: lineHeight 1.5em
-  static const double _spacingSmall = 8;
-
   @override
   Widget build(BuildContext context) {
     final activePondsCount =
@@ -104,11 +93,16 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
     final allCards = _buildAllCards(subtitle);
 
     // Check if there are more cards to show
-    final hasMoreCards = allCards.length > _maxVisibleCards;
+    final hasMoreCards =
+        allCards.length > HomeDesignConstants.dashboardMaxVisibleCards;
 
     // Split cards into visible (first 4) and additional (rest)
-    final visibleCards = allCards.take(_maxVisibleCards).toList();
-    final additionalCards = allCards.skip(_maxVisibleCards).toList();
+    final visibleCards = allCards
+        .take(HomeDesignConstants.dashboardMaxVisibleCards)
+        .toList();
+    final additionalCards = allCards
+        .skip(HomeDesignConstants.dashboardMaxVisibleCards)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,14 +115,16 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
             sizeFactor: _expandAnimation,
             child: Column(
               children: [
-                const SizedBox(height: _gridSpacing),
+                const SizedBox(
+                  height: HomeDesignConstants.dashboardGridSpacing,
+                ),
                 _buildGrid(additionalCards),
               ],
             ),
           ),
         // Toggle button (only show if there are more cards)
         if (hasMoreCards) ...[
-          const SizedBox(height: _spacingSmall),
+          const SizedBox(height: HomeDesignConstants.dashboardSpacingSmall),
           _buildToggleButton(context),
         ],
       ],
@@ -203,7 +199,7 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
           children: [
             Expanded(child: rowCards[0]),
             if (rowCards.length > 1) ...[
-              const SizedBox(width: _gridSpacing),
+              const SizedBox(width: HomeDesignConstants.dashboardGridSpacing),
               Expanded(child: rowCards[1]),
             ] else
               const Expanded(child: SizedBox.shrink()),
@@ -211,7 +207,9 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
         ),
       );
       if (i + 2 < cards.length) {
-        rows.add(const SizedBox(height: _gridSpacing));
+        rows.add(
+          const SizedBox(height: HomeDesignConstants.dashboardGridSpacing),
+        );
       }
     }
 
@@ -232,9 +230,14 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
         color: Colors.transparent,
         child: InkWell(
           onTap: _toggleExpand,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(
+            HomeDesignConstants.dashboardToggleBorderRadius,
+          ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+              horizontal: HomeDesignConstants.dashboardTogglePaddingHorizontal,
+              vertical: HomeDesignConstants.dashboardTogglePaddingVertical,
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -242,15 +245,21 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: _fontSizeSmall,
-                    fontWeight: FontWeight.w600, // Semibold
-                    color: _secondaryColor, // Secondary/60 (Base)
+                    fontSize: HomeDesignConstants.dashboardToggleFontSize,
+                    fontWeight: FontWeight.w600,
+                    color: HomeDesignConstants.dashboardSecondaryColor,
                     fontFamily: AppConstants.fontFamily,
-                    height: _lineHeight,
+                    height: HomeDesignConstants.dashboardToggleLineHeight,
                   ),
                 ),
-                const SizedBox(width: 2), // Figma: gap 2px
-                Icon(icon, size: 24, color: _secondaryColor),
+                const SizedBox(
+                  width: HomeDesignConstants.dashboardToggleSpacing,
+                ),
+                Icon(
+                  icon,
+                  size: HomeDesignConstants.dashboardToggleIconSize,
+                  color: HomeDesignConstants.dashboardSecondaryColor,
+                ),
               ],
             ),
           ),

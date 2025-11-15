@@ -38,4 +38,10 @@ class Routes {
 
   /// Splash route name.
   static const String splashName = 'splash';
+
+  /// Login route path.
+  static const String login = '/login';
+
+  /// Login route name.
+  static const String loginName = 'login';
 }

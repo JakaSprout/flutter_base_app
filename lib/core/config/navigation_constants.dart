@@ -54,4 +54,7 @@ class NavigationConstants {
 
   /// Profile screen placeholder message
   static const String placeholderProfile = 'Profile screen - TODO: Implement';
+
+  /// Splash screen title
+  static const String screenSplashTitle = 'Splash Screen';
 }

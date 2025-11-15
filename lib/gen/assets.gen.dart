@@ -20,6 +20,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/app_icon.png
   AssetGenImage get appIcon => const AssetGenImage('assets/icons/app_icon.png');
 
+  /// File path: assets/icons/app_icon_dev.png
+  AssetGenImage get appIconDev =>
+      const AssetGenImage('assets/icons/app_icon_dev.png');
+
+  /// File path: assets/icons/app_icon_staging.png
+  AssetGenImage get appIconStaging =>
+      const AssetGenImage('assets/icons/app_icon_staging.png');
+
   /// Directory path: assets/icons/general
   $AssetsIconsGeneralGen get general => const $AssetsIconsGeneralGen();
 
@@ -30,7 +38,7 @@ class $AssetsIconsGen {
   $AssetsIconsSolidGen get solid => const $AssetsIconsSolidGen();
 
   /// List of all assets
-  List<dynamic> get values => [readme, appIcon];
+  List<dynamic> get values => [readme, appIcon, appIconDev, appIconStaging];
 }
 
 class $AssetsImagesGen {

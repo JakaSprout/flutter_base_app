@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_item.dart';
+import 'package:flutter_base_app/router/routes.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pond List section for Home screen.
@@ -28,22 +30,11 @@ class PondListSection extends StatelessWidget {
   /// Receives the pond ID as parameter
   final ValueChanged<String>? onPondTap;
 
-  // Design tokens - exact Figma specs
-  static const double _headerSpacing = 24; // Spacing between header and list
-  static const double _itemSpacing = 12; // Figma: gap 12px between list items
-  static const double _fontSizeTitle =
-      16; // Figma: Body/Small/Medium/Semibold - fontSize 16
-  static const double _fontSizeCount =
-      16; // Figma: Body/Small/Medium/Semibold - fontSize 16 (orange)
-  static const double _fontSizeSeeAll =
-      12; // Figma: Label/Medium/Semibold - fontSize 12
-  static const double _lineHeight = 1.5; // Figma: lineHeight 1.5em
-  static const int _maxVisibleItems = 8; // Maximum items to show
-
   @override
   Widget build(BuildContext context) {
     final pondsList = ponds ?? HomeConstants.defaultPonds;
-    final visiblePonds = pondsList.take(_maxVisibleItems).toList();
+    final visiblePonds =
+        pondsList.take(HomeDesignConstants.pondListMaxVisibleItems).toList();
     final pondCount = pondsList.length;
 
     return Column(
@@ -60,23 +51,25 @@ class PondListSection extends StatelessWidget {
                 Text(
                   HomeConstants.pondListSectionTitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: _fontSizeTitle,
-                    fontWeight: FontWeight.w600, // Semibold
+                    fontSize: HomeDesignConstants.pondListTitleFontSize,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.gray100,
                     fontFamily: AppConstants.fontFamily,
-                    height: _lineHeight,
+                    height: HomeDesignConstants.pondListLineHeight,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(
+                  width: HomeDesignConstants.pondListCountSpacing,
+                ),
                 // Count in orange
                 Text(
                   '($pondCount)',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: _fontSizeCount,
-                    fontWeight: FontWeight.w600, // Semibold
-                    color: AppColors.secondary, // Secondary/60 (Base)
+                    fontSize: HomeDesignConstants.pondListCountFontSize,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondary,
                     fontFamily: AppConstants.fontFamily,
-                    height: _lineHeight,
+                    height: HomeDesignConstants.pondListLineHeight,
                   ),
                 ),
               ],
@@ -88,22 +81,25 @@ class PondListSection extends StatelessWidget {
                 onTap:
                     onSeeAllTap ??
                     () {
-                      context.go('/pond');
+                      context.go(Routes.pond);
                     },
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(
+                  HomeDesignConstants.pondListLinkBorderRadius,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
+                    horizontal:
+                        HomeDesignConstants.pondListLinkPaddingHorizontal,
+                    vertical: HomeDesignConstants.pondListLinkPaddingVertical,
                   ),
                   child: Text(
                     HomeConstants.pondListSeeAllLabel,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontSize: _fontSizeSeeAll,
-                      fontWeight: FontWeight.w600, // Semibold
-                      color: AppColors.secondary, // Secondary/60 (Base)
+                      fontSize: HomeDesignConstants.pondListSeeAllFontSize,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.secondary,
                       fontFamily: AppConstants.fontFamily,
-                      height: _lineHeight,
+                      height: HomeDesignConstants.pondListLineHeight,
                     ),
                   ),
                 ),
@@ -111,14 +107,18 @@ class PondListSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: _headerSpacing),
+        const SizedBox(
+          height: HomeDesignConstants.pondListHeaderSpacing,
+        ),
         // List of pond items
         ...visiblePonds.asMap().entries.map((entry) {
           final index = entry.key;
           final pond = entry.value;
           return Padding(
             padding: EdgeInsets.only(
-              bottom: index < visiblePonds.length - 1 ? _itemSpacing : 0,
+              bottom: index < visiblePonds.length - 1
+                  ? HomeDesignConstants.pondListItemSpacing
+                  : 0,
             ),
             child: PondListItem(
               pondName: pond.name,

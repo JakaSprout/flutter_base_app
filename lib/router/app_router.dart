@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_base_app/core/config/navigation_constants.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
 import 'package:flutter_base_app/design_system/components/navigation/stp_bottom_nav_bar.dart';
+import 'package:flutter_base_app/features/auth/presentation/screens/login_screen.dart';
+import 'package:flutter_base_app/features/graph/presentation/screens/graph_screen.dart';
 import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter_base_app/features/input_data/presentation/screens/input_data_screen.dart';
-import 'package:flutter_base_app/features/graph/presentation/screens/graph_screen.dart';
 import 'package:flutter_base_app/features/pond/presentation/screens/pond_screen.dart';
 import 'package:flutter_base_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter_base_app/router/routes.dart';
@@ -14,7 +16,7 @@ import 'package:talker_flutter/talker_flutter.dart';
 class AppRouter {
   /// GoRouter instance for navigation.
   static final GoRouter router = GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: Routes.login,
     routes: [
       // Shell route with bottom navigation bar
       ShellRoute(
@@ -62,8 +64,16 @@ class AppRouter {
         path: Routes.splash,
         name: Routes.splashName,
         builder: (context, state) {
-          return const Scaffold(body: Center(child: Text('Splash Screen')));
+          return const Scaffold(
+            body: Center(child: Text(NavigationConstants.screenSplashTitle)),
+          );
         },
+      ),
+      // Login route (outside shell route, no bottom nav)
+      GoRoute(
+        path: Routes.login,
+        name: Routes.loginName,
+        builder: (context, state) => const LoginScreen(),
       ),
     ],
     // Add TalkerRouteObserver for logging route changes

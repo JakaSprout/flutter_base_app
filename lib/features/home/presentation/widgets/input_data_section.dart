@@ -3,8 +3,10 @@ import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/components/cards/stp_input_data_item.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/input_data_shimmer.dart';
+import 'package:flutter_base_app/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,15 +25,6 @@ class InputDataSection extends HookConsumerWidget {
   /// Callback when an item is tapped
   /// Receives the item label as parameter
   final ValueChanged<String>? onItemTap;
-
-  // Design tokens - exact Figma specs
-  static const double _gridSpacing = 8; // Figma: gap 8px
-  static const double _headerSpacing = 24;
-  static const double _fontSizeTitle =
-      16; // Figma: Body/Small/Medium/Semibold - fontSize 16
-  static const double _fontSizeSeeAll =
-      12; // Figma: Label/Medium/Semibold - fontSize 12
-  static const double _lineHeight = 1.5; // Figma: lineHeight 1.5em
 
   /// Convert hex color string to Color
   /// Supports formats: #RRGGBB, #AARRGGBB
@@ -95,11 +88,11 @@ class InputDataSection extends HookConsumerWidget {
                 Text(
                   HomeConstants.inputDataSectionTitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: _fontSizeTitle,
-                    fontWeight: FontWeight.w600, // Semibold
+                    fontSize: HomeDesignConstants.inputDataTitleFontSize,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.gray100,
                     fontFamily: AppConstants.fontFamily,
-                    height: _lineHeight,
+                    height: HomeDesignConstants.inputDataLineHeight,
                   ),
                 ),
                 // "Lihat Semua" link with tap feedback
@@ -109,22 +102,26 @@ class InputDataSection extends HookConsumerWidget {
                     onTap:
                         onSeeAllTap ??
                         () {
-                          context.go('/input-data');
+                          context.go(Routes.inputData);
                         },
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(
+                      HomeDesignConstants.inputDataLinkBorderRadius,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
+                        horizontal:
+                            HomeDesignConstants.inputDataLinkPaddingHorizontal,
+                        vertical:
+                            HomeDesignConstants.inputDataLinkPaddingVertical,
                       ),
                       child: Text(
                         HomeConstants.inputDataSeeAllLabel,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontSize: _fontSizeSeeAll,
-                          fontWeight: FontWeight.w600, // Semibold
-                          color: AppColors.secondary, // Secondary/60 (Base)
+                          fontSize: HomeDesignConstants.inputDataSeeAllFontSize,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.secondary,
                           fontFamily: AppConstants.fontFamily,
-                          height: _lineHeight,
+                          height: HomeDesignConstants.inputDataLineHeight,
                         ),
                       ),
                     ),
@@ -132,7 +129,9 @@ class InputDataSection extends HookConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: _headerSpacing),
+            const SizedBox(
+              height: HomeDesignConstants.inputDataHeaderSpacing,
+            ),
             // Grid - data from API
             Row(
               children: [
@@ -146,7 +145,10 @@ class InputDataSection extends HookConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: entry.value,
                           ),
-                          if (!isLast) const SizedBox(height: _gridSpacing),
+                          if (!isLast)
+                            const SizedBox(
+                              height: HomeDesignConstants.inputDataGridSpacing,
+                            ),
                         ],
                       );
                     }).toList(),

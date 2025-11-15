@@ -81,7 +81,7 @@ dev_dependencies:
 
   # App Configuration Tools
   flutter_native_splash: ^2.4.6
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.4
 
   # Asset Code Generation
   flutter_gen_runner: ^5.4.0 # Type-safe asset code generation

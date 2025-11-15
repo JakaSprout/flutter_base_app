@@ -16,10 +16,16 @@ class StatusBarConfig {
   /// - Status bar color: White
   /// - Status bar icon brightness: Dark (for visibility on light background)
   static void setLightStatusBar() {
+    // Ensure status bar is enabled (for Android)
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.top],
+    );
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: AppColors.white,
-        statusBarIconBrightness: Brightness.dark, // Dark icons on light background
+        statusBarIconBrightness:
+            Brightness.dark, // Dark icons on light background
         statusBarBrightness: Brightness.light, // For iOS
         systemNavigationBarColor: AppColors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
@@ -33,10 +39,16 @@ class StatusBarConfig {
   /// - Status bar color: Black or dark background
   /// - Status bar icon brightness: Light (for visibility on dark background)
   static void setDarkStatusBar() {
+    // Ensure status bar is enabled (for Android)
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.top],
+    );
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: AppColors.black,
-        statusBarIconBrightness: Brightness.light, // Light icons on dark background
+        statusBarIconBrightness:
+            Brightness.light, // Light icons on dark background
         statusBarBrightness: Brightness.dark, // For iOS
         systemNavigationBarColor: AppColors.black,
         systemNavigationBarIconBrightness: Brightness.light,
@@ -55,10 +67,8 @@ class StatusBarConfig {
     switch (brightness) {
       case Brightness.light:
         setLightStatusBar();
-        break;
       case Brightness.dark:
         setDarkStatusBar();
-        break;
     }
   }
 
@@ -94,5 +104,70 @@ class StatusBarConfig {
     final brightness = Theme.of(context).brightness;
     setStatusBarForBrightness(brightness);
   }
-}
 
+  /// Configure status bar for dark background with light icons.
+  ///
+  /// Use this for screens with dark backgrounds (e.g., login screen with blue background)
+  /// where white text/icons are needed for visibility.
+  ///
+  /// Sets:
+  /// - Status bar: Transparent with light icons (white)
+  /// - Navigation bar: Transparent (Android)
+  static void setStatusBarForDarkBackground() {
+    // Ensure status bar is enabled (for Android)
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.top],
+    );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // Always transparent
+        statusBarIconBrightness:
+            Brightness.light, // Light icons (white) for dark background
+        statusBarBrightness:
+            Brightness.dark, // Dark status bar style for iOS (white text/icons)
+        systemNavigationBarColor:
+            Colors.transparent, // Transparent navigation bar
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+  }
+
+  /// Get SystemUiOverlayStyle for dark background with light icons.
+  ///
+  /// Use this with [AnnotatedRegion] widget for per-screen status bar configuration.
+  ///
+  /// Returns:
+  /// - [SystemUiOverlayStyle] configured for dark background with white icons.
+  static SystemUiOverlayStyle getStatusBarStyleForDarkBackground() {
+    return const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Always transparent
+      statusBarIconBrightness:
+          Brightness.light, // Light icons (white) for dark background
+      statusBarBrightness:
+          Brightness.dark, // Dark status bar style for iOS (white text/icons)
+      systemNavigationBarColor:
+          Colors.transparent, // Transparent navigation bar
+      systemNavigationBarIconBrightness: Brightness.light,
+    );
+  }
+
+  /// Get SystemUiOverlayStyle for light background with dark icons.
+  ///
+  /// Use this with [AnnotatedRegion] widget for per-screen status bar configuration.
+  ///
+  /// Returns:
+  /// - [SystemUiOverlayStyle] configured for light background with dark icons.
+  static SystemUiOverlayStyle getStatusBarStyleForLightBackground() {
+    return const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Always transparent
+      statusBarIconBrightness:
+          Brightness.dark, // Dark icons (black) for light background
+      statusBarBrightness:
+          Brightness.light, // Light status bar style for iOS (black text/icons)
+      systemNavigationBarColor:
+          Colors.transparent, // Transparent navigation bar
+      systemNavigationBarIconBrightness: Brightness.dark,
+    );
+  }
+}

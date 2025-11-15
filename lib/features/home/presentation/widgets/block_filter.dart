@@ -3,6 +3,7 @@ import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 
 /// Block filter section for Home screen.
 ///
@@ -39,12 +40,6 @@ class _BlockFilterState extends State<BlockFilter> {
   // Design tokens - using shared colors from design system
   static const Color _gray100 = AppColors.gray100;
 
-  // Widget-specific spacing constants - exact Figma specs
-  static const double _spacingSmall = 8; // Figma: gap 8px
-  static const double _fontSizeMedium =
-      16; // Figma: Body/Small/Medium/Semibold - fontSize 16
-  static const double _lineHeight = 1.5; // Figma: lineHeight 1.5em
-
   // Default values - using feature constants
   static const String _defaultBlock = HomeConstants.defaultBlock;
   static const String _label = HomeConstants.blockFilterLabel;
@@ -74,14 +69,14 @@ class _BlockFilterState extends State<BlockFilter> {
         Text(
           _label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontSize: _fontSizeMedium,
-            fontWeight: FontWeight.w600, // Semibold
+            fontSize: HomeDesignConstants.blockFilterFontSizeMedium,
+            fontWeight: FontWeight.w600,
             color: _gray100,
             fontFamily: AppConstants.fontFamily,
-            height: _lineHeight,
+            height: HomeDesignConstants.blockFilterLineHeight,
           ),
         ),
-        const SizedBox(height: _spacingSmall),
+        const SizedBox(height: HomeDesignConstants.blockFilterSpacingSmall),
         // Dropdown Field
         _buildDropdownField(context),
       ],

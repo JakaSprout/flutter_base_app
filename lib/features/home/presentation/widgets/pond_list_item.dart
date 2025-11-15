@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 
 /// Pond list item widget for displaying a single pond entry.
 ///
@@ -33,19 +34,10 @@ class PondListItem extends StatelessWidget {
   /// Optional callback when item is tapped
   final VoidCallback? onTap;
 
-  // Design tokens - exact Figma specs
+  // Design tokens - using shared colors from design system
   static const Color _gray100 = AppColors.gray100;
   static const Color _gray70 = AppColors.gray70;
   static const Color _gray05 = AppColors.gray05;
-
-  static const double _borderRadius = 12; // Figma: borderRadius 12px
-  static const double _paddingHorizontal = 16; // Figma: padding horizontal
-  static const double _paddingVertical = 12; // Figma: padding vertical
-  static const double _gap = 8; // Gap between name and ID
-  static const double _iconSize = 24; // Chevron icon size
-  static const double _fontSizeName = 14; // Body/Small/Medium/Bold
-  static const double _fontSizeId = 12; // Body/Small/Regular
-  static const double _lineHeight = 1.4;
 
   @override
   Widget build(BuildContext context) {
@@ -54,15 +46,19 @@ class PondListItem extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color: _gray05,
-          borderRadius: BorderRadius.circular(_borderRadius),
+          borderRadius: BorderRadius.circular(
+            HomeDesignConstants.pondListItemBorderRadius,
+          ),
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(_borderRadius),
+          borderRadius: BorderRadius.circular(
+            HomeDesignConstants.pondListItemBorderRadius,
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: _paddingHorizontal,
-              vertical: _paddingVertical,
+              horizontal: HomeDesignConstants.pondListItemPaddingHorizontal,
+              vertical: HomeDesignConstants.pondListItemPaddingVertical,
             ),
             child: Row(
               children: [
@@ -76,25 +72,28 @@ class PondListItem extends StatelessWidget {
                       Text(
                         pondName,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: _fontSizeName,
-                          fontWeight: FontWeight.w700, // Bold
+                          fontSize:
+                              HomeDesignConstants.pondListItemNameFontSize,
+                          fontWeight: FontWeight.w700,
                           color: _gray100,
                           fontFamily: AppConstants.fontFamily,
-                          height: _lineHeight,
+                          height: HomeDesignConstants.pondListItemLineHeight,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: _gap),
+                      const SizedBox(
+                        height: HomeDesignConstants.pondListItemGap,
+                      ),
                       // Pond ID
                       Text(
                         'Kolam ID: $pondId',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: _fontSizeId,
-                          fontWeight: FontWeight.w400, // Regular
+                          fontSize: HomeDesignConstants.pondListItemIdFontSize,
+                          fontWeight: FontWeight.w400,
                           color: _gray70,
                           fontFamily: AppConstants.fontFamily,
-                          height: _lineHeight,
+                          height: HomeDesignConstants.pondListItemLineHeight,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -102,11 +101,13 @@ class PondListItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: _gap),
+                const SizedBox(
+                  width: HomeDesignConstants.pondListItemGap,
+                ),
                 // Chevron icon
                 const Icon(
                   Icons.chevron_right,
-                  size: _iconSize,
+                  size: HomeDesignConstants.pondListItemIconSize,
                   color: _gray100,
                 ),
               ],

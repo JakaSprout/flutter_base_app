@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_base_app/router/routes.dart';
+
 /// Authentication guard for route protection.
 ///
 /// This guard checks if user is authenticated before allowing access to
@@ -17,6 +19,6 @@ class AuthGuard {
   /// Redirect to login if not authenticated.
   static void redirectToLogin(GoRouter router) {
     // TODO(team): Implement redirect to login
-    router.go('/login');
+    router.go(Routes.login);
   }
 }

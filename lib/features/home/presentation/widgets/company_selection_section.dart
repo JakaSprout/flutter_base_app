@@ -3,6 +3,7 @@ import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
 
 /// Company Selection section for Home screen.
 ///
@@ -34,13 +35,6 @@ class CompanySelectionSection extends StatefulWidget {
 
 class _CompanySelectionSectionState extends State<CompanySelectionSection> {
   String? _selectedCompany;
-
-  // Design tokens - exact Figma specs
-  static const double _labelSpacing =
-      8; // Figma: gap 8px between label and dropdown
-  static const double _fontSizeLabel =
-      12; // Figma: Label/Medium/Regular - fontSize 12
-  static const double _lineHeight = 1.5; // Figma: lineHeight 1.5em
 
   @override
   void initState() {
@@ -75,14 +69,16 @@ class _CompanySelectionSectionState extends State<CompanySelectionSection> {
         Text(
           HomeConstants.companySelectionLabel,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontSize: _fontSizeLabel,
-            fontWeight: FontWeight.w400, // Regular
+            fontSize: HomeDesignConstants.companySelectionLabelFontSize,
+            fontWeight: FontWeight.w400,
             color: AppColors.gray100,
             fontFamily: AppConstants.fontFamily,
-            height: _lineHeight,
+            height: HomeDesignConstants.companySelectionLineHeight,
           ),
         ),
-        const SizedBox(height: _labelSpacing),
+        const SizedBox(
+          height: HomeDesignConstants.companySelectionLabelSpacing,
+        ),
         // Dropdown
         STPDropdown<String>(
           items: companies,

@@ -35,8 +35,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text(NavigationConstants.screenGraphTitle), findsOneWidget);
-      expect(find.text(NavigationConstants.placeholderGraph), findsOneWidget);
+      expect(
+        find.text(NavigationConstants.screenGraphTitle),
+        findsOneWidget,
+      );
+      expect(
+        find.text(NavigationConstants.placeholderGraph),
+        findsOneWidget,
+      );
     });
 
     testWidgets('should navigate to input data screen', (tester) async {

@@ -1,0 +1,24 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter_base_app/core/error/failures.dart';
+import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
+import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
+import 'package:flutter_base_app/features/auth/domain/repositories/auth_repository.dart';
+
+/// Use case for login with phone number.
+class LoginWithPhone {
+  /// Creates a new instance of [LoginWithPhone].
+  const LoginWithPhone(this._repository);
+
+  final AuthRepository _repository;
+
+  /// Executes the use case.
+  ///
+  /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
+  Future<Either<Failure, LoginResponse>> call(
+    PhoneLoginRequest request,
+  ) async {
+    return await _repository.loginWithPhone(request);
+  }
+}
+
+
