@@ -309,7 +309,14 @@ class SyncService {
   /// Update sync status and notify listeners.
   void _updateStatus(SyncStatusModel status) {
     _currentStatus = status;
-    _statusController.add(status);
+    try {
+      if (!_statusController.isClosed) {
+        _statusController.add(status);
+      }
+    } catch (e) {
+      // Ignore errors if controller is closed
+      AppLogger.warning('Error updating status: $e');
+    }
   }
 
   /// Pause sync.
@@ -344,7 +351,15 @@ class SyncService {
 
   /// Dispose resources.
   Future<void> dispose() async {
-    await _sseService.dispose();
-    await _statusController.close();
+    if (_statusController.isClosed) return;
+    try {
+      await _sseService.dispose();
+    } catch (e) {
+      // Ignore errors if already disposed
+      AppLogger.warning('Error disposing SSE service: $e');
+    }
+    if (!_statusController.isClosed) {
+      await _statusController.close();
+    }
   }
 }

@@ -205,6 +205,26 @@ tearDown(() {
 });
 ```
 
+### 7. Widget Test Cleanup
+
+Always clean up widget tests to prevent `timersPending` errors:
+
+```dart
+testWidgets('should display widget', (tester) async {
+  // Arrange, Act, Assert...
+
+  // Cleanup to prevent timersPending error
+  await tester.pumpWidget(Container());
+  await tester.pumpAndSettle();
+});
+```
+
+**Standard Cleanup Pattern:**
+
+- Use `await tester.pumpWidget(Container());` to dispose the widget tree
+- Follow with `await tester.pumpAndSettle();` to allow all animations/timers to complete
+- This ensures no pending timers or async operations remain after test completion
+
 ## 📚 Resources
 
 - [Flutter Testing Documentation](https://docs.flutter.dev/testing)

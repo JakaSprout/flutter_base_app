@@ -44,6 +44,7 @@ SyncItem createTestSyncItem({
   SyncPriority? priority,
   int? maxRetries,
   DateTime? createdAt,
+  Map<String, dynamic>? metadata,
 }) {
   return SyncItem(
     id: id ?? 'test-sync-id-1',
@@ -54,6 +55,7 @@ SyncItem createTestSyncItem({
     priority: priority ?? SyncPriority.normal,
     maxRetries: maxRetries ?? 3,
     createdAt: createdAt ?? DateTime.now(),
+    metadata: metadata,
   );
 }
 
@@ -96,6 +98,21 @@ Response<dynamic> createTestDioResponse({
   RequestOptions? requestOptions,
 }) {
   return Response<dynamic>(
+    data: data ?? {'success': true},
+    statusCode: statusCode ?? 200,
+    headers: headers ?? Headers(),
+    requestOptions: requestOptions ?? RequestOptions(path: '/test'),
+  );
+}
+
+/// Create a test DioResponse with Map<String, dynamic> data.
+Response<Map<String, dynamic>> createTestDioResponseMap({
+  Map<String, dynamic>? data,
+  int? statusCode,
+  Headers? headers,
+  RequestOptions? requestOptions,
+}) {
+  return Response<Map<String, dynamic>>(
     data: data ?? {'success': true},
     statusCode: statusCode ?? 200,
     headers: headers ?? Headers(),

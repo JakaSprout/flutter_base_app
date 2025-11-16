@@ -21,14 +21,11 @@ class TestHelpers {
   }) {
     final testOverrides = <Override>[
       ...testProviderOverrides,
-      if (appConfig != null)
-        appConfigProvider.overrideWithValue(appConfig),
+      if (appConfig != null) appConfigProvider.overrideWithValue(appConfig),
       if (overrides != null) ...overrides,
     ];
 
-    return ProviderContainer(
-      overrides: testOverrides,
-    );
+    return ProviderContainer(overrides: testOverrides);
   }
 
   /// Create a MaterialApp with ProviderScope for widget tests.
@@ -61,6 +58,42 @@ class TestHelpers {
         home: Scaffold(body: child),
       ),
     );
+  }
+
+  /// Create a MaterialApp with ProviderScope for widget tests and return both widget and container.
+  ///
+  /// This is useful for widget tests that need to dispose the container explicitly.
+  ///
+  /// Example:
+  /// ```dart
+  /// testWidgets('MyWidget test', (tester) async {
+  ///   final result = TestHelpers.createTestAppWithContainer(
+  ///     child: MyWidget(),
+  ///   );
+  ///   await tester.pumpWidget(result.widget);
+  ///   // ... test code ...
+  ///   result.container.dispose();
+  /// });
+  /// ```
+  static ({Widget widget, ProviderContainer container})
+  createTestAppWithContainer({
+    required Widget child,
+    List<Override>? overrides,
+    ThemeData? theme,
+    ThemeData? darkTheme,
+  }) {
+    final container = createContainer(overrides: overrides);
+
+    final widget = UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(
+        theme: theme,
+        darkTheme: darkTheme,
+        home: Scaffold(body: child),
+      ),
+    );
+
+    return (widget: widget, container: container);
   }
 
   /// Create a test AppConfig with custom values.
