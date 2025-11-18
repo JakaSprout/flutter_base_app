@@ -270,7 +270,7 @@ class LoginScreen extends HookConsumerWidget {
       await ref.read(phoneLoginProvider(request).future);
 
       if (context.mounted) {
-        context.go(Routes.home);
+        context.goNamed(Routes.homeName);
       }
     } catch (e) {
       if (context.mounted) {
@@ -310,7 +310,7 @@ class LoginScreen extends HookConsumerWidget {
       await ref.read(emailLoginProvider(request).future);
 
       if (context.mounted) {
-        context.go(Routes.home);
+        context.goNamed(Routes.homeName);
       }
     } catch (e) {
       if (context.mounted) {

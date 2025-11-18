@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 class NavigationService {
   /// Navigate to home screen.
   static void goToHome(BuildContext context) {
-    context.go(Routes.home);
+    context.goNamed(Routes.homeName);
   }
 
   /// Navigate back.

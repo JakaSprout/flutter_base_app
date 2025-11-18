@@ -44,4 +44,16 @@ class Routes {
 
   /// Login route name.
   static const String loginName = 'login';
+
+  /// Lab Request List route path.
+  static const String labRequestList = '/lab-request';
+
+  /// Lab Request List route name.
+  static const String labRequestListName = 'lab-request';
+
+  /// Lab Request Form route path.
+  static const String labRequestForm = '/lab-request/form';
+
+  /// Lab Request Form route name.
+  static const String labRequestFormName = 'lab-request-form';
 }

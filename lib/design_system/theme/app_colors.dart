@@ -23,7 +23,10 @@ class AppColors {
   static const Color gray70 = Color(0xFF6D6D6D);
 
   /// Gray/20 - Light gray for borders
-  static const Color gray20 = Color(0xFFEEEEEE);
+  static const Color gray20 = Color(0xFFE3E3E3);
+
+  /// Gray/10 - Very light gray for dividers
+  static const Color gray10 = Color(0xFFEBEBEB);
 
   /// Gray/05 - Very light gray for card backgrounds
   static const Color gray05 = Color(0xFFF5F5F5);

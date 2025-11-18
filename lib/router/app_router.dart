@@ -6,6 +6,8 @@ import 'package:flutter_base_app/features/auth/presentation/screens/login_screen
 import 'package:flutter_base_app/features/graph/presentation/screens/graph_screen.dart';
 import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter_base_app/features/input_data/presentation/screens/input_data_screen.dart';
+import 'package:flutter_base_app/features/lab_request/presentation/screens/lab_request_form_screen.dart';
+import 'package:flutter_base_app/features/lab_request/presentation/screens/lab_request_list_screen.dart';
 import 'package:flutter_base_app/features/pond/presentation/screens/pond_screen.dart';
 import 'package:flutter_base_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter_base_app/router/routes.dart';
@@ -14,12 +16,23 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 /// Main router configuration for the application.
 class AppRouter {
+  /// Root navigator key for route observation
+  static final GlobalKey<NavigatorState> _rootNavigatorKey =
+      GlobalKey<NavigatorState>();
+
+  /// Shell navigator key for route observation
+  static final GlobalKey<NavigatorState> _shellNavigatorKey =
+      GlobalKey<NavigatorState>();
+
   /// GoRouter instance for navigation.
   static final GoRouter router = GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: Routes.login,
     routes: [
       // Shell route with bottom navigation bar
       ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        observers: [TalkerRouteObserver(AppLogger.instance)],
         builder: (context, state, child) {
           return Scaffold(
             body: child,
@@ -74,6 +87,17 @@ class AppRouter {
         path: Routes.login,
         name: Routes.loginName,
         builder: (context, state) => const LoginScreen(),
+      ),
+      // Lab Request routes (outside shell route, no bottom nav)
+      GoRoute(
+        path: Routes.labRequestList,
+        name: Routes.labRequestListName,
+        builder: (context, state) => const LabRequestListScreen(),
+      ),
+      GoRoute(
+        path: Routes.labRequestForm,
+        name: Routes.labRequestFormName,
+        builder: (context, state) => const LabRequestFormScreen(),
       ),
     ],
     // Add TalkerRouteObserver for logging route changes

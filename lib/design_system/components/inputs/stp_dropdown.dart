@@ -70,6 +70,7 @@ class STPDropdown<T> extends StatefulWidget {
     this.hint,
     this.enabled = true,
     this.showBorder = true,
+    this.displayText,
   });
 
   /// List of items to display in the dropdown
@@ -96,6 +97,9 @@ class STPDropdown<T> extends StatefulWidget {
   /// Whether to show border on trigger (default: true)
   final bool showBorder;
 
+  /// Optional function to get display text for each item
+  final String Function(T)? displayText;
+
   @override
   State<STPDropdown<T>> createState() => _STPDropdownState<T>();
 }
@@ -108,9 +112,18 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
   static const double _spacingSmall = 8;
   static const double _spacingMedium = 12;
   static const double _borderRadius = 12;
-  static const double _fontSizeSmall = 12;
+  static const double _fontSizeSmall = 12; // For label
+  static const double _fontSizeValue = 14; // For selected value (consistent with FormInputField)
   static const double _lineHeight = 1.4;
-  static const double _menuGap = 4;
+  static const double _handleHeight = 4;
+  static const double _handleWidth = 40;
+  static const double _titleFontSize = 16;
+  static const double _itemPaddingVertical = 16;
+  static const double _itemPaddingHorizontal = 16;
+  static const double _itemSpacing = 8;
+  static const double _headerPaddingVertical = 16;
+  static const double _headerPaddingHorizontal = 16;
+  static const double _bottomSheetPadding = 16;
 
   @override
   Widget build(BuildContext context) {
@@ -148,14 +161,19 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
             // Selected Value or Hint
             Expanded(
               child: Text(
-                widget.selectedValue?.toString() ?? widget.hint ?? '',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontSize: _fontSizeSmall,
+                widget.selectedValue != null
+                    ? (widget.displayText != null
+                        ? widget.displayText!(widget.selectedValue as T)
+                        : widget.selectedValue.toString())
+                    : (widget.hint ?? ''),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: _fontSizeValue,
                   fontWeight: widget.selectedValue != null
-                      ? FontWeight
-                            .w600 // Semibold when selected
+                      ? FontWeight.w400 // Regular when selected (consistent with FormInputField)
                       : FontWeight.w400, // Regular for hint
-                  color: widget.colors.textColor,
+                  color: widget.selectedValue != null
+                      ? widget.colors.textColor
+                      : AppColors.gray70, // Hint color (consistent with FormInputField)
                   fontFamily: AppConstants.fontFamily,
                   height: _lineHeight,
                 ),
@@ -186,65 +204,153 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
     );
   }
 
-  /// Shows the dropdown menu below the trigger widget.
+  /// Shows the dropdown menu as a bottom sheet.
   void _showDropdown(BuildContext context) {
-    final renderBox =
-        _dropdownKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-
-    final size = renderBox.size;
-    final offset = renderBox.localToGlobal(Offset.zero);
-
-    showMenu<T>(
+    showModalBottomSheet<T>(
       context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx,
-        offset.dy + size.height + _menuGap,
-        offset.dx + size.width,
-        offset.dy + size.height + _menuGap,
-      ),
-      color: widget.colors.backgroundColor,
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_borderRadius),
-        side: BorderSide(color: widget.colors.borderColor),
-      ),
-      constraints: BoxConstraints.tightFor(width: size.width),
-      items: widget.items.map((T item) {
-        return PopupMenuItem<T>(
-          value: item,
-          padding: EdgeInsets.zero,
-          child: SizedBox(
-            width: size.width,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: _spacingMedium,
-                vertical: 10,
-              ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        decoration: BoxDecoration(
+          color: widget.colors.backgroundColor,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(_borderRadius),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: _handleWidth,
+              height: _handleHeight,
               decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: widget.colors.borderColor),
-                ),
-              ),
-              child: Text(
-                item.toString(),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: _fontSizeSmall,
-                  fontWeight: FontWeight.w400, // Regular
-                  color: widget.colors.textColor,
-                  fontFamily: AppConstants.fontFamily,
-                  height: _lineHeight,
-                ),
-                overflow: TextOverflow.ellipsis,
+                color: AppColors.gray20,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-          ),
-        );
-      }).toList(),
-    ).then((T? selectedItem) {
-      if (selectedItem != null) {
-        widget.onChanged(selectedItem);
-      }
-    });
+            // Title and Close button (only show if hint is provided)
+            if (widget.hint != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: _headerPaddingHorizontal,
+                  vertical: _headerPaddingVertical,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.hint!,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                              fontSize: _titleFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.gray100,
+                              fontFamily: AppConstants.fontFamily,
+                            ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 24),
+                      color: AppColors.gray100,
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+              ),
+            // List of items
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.only(
+                  left: _bottomSheetPadding,
+                  right: _bottomSheetPadding,
+                  bottom: _bottomSheetPadding,
+                  top: widget.hint != null ? 0 : _spacingSmall,
+                ),
+                itemCount: widget.items.length,
+                itemBuilder: (context, index) {
+                  final item = widget.items[index];
+                  final isSelected = item == widget.selectedValue;
+
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      bottom: index < widget.items.length - 1
+                          ? _itemSpacing
+                          : 0,
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context, item);
+                        widget.onChanged(item);
+                      },
+                      borderRadius: BorderRadius.circular(_borderRadius),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: _itemPaddingHorizontal,
+                          vertical: _itemPaddingVertical,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary20
+                              : AppColors.white,
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.gray20,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(_borderRadius),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.displayText != null
+                                    ? widget.displayText!(item)
+                                    : item.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      fontSize: _fontSizeValue,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                      color: widget.colors.textColor,
+                                      fontFamily: AppConstants.fontFamily,
+                                      height: _lineHeight,
+                                    ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (isSelected) ...[
+                              const SizedBox(width: _spacingSmall),
+                              const Icon(
+                                Icons.check,
+                                size: 20,
+                                color: AppColors.primary,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

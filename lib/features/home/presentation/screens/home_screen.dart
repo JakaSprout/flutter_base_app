@@ -15,7 +15,9 @@ import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_load
 import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/company_selection_shimmer.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/dashboard_summary_shimmer.dart';
 import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/pond_list_shimmer.dart';
+import 'package:flutter_base_app/router/routes.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Home screen (Beranda).
@@ -92,8 +94,9 @@ class HomeScreen extends HookConsumerWidget {
                   const SizedBox(height: HomeDesignConstants.sectionSpacing),
                 // 2. Banner Section (NEW) - Data from API
                 bannerListAsync.when(
-                  data: (data) =>
-                      const BannerSection(onCardTap: _handleBannerTap),
+                  data: (data) => BannerSection(
+                    onCardTap: (cardId) => _handleBannerTap(context, cardId),
+                  ),
                   loading: () => const BannerSectionShimmer(),
                   error: (error, stackTrace) => const SizedBox.shrink(),
                   skipLoadingOnRefresh: false,
@@ -190,8 +193,14 @@ class HomeScreen extends HookConsumerWidget {
     debugPrint('Notification tapped');
   }
 
-  static void _handleBannerTap(String cardId) {
-    // TODO(sproutdigital): Handle banner card tap navigation.
+  static void _handleBannerTap(BuildContext context, String cardId) {
+    // Navigate to lab request list screen if banner is "Analisis Lab"
+    if (cardId == 'lab_analysis') {
+      context.push(Routes.labRequestList);
+      return;
+    }
+
+    // TODO(sproutdigital): Handle other banner card tap navigation.
     debugPrint('Banner card tapped: $cardId');
   }
 
