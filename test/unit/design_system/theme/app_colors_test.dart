@@ -19,7 +19,7 @@ void main() {
       expect(AppColors.gray70, isA<Color>());
       expect(AppColors.gray70.value, equals(0xFF6D6D6D));
       expect(AppColors.gray20, isA<Color>());
-      expect(AppColors.gray20.value, equals(0xFFEEEEEE));
+      expect(AppColors.gray20.value, equals(0xFFE3E3E3));
       expect(AppColors.gray05, isA<Color>());
       expect(AppColors.gray05.value, equals(0xFFF5F5F5));
     });
@@ -109,4 +109,3 @@ void main() {
     });
   });
 }
-

@@ -19,6 +19,8 @@ class AppConfig {
     required this.apiBaseUrl,
     required this.enableLogging,
     required this.enableCrashReporting,
+    this.useMockApi = false,
+    this.mockApiDelayMs = 0,
   });
 
   /// Current flavor
@@ -36,11 +38,17 @@ class AppConfig {
   /// Enable crash reporting
   final bool enableCrashReporting;
 
+  /// Whether to use mock API instead of real API
+  final bool useMockApi;
+
+  /// Mock API delay in milliseconds (for testing/simulation)
+  final int mockApiDelayMs;
+
   /// Development configuration
   static const AppConfig dev = AppConfig(
     flavor: AppFlavor.dev,
     appName: 'Flutter Base App Dev',
-    apiBaseUrl: 'https://jsonplaceholder.typicode.com', // Fake API
+    apiBaseUrl: 'https://39ed3fab6852.ngrok-free.app',
     enableLogging: true,
     enableCrashReporting: false,
   );

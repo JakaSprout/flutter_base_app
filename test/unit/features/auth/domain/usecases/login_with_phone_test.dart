@@ -11,13 +11,7 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(
-      const PhoneLoginRequest(
-        countryCode: '+62',
-        phoneNumber: '81234567890',
-        password: 'password',
-      ),
-    );
+    registerFallbackValue(const PhoneLoginRequest(phoneNumber: '81234567890'));
   });
 
   group('LoginWithPhone', () {
@@ -33,16 +27,12 @@ void main() {
       'should return LoginResponse when repository call is successful',
       () async {
         // Arrange
-        const request = PhoneLoginRequest(
-          countryCode: '+62',
-          phoneNumber: '81234567890',
-          password: 'Password123',
-        );
+        const request = PhoneLoginRequest(phoneNumber: '81234567890');
         const expectedResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
           userId: 'user_123',
-          phoneNumber: '+6281234567890',
+          phoneNumber: '81234567890',
         );
 
         when(
@@ -59,7 +49,7 @@ void main() {
           expect(response.accessToken, equals('access_token'));
           expect(response.refreshToken, equals('refresh_token'));
           expect(response.userId, equals('user_123'));
-          expect(response.phoneNumber, equals('+6281234567890'));
+          expect(response.phoneNumber, equals('81234567890'));
         });
         verify(() => mockRepository.loginWithPhone(request)).called(1);
         verifyNoMoreInteractions(mockRepository);
@@ -68,11 +58,7 @@ void main() {
 
     test('should return Failure when repository call fails', () async {
       // Arrange
-      const request = PhoneLoginRequest(
-        countryCode: '+62',
-        phoneNumber: '81234567890',
-        password: 'Password123',
-      );
+      const request = PhoneLoginRequest(phoneNumber: '81234567890');
       const failure = NetworkFailure(
         message: 'Network error',
         code: 'NETWORK_ERROR',
@@ -100,9 +86,7 @@ void main() {
       () async {
         // Arrange
         const request = PhoneLoginRequest(
-          countryCode: '+62',
           phoneNumber: '123', // Too short
-          password: 'Password123',
         );
         const failure = ValidationFailure(
           message: 'Invalid phone number format',
@@ -128,11 +112,7 @@ void main() {
 
     test('should return AuthFailure when credentials are wrong', () async {
       // Arrange
-      const request = PhoneLoginRequest(
-        countryCode: '+62',
-        phoneNumber: '81234567890',
-        password: 'WrongPassword',
-      );
+      const request = PhoneLoginRequest(phoneNumber: '81234567890');
       const failure = AuthFailure.unauthorized();
 
       when(
@@ -151,18 +131,14 @@ void main() {
       verify(() => mockRepository.loginWithPhone(request)).called(1);
     });
 
-    test('should handle different country codes', () async {
+    test('should handle phone numbers with leading zero', () async {
       // Arrange
-      const request = PhoneLoginRequest(
-        countryCode: '+1',
-        phoneNumber: '1234567890',
-        password: 'Password123',
-      );
+      const request = PhoneLoginRequest(phoneNumber: '01234567890');
       const expectedResponse = LoginResponse(
         accessToken: 'access_token',
         refreshToken: 'refresh_token',
         userId: 'user_456',
-        phoneNumber: '+11234567890',
+        phoneNumber: '01234567890',
       );
 
       when(
@@ -175,7 +151,7 @@ void main() {
       // Assert
       expect(result, isA<Right<Failure, LoginResponse>>());
       result.fold((failure) => fail('Should not return failure'), (response) {
-        expect(response.phoneNumber, equals('+11234567890'));
+        expect(response.phoneNumber, equals('01234567890'));
       });
       verify(() => mockRepository.loginWithPhone(request)).called(1);
     });

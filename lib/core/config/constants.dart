@@ -27,6 +27,9 @@ class AppConstants {
   /// Secure storage key for refresh token
   static const String storageRefreshToken = 'refresh_token';
 
+  /// Secure storage key for token expiration timestamp
+  static const String storageTokenExpiresAt = 'token_expires_at';
+
   /// Secure storage key for user data
   static const String storageUserData = 'user_data';
 

@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/country_code.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
 
@@ -9,12 +8,7 @@ import 'package:flutter_base_app/features/auth/domain/entities/login_response.da
 /// This defines the contract for authentication operations.
 /// Implementation is in the data layer.
 abstract class AuthRepository {
-  /// Get list of supported country codes.
-  ///
-  /// Returns [Either] containing [Failure] on error or [List<CountryCode>] on success.
-  Future<Either<Failure, List<CountryCode>>> getCountryCodes();
-
-  /// Login with phone number and password.
+  /// Login with phone number.
   ///
   /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
   Future<Either<Failure, LoginResponse>> loginWithPhone(
@@ -27,8 +21,15 @@ abstract class AuthRepository {
   Future<Either<Failure, LoginResponse>> loginWithEmail(
     EmailLoginRequest request,
   );
+
+  /// Refresh access token using refresh token.
+  ///
+  /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
+  Future<Either<Failure, LoginResponse>> refreshToken(String refreshToken);
+
+  /// Logout from the server.
+  ///
+  /// Invalidates the current session on the server.
+  /// Returns [Either] containing [Failure] on error or void on success.
+  Future<Either<Failure, void>> logout();
 }
-
-
-
-

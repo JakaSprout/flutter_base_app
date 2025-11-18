@@ -1,4 +1,3 @@
-import 'package:flutter_base_app/core/config/flavor_config.dart';
 import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/home/data/datasources/remote/home_remote_datasource.dart';
@@ -25,13 +24,13 @@ part 'home_provider.g.dart';
 
 /// Provider for Home remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 @Riverpod(keepAlive: true)
 HomeRemoteDataSource homeRemoteDataSource(HomeRemoteDataSourceRef ref) {
   final config = ref.watch(appConfigProvider);
 
   // Use mock API if configured for current flavor
-  if (FlavorConfig.useMockApi(config.flavor)) {
+  if (config.useMockApi) {
     return HomeRemoteDataSourceMock(config: config);
   }
 

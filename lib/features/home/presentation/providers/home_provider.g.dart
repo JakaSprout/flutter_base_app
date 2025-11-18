@@ -7,11 +7,11 @@ part of 'home_provider.dart';
 // **************************************************************************
 
 String _$homeRemoteDataSourceHash() =>
-    r'83ab6815630e7ddb1b7fc34ee9a3831f4c6d68a3';
+    r'ee63593779a811128c8c1411cce027c3fe4eddb9';
 
 /// Provider for Home remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 ///
 /// Copied from [homeRemoteDataSource].
 @ProviderFor(homeRemoteDataSource)

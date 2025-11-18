@@ -60,5 +60,13 @@
 	<array/>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<!-- Allow arbitrary loads for development (ngrok, etc.) -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

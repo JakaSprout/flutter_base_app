@@ -7,11 +7,11 @@ part of 'lab_request_provider.dart';
 // **************************************************************************
 
 String _$labRequestRemoteDataSourceHash() =>
-    r'3e41989d49db168d94725c979293c7bdc2324bda';
+    r'f30041bf88960fb128915d71f62ea6a3bfa9e582';
 
 /// Provider for Lab Request remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 ///
 /// Copied from [labRequestRemoteDataSource].
 @ProviderFor(labRequestRemoteDataSource)

@@ -1,4 +1,3 @@
-import 'package:flutter_base_app/core/config/flavor_config.dart';
 import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
 import 'package:flutter_base_app/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
 import 'package:flutter_base_app/features/lab_request/data/repositories/lab_request_repository_impl.dart';
@@ -13,7 +12,7 @@ part 'lab_request_provider.g.dart';
 
 /// Provider for Lab Request remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 @Riverpod(keepAlive: true)
 LabRequestRemoteDataSource labRequestRemoteDataSource(
   LabRequestRemoteDataSourceRef ref,
@@ -21,7 +20,7 @@ LabRequestRemoteDataSource labRequestRemoteDataSource(
   final config = ref.watch(appConfigProvider);
 
   // Use mock API if configured for current flavor
-  if (FlavorConfig.useMockApi(config.flavor)) {
+  if (config.useMockApi) {
     return LabRequestRemoteDataSourceMock(config: config);
   }
 

@@ -2,11 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/country_code.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
 import 'package:flutter_base_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:flutter_base_app/features/auth/domain/usecases/get_country_codes.dart';
 import 'package:flutter_base_app/features/auth/domain/usecases/login_with_email.dart';
 import 'package:flutter_base_app/features/auth/domain/usecases/login_with_phone.dart';
 import 'package:flutter_base_app/features/auth/presentation/providers/auth_provider.dart';
@@ -25,13 +23,7 @@ void main() {
     registerFallbackValue(
       const EmailLoginRequest(email: 'test@example.com', password: 'password'),
     );
-    registerFallbackValue(
-      const PhoneLoginRequest(
-        countryCode: '+62',
-        phoneNumber: '81234567890',
-        password: 'password',
-      ),
-    );
+    registerFallbackValue(const PhoneLoginRequest(phoneNumber: '81234567890'));
   });
 
   group('AuthProvider', () {
@@ -80,16 +72,6 @@ void main() {
       });
     });
 
-    group('getCountryCodesProvider', () {
-      test('should return GetCountryCodes use case', () {
-        // Act
-        final useCase = container.read(getCountryCodesProvider);
-
-        // Assert
-        expect(useCase, isA<GetCountryCodes>());
-      });
-    });
-
     group('loginWithPhoneProvider', () {
       test('should return LoginWithPhone use case', () {
         // Act
@@ -110,69 +92,15 @@ void main() {
       });
     });
 
-    group('countryCodesProvider', () {
-      test(
-        'should return list of CountryCode when use case succeeds',
-        () async {
-          // Arrange
-          const expectedCountryCodes = [
-            CountryCode(
-              code: 'ID',
-              dialCode: '+62',
-              name: 'Indonesia',
-              flag: '🇮🇩',
-            ),
-            CountryCode(
-              code: 'MY',
-              dialCode: '+60',
-              name: 'Malaysia',
-              flag: '🇲🇾',
-            ),
-          ];
-
-          when(
-            () => mockRepository.getCountryCodes(),
-          ).thenAnswer((_) async => const Right(expectedCountryCodes));
-
-          // Act
-          final result = await container.read(countryCodesProvider.future);
-
-          // Assert
-          expect(result, equals(expectedCountryCodes));
-          verify(() => mockRepository.getCountryCodes()).called(1);
-        },
-      );
-
-      test('should throw Failure when use case fails', () async {
-        // Arrange
-        const expectedFailure = NetworkFailure.noConnection();
-
-        when(
-          () => mockRepository.getCountryCodes(),
-        ).thenAnswer((_) async => const Left(expectedFailure));
-
-        // Act & Assert
-        expect(
-          () => container.read(countryCodesProvider.future),
-          throwsA(isA<NetworkFailure>()),
-        );
-        verify(() => mockRepository.getCountryCodes()).called(1);
-      });
-    });
-
     group('phoneLoginProvider', () {
       test('should return LoginResponse when use case succeeds', () async {
         // Arrange
-        const request = PhoneLoginRequest(
-          countryCode: '+62',
-          phoneNumber: '81234567890',
-          password: 'password123',
-        );
+        const request = PhoneLoginRequest(phoneNumber: '81234567890');
         const expectedResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
           userId: 'user_123',
-          phoneNumber: '+6281234567890',
+          phoneNumber: '81234567890',
         );
 
         when(
@@ -189,11 +117,7 @@ void main() {
 
       test('should throw Failure when use case fails', () async {
         // Arrange
-        const request = PhoneLoginRequest(
-          countryCode: '+62',
-          phoneNumber: '81234567890',
-          password: 'password123',
-        );
+        const request = PhoneLoginRequest(phoneNumber: '81234567890');
         const expectedFailure = NetworkFailure.serverError('Server Error');
 
         when(

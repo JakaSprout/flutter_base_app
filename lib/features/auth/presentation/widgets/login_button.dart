@@ -9,7 +9,6 @@ class LoginButton extends StatelessWidget {
   /// Creates a new instance of [LoginButton].
   const LoginButton({
     required this.isLoading,
-    required this.isTermsAccepted,
     required this.isFormValid,
     required this.onPressed,
     super.key,
@@ -18,20 +17,18 @@ class LoginButton extends StatelessWidget {
   /// Whether form is loading.
   final bool isLoading;
 
-  /// Whether terms are accepted.
-  final bool isTermsAccepted;
-
   /// Whether form is valid.
   final bool isFormValid;
 
   /// Callback when button is pressed.
   final VoidCallback onPressed;
 
-  bool get _isButtonEnabled => !isLoading && isTermsAccepted && isFormValid;
+  bool get _isButtonEnabled => !isLoading && isFormValid;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
       height: LoginDesignConstants.buttonHeight,
       child: ElevatedButton(
         onPressed: _isButtonEnabled ? onPressed : null,

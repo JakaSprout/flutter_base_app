@@ -14,13 +14,7 @@ class LoginWithPhone {
   /// Executes the use case.
   ///
   /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
-  Future<Either<Failure, LoginResponse>> call(
-    PhoneLoginRequest request,
-  ) async {
+  Future<Either<Failure, LoginResponse>> call(PhoneLoginRequest request) async {
     return await _repository.loginWithPhone(request);
   }
 }
-
-
-
-

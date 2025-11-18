@@ -15,7 +15,7 @@ class AuthConstants {
 
   // Input Hints
   /// Phone number input hint
-  static const String hintPhoneNumber = '8123-4567-8901';
+  static const String hintPhoneNumber = '0812-3456-7890';
 
   /// Email input hint
   static const String hintEmail = 'Input email address';
@@ -27,10 +27,6 @@ class AuthConstants {
   /// Error message when terms not accepted
   static const String errorTermsNotAccepted =
       'Please accept the terms and conditions';
-
-  /// Error message when country code not selected
-  static const String errorCountryCodeNotSelected =
-      'Please select a country code';
 
   /// Error message when fields are empty
   static const String errorFieldsEmpty = 'Please fill in all fields';
@@ -66,10 +62,6 @@ class AuthConstants {
   /// Separator text between login methods
   static const String separatorOr = 'Or';
 
-  // Default Values
-  /// Default country code (Indonesia)
-  static const String defaultCountryCode = 'ID';
-
   // Phone Validation
   /// Minimum phone number digits
   static const int phoneMinDigits = 8;
@@ -78,9 +70,8 @@ class AuthConstants {
   static const int phoneMaxDigits = 15;
 
   // Data Source Error Messages
-  /// Error message when phone number and password are required
-  static const String errorPhoneNumberAndPasswordRequired =
-      'Phone number and password are required';
+  /// Error message when phone number is required
+  static const String errorPhoneNumberRequired = 'Phone number is required';
 
   /// Error message when email and password are required
   static const String errorEmailAndPasswordRequired =
@@ -89,10 +80,19 @@ class AuthConstants {
   /// Error message for invalid email format
   static const String errorInvalidEmailFormat = 'Invalid email format';
 
-  /// Error message when failed to get country codes
-  static const String errorFailedToGetCountryCodes =
-      'Failed to get country codes';
-
   /// Error message when login failed
   static const String errorLoginFailed = 'Login failed';
+
+  // Timing Constants
+  /// Threshold duration before token expiration to trigger refresh
+  static const Duration tokenExpirationThreshold = Duration(minutes: 5);
+
+  /// Delay duration for provider invalidation
+  static const Duration providerInvalidationDelay = Duration(milliseconds: 100);
+
+  /// Retry delay for session timeout check on error
+  static const Duration sessionTimeoutRetryDelay = Duration(minutes: 1);
+
+  /// Default check interval when token expiration info is not available
+  static const Duration defaultSessionCheckInterval = Duration(minutes: 5);
 }

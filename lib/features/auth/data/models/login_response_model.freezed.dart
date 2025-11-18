@@ -21,11 +21,15 @@ LoginResponseModel _$LoginResponseModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LoginResponseModel {
-  String get accessToken => throw _privateConstructorUsedError;
-  String get refreshToken => throw _privateConstructorUsedError;
+  String? get accessToken => throw _privateConstructorUsedError;
+  String? get refreshToken => throw _privateConstructorUsedError;
+  int? get expiresIn => throw _privateConstructorUsedError;
+  String get tokenType => throw _privateConstructorUsedError;
+  Map<String, dynamic>? get user => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
+  String? get sessionId => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,11 +49,15 @@ abstract class $LoginResponseModelCopyWith<$Res> {
   ) = _$LoginResponseModelCopyWithImpl<$Res, LoginResponseModel>;
   @useResult
   $Res call({
-    String accessToken,
-    String refreshToken,
+    String? accessToken,
+    String? refreshToken,
+    int? expiresIn,
+    String tokenType,
+    Map<String, dynamic>? user,
     String? userId,
     String? email,
     String? phoneNumber,
+    String? sessionId,
   });
 }
 
@@ -68,22 +76,38 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? accessToken = null,
-    Object? refreshToken = null,
+    Object? accessToken = freezed,
+    Object? refreshToken = freezed,
+    Object? expiresIn = freezed,
+    Object? tokenType = null,
+    Object? user = freezed,
     Object? userId = freezed,
     Object? email = freezed,
     Object? phoneNumber = freezed,
+    Object? sessionId = freezed,
   }) {
     return _then(
       _value.copyWith(
-            accessToken: null == accessToken
+            accessToken: freezed == accessToken
                 ? _value.accessToken
                 : accessToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            refreshToken: null == refreshToken
+                      as String?,
+            refreshToken: freezed == refreshToken
                 ? _value.refreshToken
                 : refreshToken // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            expiresIn: freezed == expiresIn
+                ? _value.expiresIn
+                : expiresIn // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            tokenType: null == tokenType
+                ? _value.tokenType
+                : tokenType // ignore: cast_nullable_to_non_nullable
                       as String,
+            user: freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>?,
             userId: freezed == userId
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
@@ -95,6 +119,10 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
             phoneNumber: freezed == phoneNumber
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            sessionId: freezed == sessionId
+                ? _value.sessionId
+                : sessionId // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -112,11 +140,15 @@ abstract class _$$LoginResponseModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String accessToken,
-    String refreshToken,
+    String? accessToken,
+    String? refreshToken,
+    int? expiresIn,
+    String tokenType,
+    Map<String, dynamic>? user,
     String? userId,
     String? email,
     String? phoneNumber,
+    String? sessionId,
   });
 }
 
@@ -134,22 +166,38 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? accessToken = null,
-    Object? refreshToken = null,
+    Object? accessToken = freezed,
+    Object? refreshToken = freezed,
+    Object? expiresIn = freezed,
+    Object? tokenType = null,
+    Object? user = freezed,
     Object? userId = freezed,
     Object? email = freezed,
     Object? phoneNumber = freezed,
+    Object? sessionId = freezed,
   }) {
     return _then(
       _$LoginResponseModelImpl(
-        accessToken: null == accessToken
+        accessToken: freezed == accessToken
             ? _value.accessToken
             : accessToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        refreshToken: null == refreshToken
+                  as String?,
+        refreshToken: freezed == refreshToken
             ? _value.refreshToken
             : refreshToken // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        expiresIn: freezed == expiresIn
+            ? _value.expiresIn
+            : expiresIn // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        tokenType: null == tokenType
+            ? _value.tokenType
+            : tokenType // ignore: cast_nullable_to_non_nullable
                   as String,
+        user: freezed == user
+            ? _value._user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>?,
         userId: freezed == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
@@ -162,6 +210,10 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
+        sessionId: freezed == sessionId
+            ? _value.sessionId
+            : sessionId // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -171,30 +223,51 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$LoginResponseModelImpl implements _LoginResponseModel {
   const _$LoginResponseModelImpl({
-    required this.accessToken,
-    required this.refreshToken,
+    this.accessToken,
+    this.refreshToken,
+    this.expiresIn,
+    this.tokenType = 'Bearer',
+    final Map<String, dynamic>? user,
     this.userId,
     this.email,
     this.phoneNumber,
-  });
+    this.sessionId,
+  }) : _user = user;
 
   factory _$LoginResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$LoginResponseModelImplFromJson(json);
 
   @override
-  final String accessToken;
+  final String? accessToken;
   @override
-  final String refreshToken;
+  final String? refreshToken;
+  @override
+  final int? expiresIn;
+  @override
+  @JsonKey()
+  final String tokenType;
+  final Map<String, dynamic>? _user;
+  @override
+  Map<String, dynamic>? get user {
+    final value = _user;
+    if (value == null) return null;
+    if (_user is EqualUnmodifiableMapView) return _user;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
   @override
   final String? userId;
   @override
   final String? email;
   @override
   final String? phoneNumber;
+  @override
+  final String? sessionId;
 
   @override
   String toString() {
-    return 'LoginResponseModel(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, email: $email, phoneNumber: $phoneNumber)';
+    return 'LoginResponseModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, tokenType: $tokenType, user: $user, userId: $userId, email: $email, phoneNumber: $phoneNumber, sessionId: $sessionId)';
   }
 
   @override
@@ -206,10 +279,17 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
                 other.refreshToken == refreshToken) &&
+            (identical(other.expiresIn, expiresIn) ||
+                other.expiresIn == expiresIn) &&
+            (identical(other.tokenType, tokenType) ||
+                other.tokenType == tokenType) &&
+            const DeepCollectionEquality().equals(other._user, _user) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.sessionId, sessionId) ||
+                other.sessionId == sessionId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -218,9 +298,13 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
     runtimeType,
     accessToken,
     refreshToken,
+    expiresIn,
+    tokenType,
+    const DeepCollectionEquality().hash(_user),
     userId,
     email,
     phoneNumber,
+    sessionId,
   );
 
   /// Create a copy of LoginResponseModel
@@ -242,26 +326,38 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
 
 abstract class _LoginResponseModel implements LoginResponseModel {
   const factory _LoginResponseModel({
-    required final String accessToken,
-    required final String refreshToken,
+    final String? accessToken,
+    final String? refreshToken,
+    final int? expiresIn,
+    final String tokenType,
+    final Map<String, dynamic>? user,
     final String? userId,
     final String? email,
     final String? phoneNumber,
+    final String? sessionId,
   }) = _$LoginResponseModelImpl;
 
   factory _LoginResponseModel.fromJson(Map<String, dynamic> json) =
       _$LoginResponseModelImpl.fromJson;
 
   @override
-  String get accessToken;
+  String? get accessToken;
   @override
-  String get refreshToken;
+  String? get refreshToken;
+  @override
+  int? get expiresIn;
+  @override
+  String get tokenType;
+  @override
+  Map<String, dynamic>? get user;
   @override
   String? get userId;
   @override
   String? get email;
   @override
   String? get phoneNumber;
+  @override
+  String? get sessionId;
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.

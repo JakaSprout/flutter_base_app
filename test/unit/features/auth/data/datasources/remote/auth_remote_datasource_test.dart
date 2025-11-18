@@ -1,60 +1,35 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:flutter_base_app/features/auth/data/models/country_code_model.dart';
+import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart';
 import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../../../../helpers/test_helpers.dart';
+
+class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 
 void main() {
   group('AuthRemoteDataSourceMock', () {
     late AuthRemoteDataSourceMock dataSource;
     late AppConfig testConfig;
+    late MockFlutterSecureStorage mockSecureStorage;
 
     setUp(() {
       testConfig = TestHelpers.createTestConfig();
-      dataSource = AuthRemoteDataSourceMock(config: testConfig);
-    });
-
-    group('getCountryCodes', () {
-      test('should return list of CountryCodeModel when successful', () async {
-        // Act
-        final result = await dataSource.getCountryCodes();
-
-        // Assert
-        expect(result, isA<Right<Failure, List<CountryCodeModel>>>());
-        result.fold((failure) => fail('Should not return failure'), (data) {
-          expect(data, isNotEmpty);
-          expect(data.length, greaterThanOrEqualTo(1));
-          expect(data.first, isA<CountryCodeModel>());
-          // Check that Indonesia is in the list (default country)
-          final indonesia = data.firstWhere(
-            (code) => code.code == 'ID',
-            orElse: () => throw Exception('Indonesia not found'),
-          );
-          expect(indonesia.dialCode, equals('+62'));
-          expect(indonesia.name, equals('Indonesia'));
-        });
-      });
-
-      test('should return expected country codes', () async {
-        // Act
-        final result = await dataSource.getCountryCodes();
-
-        // Assert
-        result.fold((failure) => fail('Should not return failure'), (data) {
-          // Check for common countries
-          final codes = data.map((e) => e.code).toList();
-          expect(codes, contains('ID')); // Indonesia
-          expect(codes, contains('MY')); // Malaysia
-          expect(codes, contains('SG')); // Singapore
-          expect(codes, contains('US')); // United States
-        });
-      });
+      mockSecureStorage = MockFlutterSecureStorage();
+      // Mock secure storage to return null by default (no session)
+      when(
+        () => mockSecureStorage.read(key: any(named: 'key')),
+      ).thenAnswer((_) async => null);
+      dataSource = AuthRemoteDataSourceMock(
+        config: testConfig,
+        secureStorage: mockSecureStorage,
+      );
     });
 
     group('loginWithPhone', () {
@@ -62,11 +37,7 @@ void main() {
         'should return LoginResponseModel when login is successful',
         () async {
           // Arrange
-          const request = PhoneLoginRequest(
-            countryCode: '+62',
-            phoneNumber: '81234567890',
-            password: 'password123',
-          );
+          const request = PhoneLoginRequest(phoneNumber: '81234567890');
 
           // Act
           final result = await dataSource.loginWithPhone(request);
@@ -76,8 +47,11 @@ void main() {
           result.fold((failure) => fail('Should not return failure'), (data) {
             expect(data.accessToken, isNotEmpty);
             expect(data.refreshToken, isNotEmpty);
-            expect(data.userId, equals('user_123'));
-            expect(data.phoneNumber, equals('+6281234567890'));
+            expect(data.sessionId, isNotEmpty);
+            expect(data.tokenType, equals('Bearer'));
+            expect(data.user, isNotNull);
+            expect(data.user?['id'], equals('user_123'));
+            expect(data.phoneNumber, equals('81234567890'));
           });
         },
       );
@@ -86,11 +60,7 @@ void main() {
         'should return ValidationFailure when phone number is empty',
         () async {
           // Arrange
-          const request = PhoneLoginRequest(
-            countryCode: '+62',
-            phoneNumber: '',
-            password: 'password123',
-          );
+          const request = PhoneLoginRequest(phoneNumber: '');
 
           // Act
           final result = await dataSource.loginWithPhone(request);
@@ -101,42 +71,18 @@ void main() {
             expect(failure, isA<ValidationFailure>());
             expect(
               failure.message,
-              equals(AuthConstants.errorPhoneNumberAndPasswordRequired),
+              equals(AuthConstants.errorPhoneNumberRequired),
             );
           }, (data) => fail('Should return failure'));
         },
       );
-
-      test('should return ValidationFailure when password is empty', () async {
-        // Arrange
-        const request = PhoneLoginRequest(
-          countryCode: '+62',
-          phoneNumber: '81234567890',
-          password: '',
-        );
-
-        // Act
-        final result = await dataSource.loginWithPhone(request);
-
-        // Assert
-        expect(result, isA<Left<Failure, LoginResponseModel>>());
-        result.fold((failure) {
-          expect(failure, isA<ValidationFailure>());
-          expect(
-            failure.message,
-            equals(AuthConstants.errorPhoneNumberAndPasswordRequired),
-          );
-        }, (data) => fail('Should return failure'));
-      });
 
       test(
         'should return ValidationFailure when phone number is too short',
         () async {
           // Arrange
           const request = PhoneLoginRequest(
-            countryCode: '+62',
             phoneNumber: '123', // Too short
-            password: 'password123',
           );
 
           // Act
@@ -159,9 +105,7 @@ void main() {
         () async {
           // Arrange
           const request = PhoneLoginRequest(
-            countryCode: '+62',
             phoneNumber: '12345678901234567890', // Too long
-            password: 'password123',
           );
 
           // Act
@@ -182,9 +126,7 @@ void main() {
       test('should handle phone number with non-digit characters', () async {
         // Arrange
         const request = PhoneLoginRequest(
-          countryCode: '+62',
-          phoneNumber: '812-3456-7890', // Contains dashes
-          password: 'password123',
+          phoneNumber: '0812-3456-7890', // Contains dashes
         );
 
         // Act
@@ -192,10 +134,13 @@ void main() {
 
         // Assert
         // Should succeed because non-digit characters are removed for validation
+        // Phone number in response will be cleaned (no dashes)
         expect(result, isA<Right<Failure, LoginResponseModel>>());
         result.fold((failure) => fail('Should not return failure'), (data) {
           expect(data.accessToken, isNotEmpty);
-          expect(data.phoneNumber, equals('+62812-3456-7890'));
+          expect(data.sessionId, isNotEmpty);
+          // Phone number is cleaned in request payload (non-digits removed)
+          expect(data.phoneNumber, equals('081234567890'));
         });
       });
     });
@@ -218,7 +163,10 @@ void main() {
           result.fold((failure) => fail('Should not return failure'), (data) {
             expect(data.accessToken, isNotEmpty);
             expect(data.refreshToken, isNotEmpty);
-            expect(data.userId, equals('user_456'));
+            expect(data.sessionId, isNotEmpty);
+            expect(data.tokenType, equals('Bearer'));
+            expect(data.user, isNotNull);
+            expect(data.user?['id'], equals('user_456'));
             expect(data.email, equals('test@example.com'));
           });
         },

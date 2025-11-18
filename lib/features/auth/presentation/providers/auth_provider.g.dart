@@ -7,11 +7,11 @@ part of 'auth_provider.dart';
 // **************************************************************************
 
 String _$authRemoteDataSourceHash() =>
-    r'f97ca22763905e7a2addc87af64a5a5709c3af62';
+    r'fe0b7ec0598b071c1a2190e378712dd07c647a53';
 
 /// Provider for Auth remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 ///
 /// Copied from [authRemoteDataSource].
 @ProviderFor(authRemoteDataSource)
@@ -47,25 +47,6 @@ final authRepositoryProvider = Provider<AuthRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthRepositoryRef = ProviderRef<AuthRepository>;
-String _$getCountryCodesHash() => r'eba05c54f62b387d7fb241796bf87787abc3e6c0';
-
-/// Provider for GetCountryCodes use case.
-///
-/// Copied from [getCountryCodes].
-@ProviderFor(getCountryCodes)
-final getCountryCodesProvider = Provider<GetCountryCodes>.internal(
-  getCountryCodes,
-  name: r'getCountryCodesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getCountryCodesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GetCountryCodesRef = ProviderRef<GetCountryCodes>;
 String _$loginWithPhoneHash() => r'eab2d9b0e564ae38282a3d0d29380c8bba7316fb';
 
 /// Provider for LoginWithPhone use case.
@@ -104,27 +85,45 @@ final loginWithEmailProvider = Provider<LoginWithEmail>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LoginWithEmailRef = ProviderRef<LoginWithEmail>;
-String _$countryCodesHash() => r'd308fbfecf2bb8d024b3584e42c804eb53277525';
+String _$refreshTokenHash() => r'104b0d2f8ebf1fea2d184bdbeef3de97819c5073';
 
-/// Provider for country codes list.
+/// Provider for RefreshToken use case.
 ///
-/// Copied from [countryCodes].
-@ProviderFor(countryCodes)
-final countryCodesProvider =
-    AutoDisposeFutureProvider<List<CountryCode>>.internal(
-      countryCodes,
-      name: r'countryCodesProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$countryCodesHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// Copied from [refreshToken].
+@ProviderFor(refreshToken)
+final refreshTokenProvider = Provider<RefreshToken>.internal(
+  refreshToken,
+  name: r'refreshTokenProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$refreshTokenHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CountryCodesRef = AutoDisposeFutureProviderRef<List<CountryCode>>;
-String _$phoneLoginHash() => r'9ca323930ed007c1d3c6a53017cae0d8c631cced';
+typedef RefreshTokenRef = ProviderRef<RefreshToken>;
+String _$logoutUseCaseHash() => r'e2168041009773a33cf4e07ac9a2b2ca23c25e7b';
+
+/// Provider for Logout use case.
+///
+/// Copied from [logoutUseCase].
+@ProviderFor(logoutUseCase)
+final logoutUseCaseProvider = Provider<Logout>.internal(
+  logoutUseCase,
+  name: r'logoutUseCaseProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$logoutUseCaseHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef LogoutUseCaseRef = ProviderRef<Logout>;
+String _$phoneLoginHash() => r'889b0269d63a170598f63b28607a8b49a6cee905';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -276,7 +275,7 @@ class _PhoneLoginProviderElement
   PhoneLoginRequest get request => (origin as PhoneLoginProvider).request;
 }
 
-String _$emailLoginHash() => r'3efe4ca7b2140e24c0bce74d608adf483fd0790b';
+String _$emailLoginHash() => r'2de967d452d159def098636be8fce5fd2480e06c';
 
 /// Provider for email login.
 ///
@@ -405,6 +404,138 @@ class _EmailLoginProviderElement
 
   @override
   EmailLoginRequest get request => (origin as EmailLoginProvider).request;
+}
+
+String _$tokenRefreshHash() => r'a7855c4c7c811ef07635cfaaf5e400ba2abac651';
+
+/// Provider for token refresh.
+///
+/// Copied from [tokenRefresh].
+@ProviderFor(tokenRefresh)
+const tokenRefreshProvider = TokenRefreshFamily();
+
+/// Provider for token refresh.
+///
+/// Copied from [tokenRefresh].
+class TokenRefreshFamily extends Family<AsyncValue<LoginResponse>> {
+  /// Provider for token refresh.
+  ///
+  /// Copied from [tokenRefresh].
+  const TokenRefreshFamily();
+
+  /// Provider for token refresh.
+  ///
+  /// Copied from [tokenRefresh].
+  TokenRefreshProvider call(String refreshToken) {
+    return TokenRefreshProvider(refreshToken);
+  }
+
+  @override
+  TokenRefreshProvider getProviderOverride(
+    covariant TokenRefreshProvider provider,
+  ) {
+    return call(provider.refreshToken);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'tokenRefreshProvider';
+}
+
+/// Provider for token refresh.
+///
+/// Copied from [tokenRefresh].
+class TokenRefreshProvider extends AutoDisposeFutureProvider<LoginResponse> {
+  /// Provider for token refresh.
+  ///
+  /// Copied from [tokenRefresh].
+  TokenRefreshProvider(String refreshToken)
+    : this._internal(
+        (ref) => tokenRefresh(ref as TokenRefreshRef, refreshToken),
+        from: tokenRefreshProvider,
+        name: r'tokenRefreshProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$tokenRefreshHash,
+        dependencies: TokenRefreshFamily._dependencies,
+        allTransitiveDependencies:
+            TokenRefreshFamily._allTransitiveDependencies,
+        refreshToken: refreshToken,
+      );
+
+  TokenRefreshProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.refreshToken,
+  }) : super.internal();
+
+  final String refreshToken;
+
+  @override
+  Override overrideWith(
+    FutureOr<LoginResponse> Function(TokenRefreshRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: TokenRefreshProvider._internal(
+        (ref) => create(ref as TokenRefreshRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        refreshToken: refreshToken,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<LoginResponse> createElement() {
+    return _TokenRefreshProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TokenRefreshProvider && other.refreshToken == refreshToken;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, refreshToken.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin TokenRefreshRef on AutoDisposeFutureProviderRef<LoginResponse> {
+  /// The parameter `refreshToken` of this provider.
+  String get refreshToken;
+}
+
+class _TokenRefreshProviderElement
+    extends AutoDisposeFutureProviderElement<LoginResponse>
+    with TokenRefreshRef {
+  _TokenRefreshProviderElement(super.provider);
+
+  @override
+  String get refreshToken => (origin as TokenRefreshProvider).refreshToken;
 }
 
 // ignore_for_file: type=lint

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_base_app/core/config/api_constants.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
 import 'package:flutter_base_app/core/sync/models/sync_item.dart';
 
@@ -174,8 +175,9 @@ class BatchSyncService {
 
     try {
       // Use module-specific endpoint
+      final endpoint = ApiConstants.syncBatch(module);
       final response = await _dio.post<Map<String, dynamic>>(
-        '$_baseUrl/api/sync/$module/batch',
+        '$_baseUrl$endpoint',
         data: payload,
         options: Options(headers: {'Content-Type': 'application/json'}),
       );

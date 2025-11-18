@@ -1,35 +1,47 @@
-import 'package:flutter_base_app/core/config/flavor_config.dart';
+import 'package:flutter_base_app/core/config/app_config.dart' show AppConfig;
 import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
+import 'package:flutter_base_app/core/di/providers/secure_storage_provider.dart';
+import 'package:flutter_base_app/core/utils/either_extensions.dart';
 import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart';
+import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart';
 import 'package:flutter_base_app/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/country_code.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
 import 'package:flutter_base_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:flutter_base_app/features/auth/domain/usecases/get_country_codes.dart';
 import 'package:flutter_base_app/features/auth/domain/usecases/login_with_email.dart';
 import 'package:flutter_base_app/features/auth/domain/usecases/login_with_phone.dart';
+import 'package:flutter_base_app/features/auth/domain/usecases/logout.dart';
+import 'package:flutter_base_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
 
 /// Provider for Auth remote data source.
 ///
-/// Uses [FlavorConfig.useMockApi] to determine whether to use mock or real API.
+/// Uses [AppConfig.useMockApi] to determine whether to use mock or real API.
 @Riverpod(keepAlive: true)
 AuthRemoteDataSource authRemoteDataSource(AuthRemoteDataSourceRef ref) {
   final config = ref.watch(appConfigProvider);
 
+  final secureStorage = ref.watch(secureStorageProvider);
+
   // Use mock API if configured for current flavor
-  if (FlavorConfig.useMockApi(config.flavor)) {
-    return AuthRemoteDataSourceMock(config: config);
+  if (config.useMockApi) {
+    return AuthRemoteDataSourceMock(
+      config: config,
+      secureStorage: secureStorage,
+    );
   }
 
-  // TODO: Return real API implementation when available
-  // return AuthRemoteDataSourceImpl(config: config, dio: ref.watch(dioProvider));
+  final dio = ref.watch(dioProvider);
 
-  // Fallback to mock for now
-  return AuthRemoteDataSourceMock(config: config);
+  // Return real API implementation
+  return AuthRemoteDataSourceImpl(
+    config: config,
+    dio: dio,
+    secureStorage: secureStorage,
+  );
 }
 
 /// Provider for Auth repository.
@@ -37,13 +49,6 @@ AuthRemoteDataSource authRemoteDataSource(AuthRemoteDataSourceRef ref) {
 AuthRepository authRepository(AuthRepositoryRef ref) {
   final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
   return AuthRepositoryImpl(remoteDataSource: remoteDataSource);
-}
-
-/// Provider for GetCountryCodes use case.
-@Riverpod(keepAlive: true)
-GetCountryCodes getCountryCodes(GetCountryCodesRef ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return GetCountryCodes(repository);
 }
 
 /// Provider for LoginWithPhone use case.
@@ -60,16 +65,18 @@ LoginWithEmail loginWithEmail(LoginWithEmailRef ref) {
   return LoginWithEmail(repository);
 }
 
-/// Provider for country codes list.
-@riverpod
-Future<List<CountryCode>> countryCodes(CountryCodesRef ref) async {
-  final getCountryCodes = ref.read(getCountryCodesProvider);
-  final result = await getCountryCodes();
+/// Provider for RefreshToken use case.
+@Riverpod(keepAlive: true)
+RefreshToken refreshToken(RefreshTokenRef ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return RefreshToken(repository);
+}
 
-  return result.fold<List<CountryCode>>(
-    (failure) => throw failure,
-    (data) => data,
-  );
+/// Provider for Logout use case.
+@Riverpod(keepAlive: true)
+Logout logoutUseCase(LogoutUseCaseRef ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return Logout(repository);
 }
 
 /// Provider for phone login.
@@ -80,8 +87,7 @@ Future<LoginResponse> phoneLogin(
 ) async {
   final loginWithPhone = ref.read(loginWithPhoneProvider);
   final result = await loginWithPhone(request);
-
-  return result.fold<LoginResponse>((failure) => throw failure, (data) => data);
+  return result.toFuture();
 }
 
 /// Provider for email login.
@@ -92,6 +98,16 @@ Future<LoginResponse> emailLogin(
 ) async {
   final loginWithEmail = ref.read(loginWithEmailProvider);
   final result = await loginWithEmail(request);
+  return result.toFuture();
+}
 
-  return result.fold<LoginResponse>((failure) => throw failure, (data) => data);
+/// Provider for token refresh.
+@riverpod
+Future<LoginResponse> tokenRefresh(
+  TokenRefreshRef ref,
+  String refreshToken,
+) async {
+  final refreshTokenUseCase = ref.read(refreshTokenProvider);
+  final result = await refreshTokenUseCase(refreshToken);
+  return result.toFuture();
 }

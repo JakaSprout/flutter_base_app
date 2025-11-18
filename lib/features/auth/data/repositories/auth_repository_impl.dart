@@ -1,9 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:flutter_base_app/features/auth/data/models/country_code_model.dart';
 import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/country_code.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
 import 'package:flutter_base_app/features/auth/domain/repositories/auth_repository.dart';
@@ -17,17 +15,6 @@ class AuthRepositoryImpl implements AuthRepository {
     : _remoteDataSource = remoteDataSource;
 
   final AuthRemoteDataSource _remoteDataSource;
-
-  @override
-  Future<Either<Failure, List<CountryCode>>> getCountryCodes() async {
-    final result = await _remoteDataSource.getCountryCodes();
-    return result.fold(
-      Left.new,
-      (models) => Right(
-        models.map((model) => model.toEntity()).toList(),
-      ),
-    );
-  }
 
   @override
   Future<Either<Failure, LoginResponse>> loginWithPhone(
@@ -44,8 +31,18 @@ class AuthRepositoryImpl implements AuthRepository {
     final result = await _remoteDataSource.loginWithEmail(request);
     return result.fold(Left.new, (model) => Right(model.toEntity()));
   }
+
+  @override
+  Future<Either<Failure, LoginResponse>> refreshToken(
+    String refreshToken,
+  ) async {
+    final result = await _remoteDataSource.refreshToken(refreshToken);
+    return result.fold(Left.new, (model) => Right(model.toEntity()));
+  }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    final result = await _remoteDataSource.logout();
+    return result;
+  }
 }
-
-
-
-

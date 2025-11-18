@@ -1,59 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/country_code.dart';
 import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:flutter_base_app/features/auth/presentation/constants/login_form_controls.dart';
 import 'package:flutter_base_app/features/auth/presentation/widgets/login_input_fields.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
 void main() {
   group('LoginInputFields', () {
-    late TextEditingController phoneController;
-    late TextEditingController emailController;
-    late TextEditingController passwordController;
+    late FormGroup form;
 
     setUp(() {
-      phoneController = TextEditingController();
-      emailController = TextEditingController();
-      passwordController = TextEditingController();
+      form = FormGroup({
+        LoginFormControls.phone: FormControl<String>(),
+        LoginFormControls.email: FormControl<String>(),
+        LoginFormControls.password: FormControl<String>(),
+      });
     });
 
     tearDown(() {
-      phoneController.dispose();
-      emailController.dispose();
-      passwordController.dispose();
+      form.dispose();
     });
 
     testWidgets('should display phone input when in phone mode', (
       tester,
     ) async {
-      // Arrange
-      const countryCodes = [
-        CountryCode(
-          code: 'ID',
-          dialCode: '+62',
-          name: 'Indonesia',
-          flag: '🇮🇩',
-        ),
-      ];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: true,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: countryCodes.first,
-            isPasswordVisible: false,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: true,
+              isPasswordVisible: false,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -73,25 +57,18 @@ void main() {
     testWidgets('should display email input when in email mode', (
       tester,
     ) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: false,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: false,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -109,25 +86,18 @@ void main() {
     });
 
     testWidgets('should display password input', (tester) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: false,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: false,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -146,25 +116,18 @@ void main() {
     testWidgets('should show password visibility toggle button', (
       tester,
     ) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: false,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: false,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -183,25 +146,18 @@ void main() {
     testWidgets('should show visibility icon when password is visible', (
       tester,
     ) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: true,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: true,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -223,24 +179,19 @@ void main() {
       (tester) async {
         // Arrange
         var toggleCalled = false;
-        const countryCodes = <CountryCode>[];
 
         // Act
         await tester.pumpWidget(
           TestHelpers.createTestApp(
-            overrides: [
-              countryCodesProvider.overrideWith((_) async => countryCodes),
-            ],
-            child: LoginInputFields(
-              isPhoneMode: false,
-              phoneController: phoneController,
-              emailController: emailController,
-              passwordController: passwordController,
-              selectedCountryCode: null,
-              isPasswordVisible: false,
-              isLoading: false,
-              onCountryCodeChanged: (_) {},
-              onPasswordVisibilityToggle: () => toggleCalled = true,
+            child: ReactiveForm(
+              formGroup: form,
+              child: LoginInputFields(
+                form: form,
+                isPhoneMode: false,
+                isPasswordVisible: false,
+                isLoading: false,
+                onPasswordVisibilityToggle: () => toggleCalled = true,
+              ),
             ),
           ),
         );
@@ -265,25 +216,18 @@ void main() {
     );
 
     testWidgets('should disable inputs when loading', (tester) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: emailController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: false,
-            isLoading: true,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: false,
+              isLoading: true,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -294,7 +238,7 @@ void main() {
       // Assert
       final textFields = tester.widgetList<TextField>(find.byType(TextField));
       for (final field in textFields) {
-        expect(field.enabled, isFalse);
+        expect(field.readOnly, isTrue);
       }
 
       // Cleanup to prevent timersPending error
@@ -303,25 +247,18 @@ void main() {
     });
 
     testWidgets('should allow text input when not loading', (tester) async {
-      // Arrange
-      const countryCodes = <CountryCode>[];
-
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          overrides: [
-            countryCodesProvider.overrideWith((_) async => countryCodes),
-          ],
-          child: LoginInputFields(
-            isPhoneMode: false,
-            phoneController: phoneController,
-            emailController: emailController,
-            passwordController: passwordController,
-            selectedCountryCode: null,
-            isPasswordVisible: false,
-            isLoading: false,
-            onCountryCodeChanged: (_) {},
-            onPasswordVisibilityToggle: () {},
+          child: ReactiveForm(
+            formGroup: form,
+            child: LoginInputFields(
+              form: form,
+              isPhoneMode: false,
+              isPasswordVisible: false,
+              isLoading: false,
+              onPasswordVisibilityToggle: () {},
+            ),
           ),
         ),
       );
@@ -340,7 +277,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Assert
-      expect(emailController.text, equals('test@example.com'));
+      expect(
+        form.control(LoginFormControls.email).value,
+        equals('test@example.com'),
+      );
 
       // Cleanup to prevent timersPending error
       await tester.pumpWidget(Container());

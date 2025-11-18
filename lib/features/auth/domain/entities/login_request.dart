@@ -1,40 +1,30 @@
 /// Login request entity (domain layer).
 abstract class LoginRequest {
   /// Creates a new instance of [LoginRequest].
-  const LoginRequest({required this.password});
-
-  /// User password
-  final String password;
+  const LoginRequest();
 }
 
 /// Phone number login request.
+///
+/// Phone login does not require password.
 class PhoneLoginRequest extends LoginRequest {
   /// Creates a new instance of [PhoneLoginRequest].
-  const PhoneLoginRequest({
-    required this.countryCode,
-    required this.phoneNumber,
-    required super.password,
-  });
+  const PhoneLoginRequest({required this.phoneNumber});
 
-  /// Country dial code (e.g., '+62')
-  final String countryCode;
-
-  /// Phone number without country code
+  /// Phone number (can include country code, e.g., '+6281234567890')
   final String phoneNumber;
 }
 
 /// Email login request.
+///
+/// Email login requires password.
 class EmailLoginRequest extends LoginRequest {
   /// Creates a new instance of [EmailLoginRequest].
-  const EmailLoginRequest({
-    required this.email,
-    required super.password,
-  });
+  const EmailLoginRequest({required this.email, required this.password});
 
   /// User email address
   final String email;
+
+  /// User password
+  final String password;
 }
-
-
-
-

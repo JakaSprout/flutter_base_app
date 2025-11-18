@@ -1,9 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
+import 'package:flutter_base_app/core/events/auth_event_bus.dart';
 import 'package:flutter_base_app/core/utils/status_bar_config.dart';
 import 'package:flutter_base_app/design_system/theme/app_theme.dart';
+import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:flutter_base_app/features/auth/presentation/providers/logout_provider.dart';
+import 'package:flutter_base_app/features/auth/presentation/providers/session_timeout_provider.dart';
+import 'package:flutter_base_app/features/auth/presentation/providers/token_refresh_provider.dart';
 import 'package:flutter_base_app/router/app_router.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -17,6 +26,21 @@ class App extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch auth state
+    final authStateAsync = ref.watch(authStateProvider);
+
+    // Listen to auth state changes to remove splash screen
+    // Remove splash when auth state resolves (data or error)
+    ref.listen(authStateProvider, (previous, next) {
+      next.whenOrNull(
+        data: (_) => FlutterNativeSplash.remove(),
+        error: (_, __) => FlutterNativeSplash.remove(),
+      );
+    });
+
+    // Create router with auth guard
+    final router = AppRouter.createRouter(ref, authStateAsync);
+
     return ScreenUtilInit(
       // Design size from Figma (adjust according to design system)
       // Default: iPhone 14 Pro (390 x 844)
@@ -29,11 +53,13 @@ class App extends HookConsumerWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.lightTheme, // Always use light theme
           themeMode: ThemeMode.light, // Always use light mode
-          routerConfig: AppRouter.router,
+          routerConfig: router,
           builder: (context, widget) {
-            // Wrap widget with StatusBarUpdater to handle theme changes
-            final wrappedWidget = _StatusBarUpdater(
-              child: widget ?? const SizedBox.shrink(),
+            // Wrap widget with auth event listener and status bar updater
+            final wrappedWidget = _AuthEventListener(
+              child: _StatusBarUpdater(
+                child: widget ?? const SizedBox.shrink(),
+              ),
             );
 
             // Show flavor banner in debug mode
@@ -95,5 +121,82 @@ class _StatusBarUpdaterState extends State<_StatusBarUpdater> {
     });
 
     return widget.child;
+  }
+}
+
+/// Widget that listens to auth events and handles auto-logout.
+class _AuthEventListener extends HookConsumerWidget {
+  /// Creates a new instance of [_AuthEventListener].
+  const _AuthEventListener({required this.child});
+
+  /// Child widget to wrap.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch auth state to initialize monitors
+    final authStateAsync = ref.watch(authStateProvider);
+
+    // Initialize auth monitoring when authenticated
+    useEffect(() {
+      authStateAsync.whenData((isAuthenticated) {
+        if (isAuthenticated) {
+          // User logged in, start monitors
+          ref
+            ..read(tokenRefreshMonitorProvider)
+            ..read(sessionTimeoutMonitorProvider);
+        }
+      });
+      return null;
+    }, [authStateAsync]);
+
+    // Listen to auth state changes to start/stop monitors
+    ref.listen(authStateProvider, (previous, next) {
+      next.whenData((isAuthenticated) {
+        if (isAuthenticated) {
+          // User logged in, start monitors
+          ref
+            ..read(tokenRefreshMonitorProvider)
+            ..read(sessionTimeoutMonitorProvider);
+        }
+        // If logged out, monitors will stop automatically via onDispose
+      });
+    });
+
+    // Listen to auth events for auto-logout
+    useEffect(() {
+      StreamSubscription<AuthEvent>? eventSubscription;
+
+      eventSubscription = AuthEventBus.instance.events.listen((event) {
+        if (event.type == AuthEventType.loggedOut ||
+            event.type == AuthEventType.sessionExpired) {
+          // Use context from the widget, but check mounted in handler
+          _handleAutoLogout(context, ref, event);
+        }
+      });
+
+      return () {
+        eventSubscription?.cancel();
+      };
+    }, []);
+
+    return child;
+  }
+
+  Future<void> _handleAutoLogout(
+    BuildContext context,
+    WidgetRef ref,
+    AuthEvent event,
+  ) async {
+    if (!context.mounted) return;
+
+    try {
+      // Logout provider will clear tokens and invalidate auth state
+      // Router redirect logic will automatically navigate to login
+      await ref.read(logoutProvider.future);
+    } catch (e) {
+      // Logout should always succeed, but log error just in case
+      debugPrint('Auto-logout error: $e');
+    }
   }
 }

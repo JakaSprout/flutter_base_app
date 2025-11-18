@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/config/flavor_config.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/home/data/models/banner_model.dart';
 import 'package:flutter_base_app/features/home/data/models/home_model.dart';
@@ -43,7 +42,7 @@ class HomeRemoteDataSourceMock implements HomeRemoteDataSource {
 
   /// Simulate network delay.
   Future<void> _simulateDelay() async {
-    final delay = FlavorConfig.getMockApiDelay(_config.flavor);
+    final delay = _config.mockApiDelayMs;
     if (delay > 0) {
       await Future<void>.delayed(Duration(milliseconds: delay));
     }

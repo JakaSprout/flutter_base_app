@@ -11,7 +11,7 @@ void main() {
 
     test('should have correct input hints', () {
       // Assert
-      expect(AuthConstants.hintPhoneNumber, equals('8123-4567-8901'));
+      expect(AuthConstants.hintPhoneNumber, equals('0812-3456-7890'));
       expect(AuthConstants.hintEmail, equals('Input email address'));
       expect(AuthConstants.hintPassword, equals('Password'));
     });
@@ -21,10 +21,6 @@ void main() {
       expect(
         AuthConstants.errorTermsNotAccepted,
         contains('terms and conditions'),
-      );
-      expect(
-        AuthConstants.errorCountryCodeNotSelected,
-        contains('country code'),
       );
       expect(AuthConstants.errorFieldsEmpty, contains('fill in all fields'));
       expect(AuthConstants.errorPhoneNumberLength, contains('8 and 15 digits'));
@@ -53,11 +49,6 @@ void main() {
       expect(AuthConstants.separatorOr, equals('Or'));
     });
 
-    test('should have correct default values', () {
-      // Assert
-      expect(AuthConstants.defaultCountryCode, equals('ID'));
-    });
-
     test('should have correct phone validation limits', () {
       // Assert
       expect(AuthConstants.phoneMinDigits, equals(8));
@@ -67,8 +58,8 @@ void main() {
     test('should have correct data source error messages', () {
       // Assert
       expect(
-        AuthConstants.errorPhoneNumberAndPasswordRequired,
-        contains('Phone number and password'),
+        AuthConstants.errorPhoneNumberRequired,
+        contains('Phone number is required'),
       );
       expect(
         AuthConstants.errorEmailAndPasswordRequired,
@@ -77,10 +68,6 @@ void main() {
       expect(
         AuthConstants.errorInvalidEmailFormat,
         contains('Invalid email format'),
-      );
-      expect(
-        AuthConstants.errorFailedToGetCountryCodes,
-        contains('Failed to get country codes'),
       );
       expect(AuthConstants.errorLoginFailed, contains('Login failed'));
     });

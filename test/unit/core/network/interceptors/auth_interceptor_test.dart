@@ -40,7 +40,7 @@ void main() {
         await interceptor.onRequest(options, handler);
 
         // Assert
-        expect(options.headers['Authorization'], equals('Bearer $token'));
+        expect(options.headers['x-session-id'], equals(token));
         verify(
           () => mockSecureStorage.read(key: AppConstants.storageAuthToken),
         ).called(1);
@@ -61,7 +61,7 @@ void main() {
       await interceptor.onRequest(options, handler);
 
       // Assert
-      expect(options.headers['Authorization'], isNull);
+      expect(options.headers.containsKey('x-session-id'), isFalse);
       verify(
         () => mockSecureStorage.read(key: AppConstants.storageAuthToken),
       ).called(1);
@@ -81,7 +81,7 @@ void main() {
       await interceptor.onRequest(options, handler);
 
       // Assert
-      expect(options.headers['Authorization'], isNull);
+      expect(options.headers.containsKey('x-session-id'), isFalse);
       verify(
         () => mockSecureStorage.read(key: AppConstants.storageAuthToken),
       ).called(1);

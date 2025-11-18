@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_base_app/app.dart';
 import 'package:flutter_base_app/core/config/app_config.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Common initialization function that sets up the app with the given
 /// configuration.
 void mainCommon(AppConfig config) {
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Preserve native splash screen during initialization
+  // This keeps the native splash visible while Flutter initializes
+  // and auth state is being checked
+  FlutterNativeSplash.preserve(widgetsBinding: WidgetsBinding.instance);
+
   // TODO(team): Initialize logging based on config.enableLogging
   // TODO(team): Initialize crash reporting based on config.enableCrashReporting
   // TODO(team): Initialize other services (database, network, etc.)

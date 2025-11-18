@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:eventsource/eventsource.dart';
+import 'package:flutter_base_app/core/config/api_constants.dart';
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -143,7 +144,7 @@ class SSEService {
         return;
       }
 
-      final url = Uri.parse('$_baseUrl/api/sync/events');
+      final url = Uri.parse('$_baseUrl${ApiConstants.syncEvents}');
       AppLogger.info('Connecting to SSE endpoint: $url');
 
       // Create headers with authentication

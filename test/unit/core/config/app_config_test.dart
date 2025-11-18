@@ -40,7 +40,7 @@ void main() {
         expect(AppConfig.dev.appName, equals('Flutter Base App Dev'));
         expect(
           AppConfig.dev.apiBaseUrl,
-          equals('https://jsonplaceholder.typicode.com'),
+          equals('https://39ed3fab6852.ngrok-free.app'),
         );
         expect(AppConfig.dev.enableLogging, isTrue);
         expect(AppConfig.dev.enableCrashReporting, isFalse);
@@ -98,4 +98,3 @@ void main() {
     });
   });
 }
-

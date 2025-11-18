@@ -15,7 +15,6 @@ void main() {
         TestHelpers.createTestApp(
           child: LoginButton(
             isLoading: false,
-            isTermsAccepted: true,
             isFormValid: true,
             onPressed: () {},
           ),
@@ -39,7 +38,6 @@ void main() {
         TestHelpers.createTestApp(
           child: LoginButton(
             isLoading: true,
-            isTermsAccepted: true,
             isFormValid: true,
             onPressed: () {},
           ),
@@ -55,7 +53,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('should be enabled when form is valid and terms accepted', (
+    testWidgets('should be enabled when form is valid', (
       tester,
     ) async {
       // Arrange
@@ -66,7 +64,6 @@ void main() {
         TestHelpers.createTestApp(
           child: LoginButton(
             isLoading: false,
-            isTermsAccepted: true,
             isFormValid: true,
             onPressed: () => buttonPressed = true,
           ),
@@ -98,40 +95,7 @@ void main() {
         TestHelpers.createTestApp(
           child: LoginButton(
             isLoading: false,
-            isTermsAccepted: true,
             isFormValid: false,
-            onPressed: () => buttonPressed = true,
-          ),
-        ),
-      );
-
-      // Assert
-      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
-      expect(button.onPressed, isNull);
-
-      // Try to tap button (should not work)
-      await tester.tap(find.byType(ElevatedButton), warnIfMissed: false);
-      await tester.pump();
-
-      // Assert callback was not called
-      expect(buttonPressed, isFalse);
-
-      // Cleanup to prevent timersPending error
-      await tester.pumpWidget(Container());
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('should be disabled when terms not accepted', (tester) async {
-      // Arrange
-      var buttonPressed = false;
-
-      // Act
-      await tester.pumpWidget(
-        TestHelpers.createTestApp(
-          child: LoginButton(
-            isLoading: false,
-            isTermsAccepted: false,
-            isFormValid: true,
             onPressed: () => buttonPressed = true,
           ),
         ),
@@ -162,7 +126,6 @@ void main() {
         TestHelpers.createTestApp(
           child: LoginButton(
             isLoading: true,
-            isTermsAccepted: true,
             isFormValid: true,
             onPressed: () => buttonPressed = true,
           ),
