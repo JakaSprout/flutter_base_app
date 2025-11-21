@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Header section for Home screen.
@@ -28,7 +27,7 @@ class HomeHeader extends StatelessWidget {
   final int? notificationCount;
 
   // Design tokens - using shared colors from design system
-  static const Color _black = AppColors.black;
+  static const Color _black = HomeDesignConstants.black;
 
   @override
   Widget build(BuildContext context) {

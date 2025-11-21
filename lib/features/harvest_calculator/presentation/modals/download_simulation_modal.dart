@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Modal bottom sheet for download options.
@@ -19,7 +18,7 @@ class DownloadSimulationModal extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: SafeArea(
@@ -35,7 +34,7 @@ class DownloadSimulationModal extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.gray20,
+                  color: HarvestCalculatorDesignConstants.gray20,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -55,7 +54,7 @@ class DownloadSimulationModal extends StatelessWidget {
                   IconButton(
                     icon: const Icon(
                       Icons.close,
-                      color: AppColors.gray60,
+                      color: HarvestCalculatorDesignConstants.gray60,
                       size: 24,
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -127,9 +126,9 @@ class DownloadOptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: HarvestCalculatorDesignConstants.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.gray20),
+          border: Border.all(color: HarvestCalculatorDesignConstants.gray20),
         ),
         child: Row(
           children: [
@@ -138,7 +137,7 @@ class DownloadOptionCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.gray05,
+                color: HarvestCalculatorDesignConstants.gray05,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
@@ -163,7 +162,7 @@ class DownloadOptionCard extends StatelessWidget {
               Assets.icons.general.arrowDownload,
               width: 20,
               height: 20,
-              color: AppColors.gray60,
+              color: HarvestCalculatorDesignConstants.gray60,
             ),
           ],
         ),

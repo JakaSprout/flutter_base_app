@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/components/cards/stp_input_data_item.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/input_data_shimmer.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/design_system/components/cards/stp_input_data_item.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/input_data_shimmer.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -46,7 +45,7 @@ class InputDataSection extends HookConsumerWidget {
       debugPrint('Failed to parse color: $hexString, error: $e');
     }
     
-    return AppColors.gray05; // Default if invalid
+    return HomeDesignConstants.gray05; // Default if invalid
   }
 
   @override
@@ -90,7 +89,7 @@ class InputDataSection extends HookConsumerWidget {
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontSize: HomeDesignConstants.inputDataTitleFontSize,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.gray100,
+                    color: HomeDesignConstants.gray100,
                     fontFamily: AppConstants.fontFamily,
                     height: HomeDesignConstants.inputDataLineHeight,
                   ),
@@ -119,7 +118,7 @@ class InputDataSection extends HookConsumerWidget {
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontSize: HomeDesignConstants.inputDataSeeAllFontSize,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.secondary,
+                          color: HomeDesignConstants.secondary,
                           fontFamily: AppConstants.fontFamily,
                           height: HomeDesignConstants.inputDataLineHeight,
                         ),

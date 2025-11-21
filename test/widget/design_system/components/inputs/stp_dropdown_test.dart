@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
+import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../helpers/test_helpers.dart';

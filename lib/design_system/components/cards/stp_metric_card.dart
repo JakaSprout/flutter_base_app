@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Metric card widget for displaying key metrics with icon, title, value,

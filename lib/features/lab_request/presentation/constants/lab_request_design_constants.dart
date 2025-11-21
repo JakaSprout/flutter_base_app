@@ -1,4 +1,5 @@
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 
 /// Design constants for Lab Request feature.
 ///
@@ -53,8 +54,34 @@ class LabRequestDesignConstants {
 
   // Colors
   /// Background color for form
+  /// Source: AppColors.white
   static const backgroundColor = AppColors.white;
 
   /// Border color for form fields
+  /// Source: AppColors.gray20
   static const borderColor = AppColors.gray20;
+
+  /// White color
+  /// Source: AppColors.white
+  static const Color white = AppColors.white;
+
+  /// Gray 100 color
+  /// Source: AppColors.gray100
+  static const Color gray100 = AppColors.gray100;
+
+  /// Gray 70 color
+  /// Source: AppColors.gray70
+  static const Color gray70 = AppColors.gray70;
+
+  /// Gray 20 color
+  /// Source: AppColors.gray20
+  static const Color gray20 = AppColors.gray20;
+
+  /// Gray 05 color
+  /// Source: AppColors.gray05
+  static const Color gray05 = AppColors.gray05;
+
+  /// Primary color
+  /// Source: AppColors.primary
+  static const Color primary = AppColors.primary;
 }

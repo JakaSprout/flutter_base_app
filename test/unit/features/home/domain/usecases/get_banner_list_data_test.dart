@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_entity.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/repositories/home_repository.dart';
-import 'package:flutter_base_app/features/home/domain/usecases/get_banner_list_data.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
+import 'package:app_mobile_afms/features/home/domain/usecases/get_banner_list_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

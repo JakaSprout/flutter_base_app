@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
-import 'package:flutter_base_app/core/connectivity/connectivity_service.dart';
-import 'package:flutter_base_app/core/di/providers/connectivity_provider.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_service.dart';
+import 'package:app_mobile_afms/core/di/providers/connectivity_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/download_simulation_modal.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/buttons/action_buttons.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/cards/summary_card.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/agent_metrics_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/charts_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/loan_analysis_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/ltv_risk_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/metrics_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/table_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/shared/preview_status_banner.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/shared/profit_banner.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/download_simulation_modal.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/buttons/action_buttons.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/summary_card.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/agent_metrics_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/charts_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/loan_analysis_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/ltv_risk_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/metrics_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/table_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/preview_status_banner.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/profit_banner.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -100,7 +99,7 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
     final adgFormat = NumberFormat('0.00', 'id_ID');
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: HarvestCalculatorDesignConstants.white,
       appBar: STPAppBar(
         title: HarvestCalculatorConstants.titlePreview,
         actions: [
@@ -111,7 +110,7 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
                 Assets.icons.general.arrowDownload,
                 width: 24,
                 height: 24,
-                color: AppColors.gray70,
+                color: HarvestCalculatorDesignConstants.gray70,
               ),
               onPressed: () {
                 showModalBottomSheet<void>(

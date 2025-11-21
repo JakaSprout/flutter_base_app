@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_form_controls.dart';
-import 'package:flutter_base_app/features/auth/presentation/widgets/login_input_fields.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
+import 'package:app_mobile_afms/features/auth/presentation/widgets/login_input_fields.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 

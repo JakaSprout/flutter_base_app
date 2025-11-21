@@ -1,7 +1,7 @@
-import 'package:flutter_base_app/features/auth/domain/services/auth_service.dart'
+import 'package:app_mobile_afms/features/auth/domain/services/auth_service.dart'
     show AuthService;
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

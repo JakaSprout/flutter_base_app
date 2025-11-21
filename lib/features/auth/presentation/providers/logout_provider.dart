@@ -1,10 +1,10 @@
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
-import 'package:flutter_base_app/router/app_router.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_provider.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/router/app_router.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'logout_provider.g.dart';

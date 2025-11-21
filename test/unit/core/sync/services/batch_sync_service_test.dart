@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/services/batch_sync_service.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/services/batch_sync_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

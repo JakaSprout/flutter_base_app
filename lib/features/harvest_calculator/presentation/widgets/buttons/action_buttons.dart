@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 
 /// Action buttons for cancel and save operations.
 class ActionButtons extends StatelessWidget {
@@ -38,7 +37,9 @@ class ActionButtons extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  side: const BorderSide(color: AppColors.gray40),
+                  side: const BorderSide(
+                    color: HarvestCalculatorDesignConstants.gray40,
+                  ),
                   foregroundColor: HarvestCalculatorDesignConstants.textPrimary,
                 ),
                 child: const Text(
@@ -53,7 +54,7 @@ class ActionButtons extends StatelessWidget {
                 onPressed: onSave,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: HarvestCalculatorDesignConstants.primaryBlue,
-                  foregroundColor: AppColors.white,
+                  foregroundColor: HarvestCalculatorDesignConstants.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

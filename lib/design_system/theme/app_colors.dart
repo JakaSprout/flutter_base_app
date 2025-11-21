@@ -109,9 +109,69 @@ class AppColors {
   static const Color inputDataKematianBg = Color(0x14D84639);
   static const Color inputDataKematianIcon = Color(0xFFD84639);
 
-  // TODO: Add more colors as needed from Figma design system
-  // - Success colors
-  // - Warning colors
-  // - Error colors
-  // - etc.
+  // Text Colors
+  /// Text primary color (Neutral/90)
+  static const Color textPrimary = Color(0xFF1E1E1E);
+
+  /// Text secondary color (Neutral/50)
+  static const Color textSecondary = Color(0xFF464445);
+
+  // Warning Colors
+  /// Warning base color
+  static const Color warning = Color(0xFFFDBA74);
+
+  // Chart Colors - Loan Analysis
+  /// Chart purple color for Total Cost Needs
+  static const Color chartPurple = Color(0xFF9333EA);
+
+  /// Chart blue-500 color for Loan Ceiling Taken
+  static const Color chartBlue500 = Color(0xFF3B82F6);
+
+  /// Chart blue-300 color for Remaining Credit
+  static const Color chartBlue300 = Color(0xFF93C5FD);
+
+  // Background Colors
+  /// Action chip background color
+  static const Color actionChipBackground = Color(0xFFF7F7F7);
+
+  /// Simulation card icon background blue
+  static const Color simulationCardIconBackgroundBlue = Color(0xFFE7ECFA);
+
+  /// Simulation card icon background orange
+  static const Color simulationCardIconBackgroundOrange = Color(0xFFFFF4E6);
+
+  /// Success banner background color (Light green)
+  static const Color successBannerBackground = Color(0xFFD7F5DF);
+
+  /// Light background gray
+  static const Color lightBackgroundGray = Color(0xFFF4F4F4);
+
+  /// Light background gray variant
+  static const Color lightBackgroundGrayAlt = Color(0xFFF4F4F6);
+
+  /// Blue background variant
+  static const Color blueBackground = Color(0xFFE6ECFF);
+
+  /// Light blue background
+  static const Color lightBlueBackground = Color(0xFFE3F2FD);
+
+  // Neutral Colors (Extended)
+  /// Neutral/80 color (Dark gray)
+  static const Color neutral80 = Color(0xFF2F2D2E);
+
+  /// Neutral/50 color (Medium gray)
+  static const Color neutral50 = Color(0xFF464445);
+
+  // Accent Colors
+  /// Blue accent color
+  static const Color blueAccent = Color(0xFF60A5FA);
+
+  /// Orange accent color
+  static const Color orangeAccent = Color(0xFFF97316);
+
+  /// Green accent color
+  static const Color greenAccent = Color(0xFF22C55E);
+
+  /// Dark blue accent color
+  static const Color darkBlueAccent = Color(0xFF1D4ED8);
 }

@@ -1,9 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart' as connectivity_plus;
 import 'package:dio/dio.dart';
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
-import 'package:flutter_base_app/core/connectivity/connectivity_service.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/models/sync_status.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_service.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_status.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mocktail/mocktail.dart';
 

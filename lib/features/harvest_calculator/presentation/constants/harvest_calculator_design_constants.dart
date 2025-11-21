@@ -1,3 +1,4 @@
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Design constants for Harvest Calculator feature.
@@ -70,6 +71,34 @@ class HarvestCalculatorDesignConstants {
   /// Chart height (200px)
   static const double chartHeight = 200;
 
+  // Icon Sizes
+  /// Info icon size (16px)
+  static const double infoIconSize = 16;
+
+  /// Section indicator width (8px)
+  static const double sectionIndicatorWidth = 8;
+
+  /// Section indicator height (14px)
+  static const double sectionIndicatorHeight = 14;
+
+  /// Section header gap between indicator and title (12px)
+  static const double sectionHeaderGap = 12;
+
+  /// Section header gap between title and icon (8px)
+  static const double sectionHeaderIconGap = 8;
+
+  /// Legend item size (12px)
+  static const double legendItemSize = 12;
+
+  /// Legend item border radius (4px)
+  static const double legendItemBorderRadius = 4;
+
+  /// Legend item gap (6px)
+  static const double legendItemGap = 6;
+
+  /// Legend container border radius (12px)
+  static const double legendContainerBorderRadius = 12;
+
   /// Input padding horizontal (16px)
   static const double inputPaddingHorizontal = 16;
 
@@ -113,97 +142,188 @@ class HarvestCalculatorDesignConstants {
 
   // Colors
   /// Primary blue color (Brand primary)
-  static const Color primaryBlue = Color(0xFF122E7A);
+  /// Source: AppColors.primary
+  static const Color primaryBlue = AppColors.primary;
 
   /// Secondary orange color (Brand secondary)
-  static const Color secondaryOrange = Color(0xFFFA6619);
+  /// Source: AppColors.secondary
+  static const Color secondaryOrange = AppColors.secondary;
+
+  /// White color
+  /// Source: AppColors.white
+  static const Color white = AppColors.white;
+
+  /// Black color
+  /// Source: AppColors.black
+  static const Color black = AppColors.black;
 
   /// Background white color
-  static const Color backgroundWhite = Color(0xFFFFFFFF);
+  /// Source: AppColors.white
+  static const Color backgroundWhite = AppColors.white;
 
   /// Background gray color (Neutral/5)
-  static const Color backgroundGray = Color(0xFFF5F5F5);
+  /// Source: AppColors.gray05
+  static const Color backgroundGray = AppColors.gray05;
 
   /// Border gray color (Neutral/20)
-  static const Color borderGray = Color(0xFFE3E3E3);
+  /// Source: AppColors.gray20
+  static const Color borderGray = AppColors.gray20;
+
+  /// Gray 20 color
+  /// Source: AppColors.gray20
+  static const Color gray20 = AppColors.gray20;
+
+  /// Gray 60 color
+  /// Source: AppColors.gray60
+  static const Color gray60 = AppColors.gray60;
+
+  /// Gray 70 color
+  /// Source: AppColors.gray70
+  static const Color gray70 = AppColors.gray70;
+
+  /// Gray 100 color
+  /// Source: AppColors.gray100
+  static const Color gray100 = AppColors.gray100;
+
+  /// Gray 40 color
+  /// Source: AppColors.gray40
+  static const Color gray40 = AppColors.gray40;
+
+  /// Gray 05 color
+  /// Source: AppColors.gray05
+  static const Color gray05 = AppColors.gray05;
+
+  /// Primary color
+  /// Source: AppColors.primary
+  static const Color primary = AppColors.primary;
 
   /// Primary text color (Neutral/90)
-  static const Color textPrimary = Color(0xFF1E1E1E);
+  /// Source: AppColors.textPrimary
+  static const Color textPrimary = AppColors.textPrimary;
 
   /// Secondary text color (Neutral/50)
-  static const Color textSecondary = Color(0xFF464445);
+  /// Source: AppColors.textSecondary
+  static const Color textSecondary = AppColors.textSecondary;
 
   /// Disabled field background color
-  static const Color disabledFieldBackgroundColor = Color(0xFFF5F5F5);
+  /// Source: AppColors.gray05
+  static const Color disabledFieldBackgroundColor = AppColors.gray05;
 
   /// Disabled text color
-  static const Color disabledTextColor = Color(0xFF6D6D6D);
+  /// Source: AppColors.gray70
+  static const Color disabledTextColor = AppColors.gray70;
 
   /// Error color (Destructive/60)
-  static const Color errorColor = Color(0xFFD84639);
+  /// Source: AppColors.error
+  static const Color errorColor = AppColors.error;
+
+  /// Error color (alias)
+  /// Source: AppColors.error
+  static const Color error = AppColors.error;
 
   /// Success color (Success/60)
-  static const Color successColor = Color(0xFF1BAA69);
+  /// Source: AppColors.success
+  static const Color successColor = AppColors.success;
+
+  /// Success color (alias)
+  /// Source: AppColors.success
+  static const Color success = AppColors.success;
 
   /// Placeholder color (Neutral/40)
-  static const Color placeholderColor = Color(0xFF8A8A8A);
+  /// Source: AppColors.gray60
+  static const Color placeholderColor = AppColors.gray60;
 
   /// Action chip background color
-  static const Color actionChipBackgroundColor = Color(0xFFF7F7F7);
+  /// Source: AppColors.actionChipBackground
+  static const Color actionChipBackgroundColor = AppColors.actionChipBackground;
 
   /// Simulation card icon background blue
-  static const Color simulationCardIconBackgroundBlue = Color(0xFFE7ECFA);
+  /// Source: AppColors.simulationCardIconBackgroundBlue
+  static const Color simulationCardIconBackgroundBlue =
+      AppColors.simulationCardIconBackgroundBlue;
 
   /// Simulation card icon background orange
-  static const Color simulationCardIconBackgroundOrange = Color(0xFFFFF4E6);
+  /// Source: AppColors.simulationCardIconBackgroundOrange
+  static const Color simulationCardIconBackgroundOrange =
+      AppColors.simulationCardIconBackgroundOrange;
 
   /// Divider color
-  static const Color dividerColor = Color(0xFFEBEBEB);
+  /// Source: AppColors.gray10
+  static const Color dividerColor = AppColors.gray10;
 
   /// Success banner background color (Light green)
-  static const Color successBannerBackgroundColor = Color(0xFFD7F5DF);
+  /// Source: AppColors.successBannerBackground
+  static const Color successBannerBackgroundColor =
+      AppColors.successBannerBackground;
 
   /// Neutral/80 color (Dark gray)
-  static const Color neutral80 = Color(0xFF2F2D2E);
+  /// Source: AppColors.neutral80
+  static const Color neutral80 = AppColors.neutral80;
 
   /// Neutral/50 color (Medium gray)
-  static const Color neutral50 = Color(0xFF464445);
+  /// Source: AppColors.neutral50
+  static const Color neutral50 = AppColors.neutral50;
 
   /// Warning color (Orange)
-  static const Color warningColor = Color(0xFFFDBA74);
+  /// Source: AppColors.warning
+  static const Color warningColor = AppColors.warning;
 
   /// Action chip background (Light gray)
-  static const Color actionChipBackground = Color(0xFFF7F7F7);
+  /// Source: AppColors.actionChipBackground
+  static const Color actionChipBackground = AppColors.actionChipBackground;
 
   /// Light background gray
-  static const Color lightBackgroundGray = Color(0xFFF4F4F4);
+  /// Source: AppColors.lightBackgroundGray
+  static const Color lightBackgroundGray = AppColors.lightBackgroundGray;
 
   /// Light background gray variant
-  static const Color lightBackgroundGrayAlt = Color(0xFFF4F4F6);
+  /// Source: AppColors.lightBackgroundGrayAlt
+  static const Color lightBackgroundGrayAlt = AppColors.lightBackgroundGrayAlt;
 
   /// Blue background variant
-  static const Color blueBackground = Color(0xFFE6ECFF);
+  /// Source: AppColors.blueBackground
+  static const Color blueBackground = AppColors.blueBackground;
 
   /// Light blue background
-  static const Color lightBlueBackground = Color(0xFFE3F2FD);
+  /// Source: AppColors.lightBlueBackground
+  static const Color lightBlueBackground = AppColors.lightBlueBackground;
 
   /// Border gray variant
-  static const Color borderGrayAlt = Color(0xFFE3E3E3);
+  /// Source: AppColors.gray20
+  static const Color borderGrayAlt = AppColors.gray20;
 
   /// Disabled text color variant
-  static const Color disabledTextColorAlt = Color(0xFF6D6D6D);
+  /// Source: AppColors.gray70
+  static const Color disabledTextColorAlt = AppColors.gray70;
 
   /// Blue accent color
-  static const Color blueAccent = Color(0xFF60A5FA);
+  /// Source: AppColors.blueAccent
+  static const Color blueAccent = AppColors.blueAccent;
 
   /// Orange accent color
-  static const Color orangeAccent = Color(0xFFF97316);
+  /// Source: AppColors.orangeAccent
+  static const Color orangeAccent = AppColors.orangeAccent;
 
   /// Green accent color
-  static const Color greenAccent = Color(0xFF22C55E);
+  /// Source: AppColors.greenAccent
+  static const Color greenAccent = AppColors.greenAccent;
 
   /// Dark blue accent color
-  static const Color darkBlueAccent = Color(0xFF1D4ED8);
+  /// Source: AppColors.darkBlueAccent
+  static const Color darkBlueAccent = AppColors.darkBlueAccent;
+
+  // Chart Colors - Loan Analysis
+  /// Chart purple color for Total Cost Needs
+  /// Source: AppColors.chartPurple
+  static const Color chartPurple = AppColors.chartPurple;
+
+  /// Chart blue-500 color for Loan Ceiling Taken
+  /// Source: AppColors.chartBlue500
+  static const Color chartBlue500 = AppColors.chartBlue500;
+
+  /// Chart blue-300 color for Remaining Credit
+  /// Source: AppColors.chartBlue300
+  static const Color chartBlue300 = AppColors.chartBlue300;
 
   // Text Styles
   /// Card title text style (18px, Bold)
@@ -362,7 +482,7 @@ class HarvestCalculatorDesignConstants {
   static const Color searchFieldBorderColor = borderGray;
 
   /// Empty state icon size (64px)
-  static const double emptyStateIconSize = 64;
+  static const double emptyStateIconSize = 129;
 
   /// Empty state primary text style (16px, Bold)
   static const TextStyle emptyStatePrimaryTextStyle = TextStyle(

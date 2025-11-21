@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 
 /// Block filter section for Home screen.
 ///
@@ -38,7 +37,7 @@ class _BlockFilterState extends State<BlockFilter> {
   String? _selectedBlock;
 
   // Design tokens - using shared colors from design system
-  static const Color _gray100 = AppColors.gray100;
+  static const Color _gray100 = HomeDesignConstants.gray100;
 
   // Default values - using feature constants
   static const String _defaultBlock = HomeConstants.defaultBlock;

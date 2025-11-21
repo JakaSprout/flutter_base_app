@@ -1,13 +1,12 @@
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/capacity_recommendation_helper.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/field_builder.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/utils/capacity_recommendation_helper.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/field_builder.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -68,12 +67,21 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                 ReactiveFormConsumer(
                   builder: (context, form, child) {
                     // Listen to commodity and cultivation system changes
-                    final commodity = form.control(
-                      HarvestCalculatorFormControls.commodity,
-                    ).value as String?;
-                    final cultivationSystem = form.control(
-                      HarvestCalculatorFormControls.cultivationSystem,
-                    ).value as String?;
+                    final commodity =
+                        form
+                                .control(
+                                  HarvestCalculatorFormControls.commodity,
+                                )
+                                .value
+                            as String?;
+                    final cultivationSystem =
+                        form
+                                .control(
+                                  HarvestCalculatorFormControls
+                                      .cultivationSystem,
+                                )
+                                .value
+                            as String?;
                     final capacityControl = form.control(
                       HarvestCalculatorFormControls.capacityKgPerM2,
                     );
@@ -82,9 +90,9 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     // Get recommendation when commodity or cultivation system changes
                     final recommendedCapacity =
                         CapacityRecommendationHelper.getRecommendedCapacity(
-                      commodity: commodity,
-                      cultivationSystem: cultivationSystem,
-                    );
+                          commodity: commodity,
+                          cultivationSystem: cultivationSystem,
+                        );
 
                     // Update recommendation if available and not set yet
                     if (recommendedCapacity != null &&
@@ -111,7 +119,8 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     }
 
                     // Check if current value matches recommendation
-                    final isValueChanged = _hasRecommendation &&
+                    final isValueChanged =
+                        _hasRecommendation &&
                         recommendedCapacity != null &&
                         currentCapacity != null &&
                         currentCapacity.isNotEmpty &&
@@ -128,9 +137,9 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                             hint: '5',
                             suffix: Text(
                               'kg/m²',
-                              style: HarvestCalculatorDesignConstants.bodyTextStyle.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: HarvestCalculatorDesignConstants
+                                  .bodyTextStyle
+                                  .copyWith(fontWeight: FontWeight.w700),
                             ),
                             isRequired: true,
                           ),
@@ -140,7 +149,8 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                           formControlName:
                               HarvestCalculatorFormControls.capacityKgPerM2,
                           builder: (context, control, child) {
-                            final errorText = control.errors.isNotEmpty &&
+                            final errorText =
+                                control.errors.isNotEmpty &&
                                     (control.dirty || control.touched)
                                 ? null
                                 : _buildInfoText(
@@ -169,9 +179,9 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                                     Expanded(
                                       child: Text(
                                         errorText,
-                                        style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle.copyWith(
-                                          height: 1.5,
-                                        ),
+                                        style: HarvestCalculatorDesignConstants
+                                            .smallTextSecondaryStyle
+                                            .copyWith(height: 1.5),
                                       ),
                                     ),
                                   ],
@@ -189,13 +199,14 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                                 onPressed: () {
                                   // Restore recommendation value
                                   final capacityControl = form.control(
-                                    HarvestCalculatorFormControls.capacityKgPerM2,
+                                    HarvestCalculatorFormControls
+                                        .capacityKgPerM2,
                                   );
                                   capacityControl.value = recommendedCapacity;
                                 },
                                 icon: ColorFiltered(
                                   colorFilter: const ColorFilter.mode(
-                                    AppColors.gray60,
+                                    HarvestCalculatorDesignConstants.gray60,
                                     BlendMode.srcIn,
                                   ),
                                   child: SvgPicture.asset(
@@ -207,18 +218,22 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                                 label: const Text(
                                   HarvestCalculatorConstants
                                       .buttonReturnToRecommendation,
-                                  style: HarvestCalculatorDesignConstants.bodyTextStyle,
+                                  style: HarvestCalculatorDesignConstants
+                                      .bodyTextStyle,
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 12,
                                   ),
-                                  backgroundColor: AppColors.white,
+                                  backgroundColor:
+                                      HarvestCalculatorDesignConstants.white,
                                   foregroundColor:
-                                      HarvestCalculatorDesignConstants.textPrimary,
+                                      HarvestCalculatorDesignConstants
+                                          .textPrimary,
                                   side: const BorderSide(
-                                    color: AppColors.gray20,
+                                    color:
+                                        HarvestCalculatorDesignConstants.gray20,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),

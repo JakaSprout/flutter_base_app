@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 
 /// Login button widget for login screen.
 class LoginButton extends StatelessWidget {
@@ -34,11 +33,11 @@ class LoginButton extends StatelessWidget {
         onPressed: _isButtonEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: _isButtonEnabled
-              ? AppColors.primary
-              : AppColors.gray20,
+              ? LoginDesignConstants.primary
+              : LoginDesignConstants.gray20,
           foregroundColor: _isButtonEnabled
-              ? AppColors.white
-              : AppColors.gray70,
+              ? LoginDesignConstants.white
+              : LoginDesignConstants.gray70,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
               LoginDesignConstants.inputBorderRadius,
@@ -51,7 +50,7 @@ class LoginButton extends StatelessWidget {
                 height: LoginDesignConstants.loadingIndicatorSize,
                 child: CircularProgressIndicator(
                   strokeWidth: LoginDesignConstants.loadingIndicatorStrokeWidth,
-                  color: AppColors.white,
+                  color: LoginDesignConstants.white,
                 ),
               )
             : Text(
@@ -59,7 +58,7 @@ class LoginButton extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: _isButtonEnabled ? AppColors.white : AppColors.gray70,
+                  color: _isButtonEnabled ? LoginDesignConstants.white : LoginDesignConstants.gray70,
                   fontFamily: AppConstants.fontFamily,
                 ),
               ),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/pond_option.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/pond_option.dart';
 
 /// Modal bottom sheet for selecting a registered pond.
 class SelectRegisteredPondModal extends StatefulWidget {
@@ -96,7 +95,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: SafeArea(
@@ -112,7 +111,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.gray20,
+                  color: HarvestCalculatorDesignConstants.gray20,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -148,7 +147,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                     icon: const Icon(
                       Icons.close,
                       size: 20,
-                      color: AppColors.gray60,
+                      color: HarvestCalculatorDesignConstants.gray60,
                     ),
                   ),
                 ],
@@ -170,7 +169,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                       child: Icon(
                         Icons.search,
                         size: 20,
-                        color: AppColors.gray60,
+                        color: HarvestCalculatorDesignConstants.gray60,
                       ),
                     ),
                     prefixIconConstraints: const BoxConstraints(
@@ -179,19 +178,19 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppColors.gray20),
+                      borderSide: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppColors.gray20),
+                      borderSide: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppColors.gray20),
+                      borderSide: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
                     ),
                     disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppColors.gray20),
+                      borderSide: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -233,7 +232,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                 ),
               ),
             ),
-            const Divider(height: 1, thickness: 1, color: AppColors.gray20),
+            const Divider(height: 1, thickness: 1, color: HarvestCalculatorDesignConstants.gray20),
             // Save button
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -247,7 +246,7 @@ class _SelectRegisteredPondModalState extends State<SelectRegisteredPondModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           HarvestCalculatorDesignConstants.primaryBlue,
-                      foregroundColor: AppColors.white,
+                      foregroundColor: HarvestCalculatorDesignConstants.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -298,12 +297,12 @@ class _RegisteredPondTile extends StatelessWidget {
             color: isSelected
                 ? HarvestCalculatorDesignConstants
                       .simulationCardIconBackgroundBlue
-                : AppColors.white,
+                : HarvestCalculatorDesignConstants.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected
                   ? HarvestCalculatorDesignConstants.primaryBlue
-                  : AppColors.gray20,
+                  : HarvestCalculatorDesignConstants.gray20,
               width: 1.5,
             ),
           ),
@@ -333,7 +332,7 @@ class _RegisteredPondTile extends StatelessWidget {
                     : Icons.radio_button_off,
                 color: isSelected
                     ? HarvestCalculatorDesignConstants.primaryBlue
-                    : AppColors.gray40,
+                    : HarvestCalculatorDesignConstants.gray40,
               ),
             ],
           ),

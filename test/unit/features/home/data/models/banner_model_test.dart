@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/home/data/models/banner_model.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_entity.dart';
+import 'package:app_mobile_afms/features/home/data/models/banner_model.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

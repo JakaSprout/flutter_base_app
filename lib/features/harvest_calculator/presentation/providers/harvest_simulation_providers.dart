@@ -1,8 +1,8 @@
-import 'package:flutter_base_app/features/harvest_calculator/data/repositories/harvest_simulation_repository_impl.dart';
-import 'package:flutter_base_app/features/harvest_calculator/domain/repositories/harvest_simulation_repository.dart';
-import 'package:flutter_base_app/features/harvest_calculator/domain/usecases/calculate_simulation_results_usecase.dart';
-import 'package:flutter_base_app/features/harvest_calculator/domain/usecases/get_saved_simulations_usecase.dart';
-import 'package:flutter_base_app/features/harvest_calculator/domain/usecases/save_simulation_usecase.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/data/repositories/harvest_simulation_repository_impl.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/repositories/harvest_simulation_repository.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/usecases/calculate_simulation_results_usecase.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/usecases/get_saved_simulations_usecase.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/usecases/save_simulation_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'harvest_simulation_providers.g.dart';

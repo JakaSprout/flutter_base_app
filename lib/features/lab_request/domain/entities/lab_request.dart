@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/lab_request/domain/entities/anamnesa_type.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/testing_type.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/anamnesa_type.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/testing_type.dart';
 
 /// Lab request entity (domain layer).
 ///

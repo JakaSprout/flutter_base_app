@@ -388,6 +388,22 @@ class HarvestCalculatorConstants {
   static const String labelLTVHighRisk = 'Resiko Tinggi (>80%)';
   static const String messageLTVHealthy =
       'Nilai LTV petani sebesar {value}% mencerminkan rasio yang sehat dan berada dalam batas aman.';
+  static const String messageLTVHealthyPrefix = 'Nilai LTV petani sebesar ';
+  static const String messageLTVHealthySuffix =
+      ' mencerminkan rasio yang sehat dan berada dalam batas aman.';
+  static const String titleLTVInfo = 'Penjelasan LTV';
+  static const String descriptionLTV =
+      'LTV atau Loan to Value adalah rasio pinjaman terhadap nilai aset. Aset disini merupakan Potensi Panen. Jadi artian serapannya merupakan: Rasio Pinjaman Terhadap Potensi Hasil Panen';
+  
+  // LTV Risk Thresholds
+  static const double ltvIdealThreshold = 70.0;
+  static const double ltvWarningMin = 71.0;
+  static const double ltvWarningMax = 79.0;
+  
+  // LTV Risk Status Labels
+  static const String ltvRiskStatusIdeal = 'Ideal';
+  static const String ltvRiskStatusWarning = 'Waspada';
+  static const String ltvRiskStatusHigh = 'Resiko Tinggi';
 
   // Agent Mode - Metrics
   static const String metricHarvestGuaranteePotential =

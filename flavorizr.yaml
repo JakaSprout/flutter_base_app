@@ -3,20 +3,20 @@ flavors:
     app:
       name: "Flutter Base App Dev"
     android:
-      applicationId: "com.japfa.flutter_base_app.dev"
+      applicationId: "stp.app.afms.dev"
     ios:
-      bundleId: "com.japfa.flutterBaseApp.dev"
+      bundleId: "stp.app.afms.dev"
   staging:
     app:
       name: "Flutter Base App Staging"
     android:
-      applicationId: "com.japfa.flutter_base_app.staging"
+      applicationId: "stp.app.afms.staging"
     ios:
-      bundleId: "com.japfa.flutterBaseApp.staging"
+      bundleId: "stp.app.afms.staging"
   prod:
     app:
       name: "Flutter Base App"
     android:
-      applicationId: "com.japfa.flutter_base_app"
+      applicationId: "stp.app.afms"
     ios:
-      bundleId: "com.japfa.flutterBaseApp"
+      bundleId: "stp.app.afms"

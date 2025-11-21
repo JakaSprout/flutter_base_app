@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +15,7 @@ class SelectSimulationTypeModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: SafeArea(
@@ -32,7 +31,7 @@ class SelectSimulationTypeModal extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.gray20,
+                  color: HarvestCalculatorDesignConstants.gray20,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -52,7 +51,7 @@ class SelectSimulationTypeModal extends StatelessWidget {
                   IconButton(
                     icon: const Icon(
                       Icons.close,
-                      color: AppColors.gray60,
+                      color: HarvestCalculatorDesignConstants.gray60,
                       size: 20,
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -135,9 +134,9 @@ class _SimulationTypeOption extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: HarvestCalculatorDesignConstants.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.gray20),
+          border: Border.all(color: HarvestCalculatorDesignConstants.gray20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -149,8 +148,8 @@ class _SimulationTypeOption extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
-          splashColor: AppColors.gray20.withOpacity(0.3),
-          highlightColor: AppColors.gray20.withOpacity(0.1),
+          splashColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.3),
+          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.1),
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -190,7 +189,7 @@ class _SimulationTypeOption extends StatelessWidget {
                 // Arrow icon
                 const Icon(
                   Icons.chevron_right,
-                  color: AppColors.gray60,
+                  color: HarvestCalculatorDesignConstants.gray60,
                   size: 20,
                 ),
               ],

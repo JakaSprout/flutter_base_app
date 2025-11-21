@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for BannerSection.
@@ -72,7 +72,7 @@ class BannerSectionShimmer extends StatelessWidget {
                 height: _indicatorSize,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.gray20,
+                  color: HomeDesignConstants.gray20,
                 ),
               ),
             ),
@@ -86,14 +86,14 @@ class BannerSectionShimmer extends StatelessWidget {
   Widget _buildCardShimmer() {
     return Shimmer(
       duration: const Duration(seconds: 1),
-      color: AppColors.primary20,
+      color: HomeDesignConstants.primary20,
       colorOpacity: 0.35,
       child: Container(
         height: _cardHeight,
         decoration: BoxDecoration(
-          color: AppColors.gray05,
+          color: HomeDesignConstants.gray05,
           borderRadius: BorderRadius.circular(_borderRadius),
-          border: Border.all(color: AppColors.gray20),
+          border: Border.all(color: HomeDesignConstants.gray20),
         ),
         padding: const EdgeInsets.all(_padding),
         child: Row(
@@ -103,7 +103,7 @@ class BannerSectionShimmer extends StatelessWidget {
               width: _imageWidth,
               height: _imageHeight,
               decoration: BoxDecoration(
-                color: AppColors.gray20,
+                color: HomeDesignConstants.gray20,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -120,7 +120,7 @@ class BannerSectionShimmer extends StatelessWidget {
                     width: _titleWidth,
                     height: _titleHeight,
                     decoration: BoxDecoration(
-                      color: AppColors.gray20,
+                      color: HomeDesignConstants.gray20,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -130,7 +130,7 @@ class BannerSectionShimmer extends StatelessWidget {
                     width: _descriptionWidth,
                     height: _descriptionHeight,
                     decoration: BoxDecoration(
-                      color: AppColors.gray20,
+                      color: HomeDesignConstants.gray20,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

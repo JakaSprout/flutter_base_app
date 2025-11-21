@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.flutter_base_app"
+    namespace = "stp.app.afms"
     // Compile SDK: Must be >= targetSdk
     // API 36 = Android 15+ (required by some plugins like path_provider_android)
     // API 35 = Android 15 (required by Google Play starting Nov 2025)
@@ -28,8 +28,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.flutter_base_app"
+        // Application ID will be overridden by flavorizr.gradle.kts for each flavor
+        applicationId = "stp.app.afms"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         

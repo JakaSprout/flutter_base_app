@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/harvest_calculator/domain/entities/simulation_chart_data.dart';
-import 'package:flutter_base_app/features/harvest_calculator/domain/entities/simulation_table_data.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_chart_data.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_table_data.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'harvest_simulation.freezed.dart';

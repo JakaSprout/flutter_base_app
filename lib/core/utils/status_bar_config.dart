@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 
 /// Utility class for configuring system status bar based on theme.
 ///

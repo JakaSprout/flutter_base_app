@@ -1,10 +1,10 @@
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
-import 'package:flutter_base_app/core/di/providers/connectivity_provider.dart';
-import 'package:flutter_base_app/core/di/providers/secure_storage_provider.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/models/sync_status.dart';
-import 'package:flutter_base_app/core/sync/providers/sync_queue_provider.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/di/providers/connectivity_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_status.dart';
+import 'package:app_mobile_afms/core/sync/providers/sync_queue_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
 
 /// Form section widget.
 ///

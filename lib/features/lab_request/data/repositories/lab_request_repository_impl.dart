@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
-import 'package:flutter_base_app/features/lab_request/data/models/lab_request_model.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request_list_data.dart';
-import 'package:flutter_base_app/features/lab_request/domain/repositories/lab_request_repository.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
+import 'package:app_mobile_afms/features/lab_request/data/models/lab_request_model.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request_list_data.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/repositories/lab_request_repository.dart';
 
 /// Repository implementation for Lab Request feature (data layer).
 ///

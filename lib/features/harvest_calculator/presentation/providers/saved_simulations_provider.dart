@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/harvest_calculator/domain/entities/harvest_simulation.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/providers/harvest_simulation_providers.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/harvest_simulation.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/harvest_simulation_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'saved_simulations_provider.g.dart';

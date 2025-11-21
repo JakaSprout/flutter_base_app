@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/network/interceptors/auth_interceptor.dart';
-import 'package:flutter_base_app/core/network/interceptors/error_interceptor.dart';
-import 'package:flutter_base_app/core/network/interceptors/logging_interceptor.dart';
-import 'package:flutter_base_app/core/network/interceptors/retry_interceptor.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/network/interceptors/auth_interceptor.dart';
+import 'package:app_mobile_afms/core/network/interceptors/error_interceptor.dart';
+import 'package:app_mobile_afms/core/network/interceptors/logging_interceptor.dart';
+import 'package:app_mobile_afms/core/network/interceptors/retry_interceptor.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Dio client setup with interceptors.

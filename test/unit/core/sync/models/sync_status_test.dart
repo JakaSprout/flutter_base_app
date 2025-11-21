@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/core/sync/models/sync_status.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

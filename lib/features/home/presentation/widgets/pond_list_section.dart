@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_item.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/pond_list_item.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pond List section for Home screen.
@@ -53,7 +52,7 @@ class PondListSection extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontSize: HomeDesignConstants.pondListTitleFontSize,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.gray100,
+                    color: HomeDesignConstants.gray100,
                     fontFamily: AppConstants.fontFamily,
                     height: HomeDesignConstants.pondListLineHeight,
                   ),
@@ -67,7 +66,7 @@ class PondListSection extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontSize: HomeDesignConstants.pondListCountFontSize,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.secondary,
+                    color: HomeDesignConstants.secondary,
                     fontFamily: AppConstants.fontFamily,
                     height: HomeDesignConstants.pondListLineHeight,
                   ),
@@ -97,7 +96,7 @@ class PondListSection extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontSize: HomeDesignConstants.pondListSeeAllFontSize,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.secondary,
+                      color: HomeDesignConstants.secondary,
                       fontFamily: AppConstants.fontFamily,
                       height: HomeDesignConstants.pondListLineHeight,
                     ),

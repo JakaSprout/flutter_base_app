@@ -1,7 +1,7 @@
-import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
-import 'package:flutter_base_app/core/di/providers/secure_storage_provider.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/services/sync_service.dart';
+import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/services/sync_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sync_queue_provider.g.dart';

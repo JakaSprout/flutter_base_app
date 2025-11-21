@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/home/domain/entities/input_data_item_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/input_data_item_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'input_data_item_model.freezed.dart';

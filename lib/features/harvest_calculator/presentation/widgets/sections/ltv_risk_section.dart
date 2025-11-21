@@ -1,11 +1,12 @@
+import 'package:app_mobile_afms/design_system/components/banners/stp_status_banner.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/ltv_info_bottom_sheet.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/banners/stp_status_banner.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Section displaying LTV (Loan-to-Value) risk assessment with gauge chart.
 class LTVRiskSection extends StatelessWidget {
@@ -17,55 +18,87 @@ class LTVRiskSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIdeal = ltvPercentage < 70;
-    final isWarning = ltvPercentage >= 71 && ltvPercentage <= 79;
-
-    String riskStatus;
-    Color riskColor;
-    Color statusTextColor;
-    if (isIdeal) {
-      riskStatus = 'Ideal';
-      riskColor = AppColors.success;
-      statusTextColor = AppColors.black; // Black for "Ideal" text
-    } else if (isWarning) {
-      riskStatus = 'Waspada';
-      riskColor = const Color(0xFFFFA500); // Orange for warning
-      statusTextColor = riskColor;
-    } else {
-      riskStatus = 'Resiko Tinggi';
-      riskColor = AppColors.error;
-      statusTextColor = riskColor;
-    }
+    final riskData = _calculateRiskData(ltvPercentage);
 
     return SectionFieldPadding.wrapSection(
-      child: FormSection(
-        title: HarvestCalculatorConstants.sectionLoanRiskLTV,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Custom header with info icon
+          Row(
+            children: [
+              // Orange section indicator
+              SvgPicture.asset(
+                Assets.icons.general.sectionIndicator,
+                width: HarvestCalculatorDesignConstants.sectionIndicatorWidth,
+                height: HarvestCalculatorDesignConstants.sectionIndicatorHeight,
+              ),
+              const SizedBox(
+                width: HarvestCalculatorDesignConstants.sectionHeaderGap,
+              ),
+              // Title
+              Text(
+                HarvestCalculatorConstants.sectionLoanRiskLTV,
+                style: HarvestCalculatorDesignConstants.sectionTitleTextStyle
+                    .copyWith(
+                      fontWeight:
+                          HarvestCalculatorDesignConstants.fontWeightSemibold,
+                      color: HarvestCalculatorDesignConstants.textPrimary,
+                    ),
+              ),
+              const SizedBox(
+                width: HarvestCalculatorDesignConstants.sectionHeaderIconGap,
+              ),
+              // Info icon
+              GestureDetector(
+                onTap: () => _showLTVInfoBottomSheet(context),
+                child: SvgPicture.asset(
+                  Assets.icons.general.signInfo,
+                  width: HarvestCalculatorDesignConstants.infoIconSize,
+                  height: HarvestCalculatorDesignConstants.infoIconSize,
+                  color: HarvestCalculatorDesignConstants.placeholderColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: HarvestCalculatorDesignConstants.sectionHeaderGap,
+          ),
+          // Fields
           SectionFieldPadding.wrap(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Gauge Chart
                 SizedBox(
-                  height: 200,
+                  height: HarvestCalculatorDesignConstants.chartHeight,
                   child: Echarts(
                     option: _buildGaugeChartOption(
                       ltvPercentage,
-                      riskStatus,
-                      riskColor,
-                      statusTextColor,
+                      riskData.status,
+                      riskData.color,
+                      riskData.statusTextColor,
                     ),
                     reloadAfterInit: true,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(
+                  height: HarvestCalculatorDesignConstants.spacing16,
+                ),
                 // Legend with border
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(
+                    HarvestCalculatorDesignConstants.spacing16,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.gray20),
+                    color: HarvestCalculatorDesignConstants.white,
+                    borderRadius: BorderRadius.circular(
+                      HarvestCalculatorDesignConstants
+                          .legendContainerBorderRadius,
+                    ),
+                    border: Border.all(
+                      color: HarvestCalculatorDesignConstants.gray20,
+                    ),
                   ),
                   child: const Column(
                     children: [
@@ -74,22 +107,25 @@ class LTVRiskSection extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _LegendItem(
-                            color: AppColors.success,
+                            color: HarvestCalculatorDesignConstants.success,
                             label: HarvestCalculatorConstants.labelLTVIdeal,
                           ),
                           _LegendItem(
-                            color: Color(0xFFFFA500),
+                            color:
+                                HarvestCalculatorDesignConstants.warningColor,
                             label: HarvestCalculatorConstants.labelLTVWarning,
                           ),
                         ],
                       ),
-                      SizedBox(height: 12),
+                      SizedBox(
+                        height: HarvestCalculatorDesignConstants.spacing12,
+                      ),
                       // Bottom row: Resiko Tinggi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _LegendItem(
-                            color: AppColors.error,
+                            color: HarvestCalculatorDesignConstants.error,
                             label: HarvestCalculatorConstants.labelLTVHighRisk,
                           ),
                         ],
@@ -97,28 +133,85 @@ class LTVRiskSection extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(
+                  height: HarvestCalculatorDesignConstants.spacing16,
+                ),
                 // Status banner
                 STPStatusBanner(
-                  type: isIdeal
+                  type: riskData.isIdeal
                       ? STPStatusBannerType.success
                       : STPStatusBannerType.info,
-                  child: Text(
-                    HarvestCalculatorConstants.messageLTVHealthy.replaceAll(
-                      '{value}',
-                      ltvPercentage.toStringAsFixed(1),
-                    ),
-                    style: const TextStyle(
-                      fontFamily: 'Open Sans',
-                      fontSize: 12,
-                      height: 18 / 12,
-                      fontWeight: FontWeight.w400,
-                      color: HarvestCalculatorDesignConstants.textPrimary,
-                    ),
-                  ),
+                  child: _buildLTVStatusMessage(ltvPercentage),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Calculates risk data based on LTV percentage.
+  _LTVRiskData _calculateRiskData(double ltvPercentage) {
+    final isIdeal =
+        ltvPercentage < HarvestCalculatorConstants.ltvIdealThreshold;
+    final isWarning =
+        ltvPercentage >= HarvestCalculatorConstants.ltvWarningMin &&
+        ltvPercentage <= HarvestCalculatorConstants.ltvWarningMax;
+
+    if (isIdeal) {
+      return const _LTVRiskData(
+        status: HarvestCalculatorConstants.ltvRiskStatusIdeal,
+        color: HarvestCalculatorDesignConstants.success,
+        statusTextColor: HarvestCalculatorDesignConstants.black,
+        isIdeal: true,
+      );
+    } else if (isWarning) {
+      return const _LTVRiskData(
+        status: HarvestCalculatorConstants.ltvRiskStatusWarning,
+        color: HarvestCalculatorDesignConstants.warningColor,
+        statusTextColor: HarvestCalculatorDesignConstants.warningColor,
+        isIdeal: false,
+      );
+    } else {
+      return const _LTVRiskData(
+        status: HarvestCalculatorConstants.ltvRiskStatusHigh,
+        color: HarvestCalculatorDesignConstants.error,
+        statusTextColor: HarvestCalculatorDesignConstants.error,
+        isIdeal: false,
+      );
+    }
+  }
+
+  /// Shows LTV info bottom sheet.
+  void _showLTVInfoBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const LTVInfoBottomSheet(),
+    );
+  }
+
+  /// Builds LTV status message with formatted percentage.
+  Widget _buildLTVStatusMessage(double ltvPercentage) {
+    return RichText(
+      text: TextSpan(
+        style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
+          height: 18 / HarvestCalculatorDesignConstants.fontSize12,
+          color: HarvestCalculatorDesignConstants.success,
+        ),
+        children: [
+          const TextSpan(
+            text: HarvestCalculatorConstants.messageLTVHealthyPrefix,
+          ),
+          TextSpan(
+            text: '${ltvPercentage.toStringAsFixed(1)}%',
+            style: const TextStyle(
+              fontWeight: HarvestCalculatorDesignConstants.fontWeightBold,
+            ),
+          ),
+          const TextSpan(
+            text: HarvestCalculatorConstants.messageLTVHealthySuffix,
           ),
         ],
       ),
@@ -133,10 +226,11 @@ class LTVRiskSection extends StatelessWidget {
   ) {
     // Convert colors to hex
     final successHex =
-        '#${AppColors.success.value.toRadixString(16).substring(2)}';
+        '#${HarvestCalculatorDesignConstants.success.value.toRadixString(16).substring(2)}';
     final warningHex =
-        '#${const Color(0xFFFFA500).value.toRadixString(16).substring(2)}';
-    final errorHex = '#${AppColors.error.value.toRadixString(16).substring(2)}';
+        '#${HarvestCalculatorDesignConstants.warningColor.value.toRadixString(16).substring(2)}';
+    final errorHex =
+        '#${HarvestCalculatorDesignConstants.error.value.toRadixString(16).substring(2)}';
     final statusTextColorHex =
         '#${statusTextColor.value.toRadixString(16).substring(2)}';
     final textPrimaryHex =
@@ -235,24 +329,36 @@ class _LegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: HarvestCalculatorDesignConstants.legendItemSize,
+          height: HarvestCalculatorDesignConstants.legendItemSize,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(
+              HarvestCalculatorDesignConstants.legendItemBorderRadius,
+            ),
           ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: HarvestCalculatorDesignConstants.legendItemGap),
         Text(
           label,
-          style: const TextStyle(
-            fontFamily: 'Open Sans',
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            color: HarvestCalculatorDesignConstants.textSecondary,
-          ),
+          style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle,
         ),
       ],
     );
   }
+}
+
+/// Internal data class for LTV risk calculation.
+class _LTVRiskData {
+  const _LTVRiskData({
+    required this.status,
+    required this.color,
+    required this.statusTextColor,
+    required this.isIdeal,
+  });
+
+  final String status;
+  final Color color;
+  final Color statusTextColor;
+  final bool isIdeal;
 }

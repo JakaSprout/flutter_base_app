@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base_app/core/utils/status_bar_config.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/banner_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/company_selection_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/dashboard_summary_grid.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/home_header.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/input_data_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/banner_section_shimmer.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/company_selection_shimmer.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/dashboard_summary_shimmer.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/shimmer_loaders/pond_list_shimmer.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/banner_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/company_selection_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/dashboard_summary_grid.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/home_header.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/input_data_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/pond_list_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/banner_section_shimmer.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/company_selection_shimmer.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/dashboard_summary_shimmer.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/pond_list_shimmer.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -58,13 +57,13 @@ class HomeScreen extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: HomeDesignConstants.white,
       body: SafeArea(
         bottom: false, // Don't add bottom safe area
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: StatusBarConfig.getStatusBarStyleForLightBackground(),
         child: ColoredBox(
-          color: AppColors.white,
+          color: HomeDesignConstants.white,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

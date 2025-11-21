@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/banners/stp_status_banner.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/hooks/use_create_simulation_form.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/buttons/create_simulation_bottom_button.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/use_registered_pond_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/shared/conditional_sections_wrapper.dart';
+import 'package:app_mobile_afms/design_system/components/banners/stp_status_banner.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/hooks/use_create_simulation_form.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/buttons/create_simulation_bottom_button.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/use_registered_pond_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/conditional_sections_wrapper.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -60,7 +59,7 @@ class CreateSimulationScreen extends HookWidget {
         : HarvestCalculatorConstants.titleCreateSimulation;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: HarvestCalculatorDesignConstants.white,
       resizeToAvoidBottomInset: false,
       appBar: STPAppBar(title: appBarTitle),
       body: SafeArea(

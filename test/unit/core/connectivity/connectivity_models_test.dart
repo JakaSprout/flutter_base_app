@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

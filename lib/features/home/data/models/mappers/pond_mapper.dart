@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/home/data/models/pond_model.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_entity.dart';
+import 'package:app_mobile_afms/features/home/data/models/pond_model.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_entity.dart';
 
 /// Mapper for converting between pond models and entities.
 class PondMapper {

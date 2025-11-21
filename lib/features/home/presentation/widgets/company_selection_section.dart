@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 
 /// Company Selection section for Home screen.
 ///
@@ -71,7 +70,7 @@ class _CompanySelectionSectionState extends State<CompanySelectionSection> {
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontSize: HomeDesignConstants.companySelectionLabelFontSize,
             fontWeight: FontWeight.w400,
-            color: AppColors.gray100,
+            color: HomeDesignConstants.gray100,
             fontFamily: AppConstants.fontFamily,
             height: HomeDesignConstants.companySelectionLineHeight,
           ),

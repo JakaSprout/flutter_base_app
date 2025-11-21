@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
 
 /// Retry interceptor for Dio that retries failed requests.
 class RetryInterceptor extends Interceptor {

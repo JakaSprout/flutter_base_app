@@ -1,9 +1,8 @@
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_simulation_type_modal.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/select_simulation_type_modal.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
 
 /// Empty state widget when no simulation exists.
 ///
@@ -50,7 +49,8 @@ class EmptySimulationState extends StatelessWidget {
               Text(
                 HarvestCalculatorConstants.emptyStateMessage,
                 textAlign: TextAlign.center,
-                style: HarvestCalculatorDesignConstants.emptyStatePrimaryTextStyle,
+                style:
+                    HarvestCalculatorDesignConstants.emptyStatePrimaryTextStyle,
               ),
               // Gap within text container: 4px
               // Figma: gap: 4px in Text Container
@@ -59,11 +59,12 @@ class EmptySimulationState extends StatelessWidget {
               // Figma: fontSize: 12, fontWeight: 400, lineHeight: 1.5em, textAlign: CENTER
               SizedBox(
                 width: 284,
-                child:                   Text(
-                    HarvestCalculatorConstants.emptyStateSecondaryMessage,
-                    textAlign: TextAlign.center,
-                    style: HarvestCalculatorDesignConstants.emptyStateSecondaryTextStyle,
-                  ),
+                child: Text(
+                  HarvestCalculatorConstants.emptyStateSecondaryMessage,
+                  textAlign: TextAlign.center,
+                  style: HarvestCalculatorDesignConstants
+                      .emptyStateSecondaryTextStyle,
+                ),
               ),
             ],
           ),
@@ -80,16 +81,20 @@ class EmptySimulationState extends StatelessWidget {
               builder: (context) => const SelectSimulationTypeModal(),
             );
           },
-          icon: const Icon(Icons.add, size: 20, color: AppColors.white),
+          icon: const Icon(
+            Icons.add,
+            size: 20,
+            color: HarvestCalculatorDesignConstants.white,
+          ),
           label: Text(
             HarvestCalculatorConstants.buttonSimulasiPanen,
             style: HarvestCalculatorDesignConstants.buttonTextStyle.copyWith(
-              color: AppColors.white,
+              color: HarvestCalculatorDesignConstants.white,
             ),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: HarvestCalculatorDesignConstants.primaryBlue,
-            foregroundColor: AppColors.white,
+            foregroundColor: HarvestCalculatorDesignConstants.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             minimumSize: const Size(0, 48),
             shape: RoundedRectangleBorder(

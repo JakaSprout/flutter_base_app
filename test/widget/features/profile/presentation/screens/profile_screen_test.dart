@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/navigation_constants.dart';
-import 'package:flutter_base_app/features/profile/presentation/screens/profile_screen.dart';
+import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:app_mobile_afms/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';

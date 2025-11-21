@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_base_app/core/error/error_mapper.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/error/error_mapper.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
 
 /// Global error handler for the application.
 class ErrorHandler {

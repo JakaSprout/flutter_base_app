@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart'
+import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart'
     show AuthRemoteDataSourceMock;
 
 /// Mock data for Auth feature.

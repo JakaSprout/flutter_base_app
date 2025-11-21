@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
+import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

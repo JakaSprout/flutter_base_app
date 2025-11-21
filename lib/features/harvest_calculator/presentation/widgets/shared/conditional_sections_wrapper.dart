@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/cultivation_info_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/cycle_type_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/growth_target_agent_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/growth_target_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/pond_capacity_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/price_info_agent_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/price_info_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/cultivation_info_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/cycle_type_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/growth_target_agent_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/growth_target_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/pond_capacity_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/price_info_agent_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/price_info_section.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Wrapper widget for conditional sections that appear after basic info is filled.

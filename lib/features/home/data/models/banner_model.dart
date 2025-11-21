@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/home/domain/entities/banner_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'banner_model.freezed.dart';

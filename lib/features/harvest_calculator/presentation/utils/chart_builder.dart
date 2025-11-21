@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
 
 /// Utility class for building ECharts options.
 class ChartBuilder {

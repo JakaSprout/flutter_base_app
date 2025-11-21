@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/select_commodity_modal.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_commodity_modal.dart';
 import 'package:reactive_forms/reactive_forms.dart' as reactive_forms;
 
 /// Reactive commodity field widget with bottom sheet modal.
@@ -60,7 +59,7 @@ class ReactiveCommodityFieldWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: _labelFontSize,
                 fontWeight: FontWeight.w400,
-                color: AppColors.gray100,
+                color: HarvestCalculatorDesignConstants.gray100,
                 fontFamily: AppConstants.fontFamily,
                 height: _lineHeight,
               ),
@@ -102,8 +101,10 @@ class ReactiveCommodityFieldWidget extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
-                      border: Border.all(color: AppColors.gray20),
+                      color: HarvestCalculatorDesignConstants.white,
+                      border: Border.all(
+                        color: HarvestCalculatorDesignConstants.gray20,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -115,8 +116,8 @@ class ReactiveCommodityFieldWidget extends StatelessWidget {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               color: selectedValue != null
-                                  ? AppColors.gray100
-                                  : AppColors.gray70,
+                                  ? HarvestCalculatorDesignConstants.gray100
+                                  : HarvestCalculatorDesignConstants.gray70,
                               fontFamily: AppConstants.fontFamily,
                               height: 1.4,
                             ),
@@ -127,7 +128,7 @@ class ReactiveCommodityFieldWidget extends StatelessWidget {
                         const Icon(
                           Icons.keyboard_arrow_down,
                           size: 20,
-                          color: AppColors.gray100,
+                          color: HarvestCalculatorDesignConstants.gray100,
                         ),
                       ],
                     ),

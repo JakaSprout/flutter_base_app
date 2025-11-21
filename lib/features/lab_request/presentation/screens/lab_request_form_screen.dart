@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/utils/status_bar_config.dart';
-import 'package:flutter_base_app/core/utils/validators/input_validators.dart';
-import 'package:flutter_base_app/design_system/components/buttons/stp_bottom_action_button.dart';
-import 'package:flutter_base_app/design_system/components/forms/stp_dropdown_form_field.dart';
-import 'package:flutter_base_app/design_system/components/forms/stp_info_banner.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/anamnesa_type.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/testing_type.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_constants.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_design_constants.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/providers/lab_request_provider.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/date_picker_form_field.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/radio_button_group.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/text_area_form_field.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/text_form_field.dart';
+import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
+import 'package:app_mobile_afms/core/utils/validators/input_validators.dart';
+import 'package:app_mobile_afms/design_system/components/buttons/stp_bottom_action_button.dart';
+import 'package:app_mobile_afms/design_system/components/forms/stp_dropdown_form_field.dart';
+import 'package:app_mobile_afms/design_system/components/forms/stp_info_banner.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/anamnesa_type.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/testing_type.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/providers/lab_request_provider.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/date_picker_form_field.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/radio_button_group.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/text_area_form_field.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/text_form_field.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -344,7 +343,7 @@ class LabRequestFormScreen extends HookConsumerWidget {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: AppColors.white,
+                          color: LabRequestDesignConstants.white,
                         ),
                       )
                     : null,

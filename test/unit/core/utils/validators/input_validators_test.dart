@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/core/utils/validators/input_validators.dart';
+import 'package:app_mobile_afms/core/utils/validators/input_validators.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

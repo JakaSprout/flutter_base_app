@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_form_controls.dart';
-import 'package:flutter_base_app/features/auth/presentation/validators/phone_format_validator.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
+import 'package:app_mobile_afms/features/auth/presentation/validators/phone_format_validator.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 

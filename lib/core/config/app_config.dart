@@ -51,6 +51,8 @@ class AppConfig {
     apiBaseUrl: 'https://0c6e6759950b.ngrok-free.app/',
     enableLogging: true,
     enableCrashReporting: false,
+    useMockApi: true,
+    mockApiDelayMs: 1000,
   );
 
   /// Staging configuration

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 
 /// Constants for Home feature.
 ///
@@ -107,14 +107,14 @@ class HomeConstants {
         title: 'Kalkulator Panen',
         description: 'Hitung potensi hasil panen Kamu.',
         imagePath: 'assets/images/kalkulator-panen.jpg',
-        backgroundColor: AppColors.white,
+        backgroundColor: HomeDesignConstants.white,
       ),
       HarvestCalculatorCardData(
         id: 'lab_analysis',
         title: 'Analisis Lab',
         description: 'Lakukan analisis laboratorium untuk kualitas air.',
         imagePath: 'assets/images/analisis-lab.jpg',
-        backgroundColor: AppColors.white,
+        backgroundColor: HomeDesignConstants.white,
       ),
     ];
   }

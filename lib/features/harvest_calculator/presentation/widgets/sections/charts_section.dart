@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/biomass_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/sections/feed_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/biomass_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/feed_section.dart';
 
 /// Section containing biomass and feed charts.
 class ChartsSection extends StatelessWidget {

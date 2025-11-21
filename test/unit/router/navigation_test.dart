@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/app.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/config/navigation_constants.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_bottom_nav_bar.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
-import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
-import 'package:flutter_base_app/router/app_router.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/app.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_bottom_nav_bar.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/features/home/presentation/screens/home_screen.dart';
+import 'package:app_mobile_afms/router/app_router.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

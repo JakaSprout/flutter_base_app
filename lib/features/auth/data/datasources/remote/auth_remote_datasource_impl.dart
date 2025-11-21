@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_base_app/core/config/api_constants.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/core/network/models/api_error_response.dart';
-import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/core/config/api_constants.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/network/models/api_error_response.dart';
+import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Real implementation of [AuthRemoteDataSource].

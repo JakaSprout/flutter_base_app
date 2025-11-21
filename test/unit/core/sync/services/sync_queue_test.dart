@@ -1,6 +1,6 @@
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/services/sync_queue.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/services/sync_queue.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

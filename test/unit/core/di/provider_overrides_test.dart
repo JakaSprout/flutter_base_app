@@ -1,10 +1,10 @@
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/database/app_database.dart';
-import 'package:flutter_base_app/core/di/provider_overrides.dart';
-import 'package:flutter_base_app/core/di/providers/database_provider.dart';
-import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
-import 'package:flutter_base_app/core/di/providers/secure_storage_provider.dart';
-import 'package:flutter_base_app/core/network/dio_client.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/database/app_database.dart';
+import 'package:app_mobile_afms/core/di/provider_overrides.dart';
+import 'package:app_mobile_afms/core/di/providers/database_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
+import 'package:app_mobile_afms/core/network/dio_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

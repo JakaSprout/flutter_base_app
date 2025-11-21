@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 
 /// Design constants for Login screen.
 ///
@@ -46,7 +47,28 @@ class LoginDesignConstants {
 
   // Colors
   /// Background blue color (Primary color)
-  static const Color backgroundBlue = Color(0xFF122E7A);
+  /// Source: AppColors.primary
+  static const Color backgroundBlue = AppColors.primary;
+
+  /// Primary color
+  /// Source: AppColors.primary
+  static const Color primary = AppColors.primary;
+
+  /// White color
+  /// Source: AppColors.white
+  static const Color white = AppColors.white;
+
+  /// Gray 100 color
+  /// Source: AppColors.gray100
+  static const Color gray100 = AppColors.gray100;
+
+  /// Gray 70 color
+  /// Source: AppColors.gray70
+  static const Color gray70 = AppColors.gray70;
+
+  /// Gray 20 color
+  /// Source: AppColors.gray20
+  static const Color gray20 = AppColors.gray20;
 
   // Input Padding
   /// Input content padding horizontal

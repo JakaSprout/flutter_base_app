@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 
 /// Card container widget for login screen.
 class LoginCard extends StatelessWidget {
@@ -18,7 +17,7 @@ class LoginCard extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(LoginDesignConstants.cardPadding),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: LoginDesignConstants.white,
         borderRadius: BorderRadius.circular(
           LoginDesignConstants.cardBorderRadius,
         ),

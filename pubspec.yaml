@@ -1,4 +1,4 @@
-name: flutter_base_app
+name: app_mobile_afms
 description: "Flutter offline-first app with Riverpod + Hooks, Clean Architecture, and Material Design 3"
 publish_to: "none"
 version: 0.1.0

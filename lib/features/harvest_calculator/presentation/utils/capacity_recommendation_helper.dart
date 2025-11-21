@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 
 /// Helper class for capacity recommendations based on commodity and cultivation system.
 class CapacityRecommendationHelper {

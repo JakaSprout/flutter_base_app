@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 
 /// Modal bottom sheet for selecting commodity.
 class SelectCommodityModal extends StatefulWidget {
@@ -38,7 +37,7 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: SafeArea(
@@ -54,7 +53,7 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.gray20,
+                  color: HarvestCalculatorDesignConstants.gray20,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -84,7 +83,7 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
                   IconButton(
                     icon: const Icon(
                       Icons.close,
-                      color: AppColors.gray60,
+                      color: HarvestCalculatorDesignConstants.gray60,
                       size: 20,
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -146,7 +145,7 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
             // Spacing before divider
             const SizedBox(height: 20),
             // Divider above button
-            const Divider(height: 1, thickness: 1, color: AppColors.gray20),
+            const Divider(height: 1, thickness: 1, color: HarvestCalculatorDesignConstants.gray20),
             // Save button without shadow
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -165,7 +164,7 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           HarvestCalculatorDesignConstants.primaryBlue,
-                      foregroundColor: AppColors.white,
+                      foregroundColor: HarvestCalculatorDesignConstants.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -219,19 +218,19 @@ class _CommodityOption extends StatelessWidget {
           color: isSelected
               ? HarvestCalculatorDesignConstants
                     .simulationCardIconBackgroundBlue
-              : AppColors.white,
+              : HarvestCalculatorDesignConstants.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected
                 ? HarvestCalculatorDesignConstants.primaryBlue
-                : AppColors.gray20,
+                : HarvestCalculatorDesignConstants.gray20,
           ),
         ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
-          splashColor: AppColors.gray20.withOpacity(0.3),
-          highlightColor: AppColors.gray20.withOpacity(0.1),
+          splashColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.3),
+          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.1),
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -257,7 +256,7 @@ class _CommodityOption extends StatelessWidget {
                     if (states.contains(WidgetState.selected)) {
                       return HarvestCalculatorDesignConstants.primaryBlue;
                     }
-                    return AppColors.gray20;
+                    return HarvestCalculatorDesignConstants.gray20;
                   }),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,

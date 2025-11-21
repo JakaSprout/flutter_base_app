@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/home/domain/entities/header_data.dart';
-import 'package:flutter_base_app/features/home/domain/repositories/home_repository.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
+import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
 
 /// Use case for getting header data.
 class GetHeaderData {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for CompanySelectionSection.
@@ -26,13 +26,13 @@ class CompanySelectionShimmer extends StatelessWidget {
         // Label placeholder
         Shimmer(
           duration: const Duration(seconds: 1),
-          color: AppColors.primary20,
+          color: HomeDesignConstants.primary20,
           colorOpacity: 0.35,
           child: Container(
             width: 60, // Approximate label width
             height: _labelHeight,
             decoration: BoxDecoration(
-              color: AppColors.gray05,
+              color: HomeDesignConstants.gray05,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -41,15 +41,15 @@ class CompanySelectionShimmer extends StatelessWidget {
         // Dropdown placeholder
         Shimmer(
           duration: const Duration(seconds: 1),
-          color: AppColors.primary20,
+          color: HomeDesignConstants.primary20,
           colorOpacity: 0.35,
           child: Container(
             width: double.infinity,
             height: _dropdownHeight,
             decoration: BoxDecoration(
-              color: AppColors.gray05,
+              color: HomeDesignConstants.gray05,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.gray20),
+              border: Border.all(color: HomeDesignConstants.gray20),
             ),
           ),
         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:go_router/go_router.dart';
 
 /// Navigation service for type-safe navigation.

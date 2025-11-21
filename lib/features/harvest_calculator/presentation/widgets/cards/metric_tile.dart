@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Metric tile widget displaying key performance indicators.
@@ -37,7 +36,7 @@ class MetricTile extends StatelessWidget {
         HarvestCalculatorDesignConstants.cardPadding,
       ),
       decoration: BoxDecoration(
-        color: AppColors.gray05,
+        color: HarvestCalculatorDesignConstants.gray05,
         borderRadius: BorderRadius.circular(
           HarvestCalculatorDesignConstants.cardBorderRadius,
         ),

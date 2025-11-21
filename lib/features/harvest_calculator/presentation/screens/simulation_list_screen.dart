@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/select_simulation_type_modal.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/providers/saved_simulations_provider.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/shared/simulations_content.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/states/empty_simulations_content.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_simulation_type_modal.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/saved_simulations_provider.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/simulations_content.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/states/empty_simulations_content.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// List screen for Harvest Calculator feature.
@@ -26,7 +26,7 @@ class SimulationListScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: HarvestCalculatorDesignConstants.white,
       appBar: STPAppBar(
         title: HarvestCalculatorConstants.titleHarvestCalculator,
         actions: hasSimulations

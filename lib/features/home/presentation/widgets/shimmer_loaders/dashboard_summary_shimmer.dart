@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for DashboardSummaryGrid.
@@ -56,7 +56,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
   Widget _buildCardShimmer() {
     return Shimmer(
       duration: const Duration(seconds: 1),
-      color: AppColors.primary20,
+      color: HomeDesignConstants.primary20,
       colorOpacity: 0.35,
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -64,7 +64,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
           horizontal: _cardPaddingHorizontal,
         ),
         decoration: BoxDecoration(
-          color: AppColors.gray05,
+          color: HomeDesignConstants.gray05,
           borderRadius: BorderRadius.circular(_borderRadius),
         ),
         child: Column(
@@ -79,7 +79,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
                   width: _iconSize,
                   height: _iconSize,
                   decoration: BoxDecoration(
-                    color: AppColors.gray20,
+                    color: HomeDesignConstants.gray20,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -89,7 +89,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
                   width: _titleWidth,
                   height: _titleHeight,
                   decoration: BoxDecoration(
-                    color: AppColors.gray20,
+                    color: HomeDesignConstants.gray20,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -106,7 +106,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
                   width: _valueWidth,
                   height: _valueHeight,
                   decoration: BoxDecoration(
-                    color: AppColors.gray20,
+                    color: HomeDesignConstants.gray20,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -116,7 +116,7 @@ class DashboardSummaryShimmer extends StatelessWidget {
                   width: _subtitleWidth,
                   height: _subtitleHeight,
                   decoration: BoxDecoration(
-                    color: AppColors.gray20,
+                    color: HomeDesignConstants.gray20,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),

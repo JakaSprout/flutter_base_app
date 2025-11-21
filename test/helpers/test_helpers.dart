@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/di/provider_overrides.dart';
-import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/di/provider_overrides.dart';
+import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Test helpers for common test setup.

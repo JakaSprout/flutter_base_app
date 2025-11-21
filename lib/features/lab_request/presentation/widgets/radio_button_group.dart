@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
 
 /// Radio button group widget for lab request form.
 class LabRequestRadioButtonGroup<T> extends StatelessWidget {
@@ -45,7 +44,7 @@ class LabRequestRadioButtonGroup<T> extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: _labelFontSize,
                 fontWeight: FontWeight.w400,
-                color: AppColors.gray100,
+                color: LabRequestDesignConstants.gray100,
                 fontFamily: AppConstants.fontFamily,
                 height: _lineHeight,
               ),
@@ -62,7 +61,7 @@ class LabRequestRadioButtonGroup<T> extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: _optionFontSize,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.gray100,
+                      color: LabRequestDesignConstants.gray100,
                       fontFamily: AppConstants.fontFamily,
                       height: _lineHeight,
                     ),

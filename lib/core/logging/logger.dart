@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 /// Application logger using Talker.

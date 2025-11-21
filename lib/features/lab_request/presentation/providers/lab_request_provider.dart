@@ -1,12 +1,12 @@
-import 'package:flutter_base_app/core/config/app_config.dart' show AppConfig;
-import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
-import 'package:flutter_base_app/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
-import 'package:flutter_base_app/features/lab_request/data/repositories/lab_request_repository_impl.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request_list_data.dart';
-import 'package:flutter_base_app/features/lab_request/domain/repositories/lab_request_repository.dart';
-import 'package:flutter_base_app/features/lab_request/domain/usecases/create_lab_request.dart';
-import 'package:flutter_base_app/features/lab_request/domain/usecases/get_lab_request_list.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart' show AppConfig;
+import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
+import 'package:app_mobile_afms/features/lab_request/data/repositories/lab_request_repository_impl.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request_list_data.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/repositories/lab_request_repository.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/usecases/create_lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/usecases/get_lab_request_list.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lab_request_provider.g.dart';

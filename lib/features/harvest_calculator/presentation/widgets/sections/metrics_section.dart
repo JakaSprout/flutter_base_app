@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/cards/metric_tile.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/cards/summary_card.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/metric_tile.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/summary_card.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:intl/intl.dart';
 
 /// Section displaying simulation metrics including summary and performance tiles.
@@ -67,7 +66,7 @@ class MetricsSection extends StatelessWidget {
             title: HarvestCalculatorConstants.metricPotentialRevenue,
             value: currencyFormat.format(potentialRevenue),
             subtitle: 'Biomassa: ${weightFormat.format(biomassKg)} kg',
-            indicatorColor: AppColors.success,
+            indicatorColor: HarvestCalculatorDesignConstants.success,
             iconAsset: Assets.icons.general.paymentPositive,
           ),
           const SizedBox(
@@ -77,7 +76,7 @@ class MetricsSection extends StatelessWidget {
             title: HarvestCalculatorConstants.metricPotentialExpenditure,
             value: currencyFormat.format(potentialFeedCost),
             subtitle: 'Pakan: ${weightFormat.format(feedKg)} kg',
-            indicatorColor: AppColors.error,
+            indicatorColor: HarvestCalculatorDesignConstants.error,
             iconAsset: Assets.icons.general.paymentNegative,
           ),
         ],

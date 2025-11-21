@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_response_model.freezed.dart';

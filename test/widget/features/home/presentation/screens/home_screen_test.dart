@@ -1,21 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/company_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/dashboard_summary_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/header_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/input_data_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_entity.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_list_data.dart';
-import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
-import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/banner_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/company_selection_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/dashboard_summary_grid.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/home_header.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/input_data_section.dart';
-import 'package:flutter_base_app/features/home/presentation/widgets/pond_list_section.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/input_data_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_list_data.dart';
+import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
+import 'package:app_mobile_afms/features/home/presentation/screens/home_screen.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/banner_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/company_selection_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/dashboard_summary_grid.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/home_header.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/input_data_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/pond_list_section.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';

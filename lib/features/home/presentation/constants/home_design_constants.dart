@@ -1,5 +1,5 @@
+import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 
 /// Design constants for Home feature.
 ///
@@ -33,7 +33,8 @@ class HomeDesignConstants {
   static const double headerBadgeFontSize = 10;
 
   /// Header badge color (red)
-  static const Color headerBadgeColor = Color(0xFFD84639);
+  /// Source: AppColors.error
+  static const Color headerBadgeColor = AppColors.error;
 
   /// Header tap area padding
   static const double headerTapPadding = 8;
@@ -85,10 +86,12 @@ class HomeDesignConstants {
   static const double bannerCardDescriptionLineHeight = 1.5;
 
   /// Banner card title color (Neutral/80)
-  static const Color bannerCardTitleColor = Color(0xFF2F2D2E);
+  /// Source: AppColors.neutral80
+  static const Color bannerCardTitleColor = AppColors.neutral80;
 
   /// Banner card description color (Neutral/50)
-  static const Color bannerCardDescriptionColor = Color(0xFF464445);
+  /// Source: AppColors.neutral50
+  static const Color bannerCardDescriptionColor = AppColors.neutral50;
 
   /// Banner card border color
   static const Color bannerCardBorderColor = AppColors.gray20;
@@ -195,7 +198,8 @@ class HomeDesignConstants {
   static const double dashboardTogglePaddingVertical = 4;
 
   /// Dashboard secondary color
-  static const Color dashboardSecondaryColor = Color(0xFFFA6619);
+  /// Source: AppColors.secondary
+  static const Color dashboardSecondaryColor = AppColors.secondary;
 
   /// Dashboard animation duration (milliseconds)
   static const int dashboardAnimationDurationMs = 300;
@@ -302,12 +306,47 @@ class HomeDesignConstants {
   static const double blockFilterLineHeight = 1.5;
 
   // ==================== Colors ====================
+  /// White color
+  /// Source: AppColors.white
+  static const Color white = AppColors.white;
+
   /// Secondary color (Orange)
-  static const Color secondaryColor = Color(0xFFFA6619);
+  /// Source: AppColors.secondary
+  static const Color secondaryColor = AppColors.secondary;
 
   /// Title color (Neutral/80)
-  static const Color titleColor = Color(0xFF2F2D2E);
+  /// Source: AppColors.neutral80
+  static const Color titleColor = AppColors.neutral80;
 
   /// Description color (Neutral/50)
-  static const Color descriptionColor = Color(0xFF464445);
+  /// Source: AppColors.neutral50
+  static const Color descriptionColor = AppColors.neutral50;
+
+  /// Gray 100 color
+  /// Source: AppColors.gray100
+  static const Color gray100 = AppColors.gray100;
+
+  /// Gray 70 color
+  /// Source: AppColors.gray70
+  static const Color gray70 = AppColors.gray70;
+
+  /// Gray 20 color
+  /// Source: AppColors.gray20
+  static const Color gray20 = AppColors.gray20;
+
+  /// Gray 05 color
+  /// Source: AppColors.gray05
+  static const Color gray05 = AppColors.gray05;
+
+  /// Primary 20 color
+  /// Source: AppColors.primary20
+  static const Color primary20 = AppColors.primary20;
+
+  /// Secondary color (alias for secondaryColor)
+  /// Source: AppColors.secondary
+  static const Color secondary = AppColors.secondary;
+
+  /// Black color
+  /// Source: AppColors.black
+  static const Color black = AppColors.black;
 }

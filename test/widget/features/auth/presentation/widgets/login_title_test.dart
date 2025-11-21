@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/widgets/login_title.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/widgets/login_title.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';

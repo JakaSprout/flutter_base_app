@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
 
 /// Sync operation callback type.
 typedef SyncOperation = Future<void> Function(SyncItem item);

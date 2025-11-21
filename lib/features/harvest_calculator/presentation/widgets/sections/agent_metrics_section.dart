@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
@@ -51,9 +50,11 @@ class AgentMetricsSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: HarvestCalculatorDesignConstants.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.gray20),
+              border: Border.all(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -166,9 +167,11 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.gray20),
+        border: Border.all(
+          color: HarvestCalculatorDesignConstants.gray20,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +206,7 @@ class _InfoCard extends StatelessWidget {
               fontFamily: 'Open Sans',
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.success,
+              color: HarvestCalculatorDesignConstants.success,
             ),
           ),
         ],

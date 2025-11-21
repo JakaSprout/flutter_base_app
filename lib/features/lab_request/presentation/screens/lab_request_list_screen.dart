@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/utils/status_bar_config.dart';
-import 'package:flutter_base_app/design_system/components/buttons/stp_bottom_action_button.dart';
-import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_constants.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_design_constants.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/providers/lab_request_provider.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/date_picker_field.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/widgets/lab_request_list_item.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
+import 'package:app_mobile_afms/design_system/components/buttons/stp_bottom_action_button.dart';
+import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/providers/lab_request_provider.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/date_picker_field.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/lab_request_list_item.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -45,7 +44,7 @@ class LabRequestListScreen extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: LabRequestDesignConstants.white,
       appBar: STPAppBar(
         title: LabRequestConstants.screenTitle,
         actions: [
@@ -64,7 +63,7 @@ class LabRequestListScreen extends HookConsumerWidget {
                 padding: const EdgeInsets.all(
                   LabRequestDesignConstants.screenHorizontalPadding,
                 ),
-                color: AppColors.gray05,
+                color: LabRequestDesignConstants.gray05,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -137,7 +136,7 @@ class LabRequestListScreen extends HookConsumerWidget {
                           const Icon(
                             Icons.inbox_outlined,
                             size: 64,
-                            color: AppColors.gray70,
+                            color: LabRequestDesignConstants.gray70,
                           ),
                           const SizedBox(
                             height: LabRequestDesignConstants.spacingMedium,
@@ -145,7 +144,7 @@ class LabRequestListScreen extends HookConsumerWidget {
                           Text(
                             LabRequestConstants.emptyStateMessage,
                             style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(color: AppColors.gray70),
+                                ?.copyWith(color: LabRequestDesignConstants.gray70),
                           ),
                         ],
                       ),
@@ -171,7 +170,7 @@ class LabRequestListScreen extends HookConsumerWidget {
                       const Icon(
                         Icons.error_outline,
                         size: 64,
-                        color: AppColors.gray70,
+                        color: LabRequestDesignConstants.gray70,
                       ),
                       const SizedBox(
                         height: LabRequestDesignConstants.spacingMedium,
@@ -179,7 +178,7 @@ class LabRequestListScreen extends HookConsumerWidget {
                       Text(
                         'Error: $error',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.gray70,
+                          color: LabRequestDesignConstants.gray70,
                         ),
                         textAlign: TextAlign.center,
                       ),

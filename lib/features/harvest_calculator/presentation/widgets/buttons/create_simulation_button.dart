@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 
 /// Button widget for creating a new simulation.
 class CreateSimulationButton extends StatelessWidget {
@@ -20,7 +19,7 @@ class CreateSimulationButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: HarvestCalculatorDesignConstants.primaryBlue,
-        foregroundColor: AppColors.white,
+        foregroundColor: HarvestCalculatorDesignConstants.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         minimumSize: const Size(
           0,

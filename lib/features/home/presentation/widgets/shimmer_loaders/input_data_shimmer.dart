@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for InputDataSection.
@@ -42,13 +42,13 @@ class InputDataShimmer extends StatelessWidget {
             // Title shimmer
             Shimmer(
               duration: const Duration(seconds: 1),
-              color: AppColors.primary20,
+              color: HomeDesignConstants.primary20,
               colorOpacity: 0.35,
               child: Container(
                 width: _headerTitleWidth,
                 height: _headerTitleHeight,
                 decoration: BoxDecoration(
-                  color: AppColors.gray05,
+                  color: HomeDesignConstants.gray05,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -56,13 +56,13 @@ class InputDataShimmer extends StatelessWidget {
             // "Lihat Semua" shimmer
             Shimmer(
               duration: const Duration(seconds: 1),
-              color: AppColors.primary20,
+              color: HomeDesignConstants.primary20,
               colorOpacity: 0.35,
               child: Container(
                 width: _headerSeeAllWidth,
                 height: _headerSeeAllHeight,
                 decoration: BoxDecoration(
-                  color: AppColors.gray05,
+                  color: HomeDesignConstants.gray05,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -97,7 +97,7 @@ class InputDataShimmer extends StatelessWidget {
                     width: _iconContainerSize,
                     height: _iconContainerSize,
                     decoration: const BoxDecoration(
-                      color: AppColors.gray05,
+                      color: HomeDesignConstants.gray05,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -105,13 +105,13 @@ class InputDataShimmer extends StatelessWidget {
                   // Label shimmer
                   Shimmer(
                     duration: const Duration(seconds: 1),
-                    color: AppColors.primary20,
+                    color: HomeDesignConstants.primary20,
                     colorOpacity: 0.35,
                     child: Container(
                       width: _labelWidth,
                       height: _labelHeight,
                       decoration: BoxDecoration(
-                        color: AppColors.gray05,
+                        color: HomeDesignConstants.gray05,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),

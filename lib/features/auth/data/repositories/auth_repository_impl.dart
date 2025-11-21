@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
-import 'package:flutter_base_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
+import 'package:app_mobile_afms/features/auth/domain/repositories/auth_repository.dart';
 
 /// Repository implementation for Auth feature (data layer).
 ///

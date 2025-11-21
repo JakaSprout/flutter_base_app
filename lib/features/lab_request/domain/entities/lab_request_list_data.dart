@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
 
 /// Lab request list data entity (domain layer).
 class LabRequestListData {

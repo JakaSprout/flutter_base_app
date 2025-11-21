@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

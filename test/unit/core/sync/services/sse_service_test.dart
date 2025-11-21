@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/sync/services/sse_service.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/sync/services/sse_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

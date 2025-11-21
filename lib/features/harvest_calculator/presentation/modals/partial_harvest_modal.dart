@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Data model for a partial harvest plan.
@@ -106,7 +105,7 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: SafeArea(
@@ -122,7 +121,7 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.gray20,
+                  color: HarvestCalculatorDesignConstants.gray20,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -152,7 +151,7 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                   IconButton(
                     icon: const Icon(
                       Icons.close,
-                      color: AppColors.gray60,
+                      color: HarvestCalculatorDesignConstants.gray60,
                       size: 20,
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -203,7 +202,7 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: OutlinedButton.icon(
                 onPressed: _addHarvestPlan,
-                icon: const Icon(Icons.add, size: 20, color: AppColors.gray60),
+                icon: const Icon(Icons.add, size: 20, color: HarvestCalculatorDesignConstants.gray60),
                 label: const Text(
                   HarvestCalculatorConstants.buttonAddHarvestPlan,
                   style: HarvestCalculatorDesignConstants.bodyTextStyle,
@@ -213,9 +212,9 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  backgroundColor: AppColors.white,
+                  backgroundColor: HarvestCalculatorDesignConstants.white,
                   foregroundColor: HarvestCalculatorDesignConstants.textPrimary,
-                  side: const BorderSide(color: AppColors.gray20),
+                  side: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -262,9 +261,9 @@ class HarvestSectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.gray05,
+        color: HarvestCalculatorDesignConstants.gray05,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.gray20),
+        border: Border.all(color: HarvestCalculatorDesignConstants.gray20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -285,7 +284,7 @@ class HarvestSectionCard extends StatelessWidget {
                     Assets.icons.general.trash,
                     width: 20,
                     height: 20,
-                    color: AppColors.gray60,
+                    color: HarvestCalculatorDesignConstants.gray60,
                   ),
                   onPressed: onDelete,
                   padding: EdgeInsets.zero,
@@ -379,8 +378,8 @@ class HarvestField extends StatelessWidget {
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.white,
-            border: Border.all(color: AppColors.gray20),
+            color: HarvestCalculatorDesignConstants.white,
+            border: Border.all(color: HarvestCalculatorDesignConstants.gray20),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(

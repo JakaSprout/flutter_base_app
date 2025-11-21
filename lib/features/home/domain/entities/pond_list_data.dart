@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/features/home/domain/entities/pond_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_entity.dart';
 
 /// Pond list data entity (domain layer).
 class PondListData {

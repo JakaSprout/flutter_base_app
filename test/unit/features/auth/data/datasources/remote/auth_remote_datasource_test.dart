@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart';
-import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart';
+import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
+import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

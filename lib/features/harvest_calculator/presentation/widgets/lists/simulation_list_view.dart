@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/cards/simulation_card.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/simulation_card.dart';
 import 'package:intl/intl.dart';
 
 /// List view for displaying simulations.

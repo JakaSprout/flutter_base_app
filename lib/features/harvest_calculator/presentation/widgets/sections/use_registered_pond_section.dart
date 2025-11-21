@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/buttons/stp_choice_chip_button.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/select_registered_pond_modal.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/pond_option.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/design_system/components/buttons/stp_choice_chip_button.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_registered_pond_modal.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/pond_option.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Section widget for selecting whether to use registered pond.
@@ -199,12 +198,12 @@ class UseRegisteredPondSection extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: HarvestCalculatorDesignConstants.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: hasError
                               ? HarvestCalculatorDesignConstants.errorColor
-                              : AppColors.gray20,
+                              : HarvestCalculatorDesignConstants.gray20,
                           width: 1.2,
                         ),
                       ),
@@ -245,7 +244,7 @@ class UseRegisteredPondSection extends StatelessWidget {
                           ),
                           const Icon(
                             Icons.keyboard_arrow_down,
-                            color: AppColors.gray60,
+                            color: HarvestCalculatorDesignConstants.gray60,
                           ),
                         ],
                       ),

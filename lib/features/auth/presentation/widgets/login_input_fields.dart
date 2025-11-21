@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_design_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/login_form_controls.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Input fields widget for login screen.
@@ -126,7 +125,7 @@ class LoginInputFields extends StatelessWidget {
       validationMessages: validationMessages,
       readOnly: isLoading,
       obscureText: obscureText,
-      cursorColor: AppColors.primary,
+      cursorColor: LoginDesignConstants.primary,
       decoration: _buildInputDecoration(context, hintText, suffixIcon),
     );
   }
@@ -142,25 +141,25 @@ class LoginInputFields extends StatelessWidget {
         borderRadius: BorderRadius.circular(
           LoginDesignConstants.inputBorderRadius,
         ),
-        borderSide: const BorderSide(color: AppColors.gray20),
+        borderSide: const BorderSide(color: LoginDesignConstants.gray20),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(
           LoginDesignConstants.inputBorderRadius,
         ),
-        borderSide: const BorderSide(color: AppColors.gray20),
+        borderSide: const BorderSide(color: LoginDesignConstants.gray20),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(
           LoginDesignConstants.inputBorderRadius,
         ),
-        borderSide: const BorderSide(color: AppColors.primary),
+        borderSide: const BorderSide(color: LoginDesignConstants.primary),
       ),
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(
           LoginDesignConstants.inputBorderRadius,
         ),
-        borderSide: const BorderSide(color: AppColors.gray20),
+        borderSide: const BorderSide(color: LoginDesignConstants.gray20),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: LoginDesignConstants.inputPaddingHorizontal,

@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

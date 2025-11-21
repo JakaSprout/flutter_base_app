@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_entity.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
-import 'package:flutter_base_app/features/home/presentation/providers/home_provider.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -163,7 +162,7 @@ class BannerCard extends StatelessWidget {
       buffer.write(hexString.replaceFirst('#', ''));
       return Color(int.parse(buffer.toString(), radix: 16));
     }
-    return AppColors.white; // Default to white if invalid
+    return HomeDesignConstants.white; // Default to white if invalid
   }
 
   @override
@@ -185,8 +184,8 @@ class BannerCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             HomeDesignConstants.bannerCardBorderRadius,
           ),
-          splashColor: AppColors.gray20.withOpacity(0.3),
-          highlightColor: AppColors.gray20.withOpacity(0.1),
+          splashColor: HomeDesignConstants.gray20.withOpacity(0.3),
+          highlightColor: HomeDesignConstants.gray20.withOpacity(0.1),
           child: Padding(
             padding: const EdgeInsets.all(
               HomeDesignConstants.bannerCardPadding,
@@ -208,7 +207,7 @@ class BannerCard extends StatelessWidget {
                         width: HomeDesignConstants.bannerCardImageWidth,
                         height: HomeDesignConstants.bannerCardImageHeight,
                         decoration: BoxDecoration(
-                          color: AppColors.gray05,
+                          color: HomeDesignConstants.gray05,
                           borderRadius: BorderRadius.circular(
                             HomeDesignConstants.bannerCardImageBorderRadius,
                           ),
@@ -217,7 +216,7 @@ class BannerCard extends StatelessWidget {
                           Icons.image,
                           size:
                               HomeDesignConstants.bannerCardImageErrorIconSize,
-                          color: AppColors.gray70,
+                          color: HomeDesignConstants.gray70,
                         ),
                       );
                     },

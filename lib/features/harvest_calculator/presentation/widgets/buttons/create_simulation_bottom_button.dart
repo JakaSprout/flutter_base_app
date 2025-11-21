@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/buttons/stp_bottom_action_button.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/design_system/components/buttons/stp_bottom_action_button.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 

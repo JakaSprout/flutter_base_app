@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/main.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/main.dart';
 
 /// Main entry point for staging flavor.
 void main() {

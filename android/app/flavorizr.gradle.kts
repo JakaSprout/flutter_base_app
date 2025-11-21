@@ -8,17 +8,17 @@ android.apply {
     productFlavors {
         create("dev") {
             dimension = "flavor-type"
-            applicationId = "com.japfa.flutter_base_app.dev"
+            applicationId = "stp.app.afms.dev"
             resValue(type = "string", name = "app_name", value = "Flutter Base App Dev")
         }
         create("staging") {
             dimension = "flavor-type"
-            applicationId = "com.japfa.flutter_base_app.staging"
+            applicationId = "stp.app.afms.staging"
             resValue(type = "string", name = "app_name", value = "Flutter Base App Staging")
         }
         create("prod") {
             dimension = "flavor-type"
-            applicationId = "com.japfa.flutter_base_app"
+            applicationId = "stp.app.afms"
             resValue(type = "string", name = "app_name", value = "Flutter Base App")
         }
     }

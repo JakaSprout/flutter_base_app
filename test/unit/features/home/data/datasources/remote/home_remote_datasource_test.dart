@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/home/data/datasources/remote/home_remote_datasource.dart';
-import 'package:flutter_base_app/features/home/data/models/banner_model.dart';
-import 'package:flutter_base_app/features/home/data/models/home_model.dart';
-import 'package:flutter_base_app/features/home/data/models/input_data_item_model.dart';
-import 'package:flutter_base_app/features/home/data/models/pond_model.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/home/data/datasources/remote/home_remote_datasource.dart';
+import 'package:app_mobile_afms/features/home/data/models/banner_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/home_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/input_data_item_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/pond_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

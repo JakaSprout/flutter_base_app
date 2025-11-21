@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/partial_harvest_modal.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/utils/chart_builder.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/partial_harvest_modal.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/chart_builder.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -69,10 +68,13 @@ class BiomassSection extends StatelessWidget {
                           horizontal: 12,
                           vertical: 6,
                         ),
-                        backgroundColor: AppColors.white,
+                        backgroundColor:
+                            HarvestCalculatorDesignConstants.white,
                         foregroundColor:
                             HarvestCalculatorDesignConstants.textPrimary,
-                        side: const BorderSide(color: AppColors.gray20),
+                        side: const BorderSide(
+                          color: HarvestCalculatorDesignConstants.gray20,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

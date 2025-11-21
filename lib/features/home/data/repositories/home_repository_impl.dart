@@ -1,21 +1,21 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/home/data/datasources/remote/home_remote_datasource.dart';
-import 'package:flutter_base_app/features/home/data/models/banner_model.dart';
-import 'package:flutter_base_app/features/home/data/models/input_data_item_model.dart';
-import 'package:flutter_base_app/features/home/data/models/mappers/home_mapper.dart';
-import 'package:flutter_base_app/features/home/data/models/mappers/pond_mapper.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_entity.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/company_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/dashboard_summary_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/header_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/home_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/input_data_item_entity.dart';
-import 'package:flutter_base_app/features/home/domain/entities/input_data_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_entity.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/repositories/home_repository.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/home/data/datasources/remote/home_remote_datasource.dart';
+import 'package:app_mobile_afms/features/home/data/models/banner_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/input_data_item_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/mappers/home_mapper.dart';
+import 'package:app_mobile_afms/features/home/data/models/mappers/pond_mapper.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/input_data_item_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/input_data_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_entity.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
 
 /// Repository implementation for Home feature (data layer).
 ///

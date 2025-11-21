@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 /// Shimmer loader for PondListSection.
@@ -43,13 +43,13 @@ class PondListShimmer extends StatelessWidget {
               children: [
                 Shimmer(
                   duration: const Duration(seconds: 1),
-                  color: AppColors.primary20,
+                  color: HomeDesignConstants.primary20,
                   colorOpacity: 0.35,
                   child: Container(
                     width: 120,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: AppColors.gray05,
+                      color: HomeDesignConstants.gray05,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -58,13 +58,13 @@ class PondListShimmer extends StatelessWidget {
                 // Count placeholder
                 Shimmer(
                   duration: const Duration(seconds: 1),
-                  color: AppColors.primary20,
+                  color: HomeDesignConstants.primary20,
                   colorOpacity: 0.35,
                   child: Container(
                     width: 40,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: AppColors.gray05,
+                      color: HomeDesignConstants.gray05,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -74,13 +74,13 @@ class PondListShimmer extends StatelessWidget {
             // "Lihat Semua" placeholder
             Shimmer(
               duration: const Duration(seconds: 1),
-              color: AppColors.primary20,
+              color: HomeDesignConstants.primary20,
               colorOpacity: 0.35,
               child: Container(
                 width: 80,
                 height: 18,
                 decoration: BoxDecoration(
-                  color: AppColors.gray05,
+                  color: HomeDesignConstants.gray05,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -106,7 +106,7 @@ class PondListShimmer extends StatelessWidget {
   Widget _buildItemShimmer() {
     return Shimmer(
       duration: const Duration(seconds: 1),
-      color: AppColors.primary20,
+      color: HomeDesignConstants.primary20,
       colorOpacity: 0.35,
       child: Container(
         width: double.infinity,
@@ -115,7 +115,7 @@ class PondListShimmer extends StatelessWidget {
           vertical: _itemPaddingVertical,
         ),
         decoration: BoxDecoration(
-          color: AppColors.gray05,
+          color: HomeDesignConstants.gray05,
           borderRadius: BorderRadius.circular(_borderRadius),
         ),
         child: Row(
@@ -131,7 +131,7 @@ class PondListShimmer extends StatelessWidget {
                     width: _nameWidth,
                     height: _nameHeight,
                     decoration: BoxDecoration(
-                      color: AppColors.gray20,
+                      color: HomeDesignConstants.gray20,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -141,7 +141,7 @@ class PondListShimmer extends StatelessWidget {
                     width: _idWidth,
                     height: _idHeight,
                     decoration: BoxDecoration(
-                      color: AppColors.gray20,
+                      color: HomeDesignConstants.gray20,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -154,7 +154,7 @@ class PondListShimmer extends StatelessWidget {
               width: _iconSize,
               height: _iconSize,
               decoration: BoxDecoration(
-                color: AppColors.gray20,
+                color: HomeDesignConstants.gray20,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

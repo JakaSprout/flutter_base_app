@@ -1,9 +1,8 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
@@ -38,9 +37,11 @@ class FeedTable extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: HarvestCalculatorDesignConstants.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.gray20),
+          border: Border.all(
+            color: HarvestCalculatorDesignConstants.gray20,
+          ),
         ),
         child: SizedBox(
           height: 280,
@@ -48,26 +49,44 @@ class FeedTable extends StatelessWidget {
             columnSpacing: 0,
             horizontalMargin: 0,
             minWidth: 300,
-            headingRowColor: WidgetStateProperty.all(AppColors.gray05),
+            headingRowColor: WidgetStateProperty.all(
+              HarvestCalculatorDesignConstants.gray05,
+            ),
             headingRowHeight: 56,
             headingRowDecoration: const BoxDecoration(
-              color: AppColors.gray05,
-              border: Border(bottom: BorderSide(color: AppColors.gray20)),
+              color: HarvestCalculatorDesignConstants.gray05,
+              border: Border(
+                bottom: BorderSide(
+                  color: HarvestCalculatorDesignConstants.gray20,
+                ),
+              ),
             ),
             dataRowHeight: 48,
             border: const TableBorder(
-              top: BorderSide(color: AppColors.gray20),
-              bottom: BorderSide(color: AppColors.gray20),
-              left: BorderSide(color: AppColors.gray20),
-              right: BorderSide(color: AppColors.gray20),
-              horizontalInside: BorderSide(color: AppColors.gray20),
-              verticalInside: BorderSide(color: AppColors.gray20),
+              top: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
+              bottom: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
+              left: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
+              right: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
+              horizontalInside: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
+              verticalInside: BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             columns: [
               DataColumn2(
                 minWidth: 86,
                 label: ColoredBox(
-                  color: AppColors.gray05,
+                  color: HarvestCalculatorDesignConstants.gray05,
                   child: GestureDetector(
                     onTap: onSort,
                     child: Padding(
@@ -161,7 +180,7 @@ class FeedTable extends StatelessWidget {
                     cells: [
                       DataCell(
                         Container(
-                          color: AppColors.gray05,
+                          color: HarvestCalculatorDesignConstants.gray05,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           alignment: Alignment.center,
                           child: Text(

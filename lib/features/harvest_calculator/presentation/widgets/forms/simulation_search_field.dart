@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 
 /// Search field widget for filtering simulations.
 class SimulationSearchField extends StatelessWidget {
@@ -37,7 +36,11 @@ class SimulationSearchField extends StatelessWidget {
             hintStyle: HarvestCalculatorDesignConstants.formFieldPlaceholderTextStyle,
             prefixIcon: const Padding(
               padding: EdgeInsets.only(left: 12, right: 8),
-              child: Icon(Icons.search, size: 20, color: AppColors.gray60),
+              child: Icon(
+                Icons.search,
+                size: 20,
+                color: HarvestCalculatorDesignConstants.gray60,
+              ),
             ),
             prefixIconConstraints: const BoxConstraints(
               minHeight: 20,
@@ -45,19 +48,27 @@ class SimulationSearchField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.gray20),
+              borderSide: const BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.gray20),
+              borderSide: const BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.gray20),
+              borderSide: const BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.gray20),
+              borderSide: const BorderSide(
+                color: HarvestCalculatorDesignConstants.gray20,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,

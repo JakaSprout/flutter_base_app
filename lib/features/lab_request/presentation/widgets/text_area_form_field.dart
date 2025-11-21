@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
 
 /// Text area form field widget for lab request form.
 class LabRequestTextAreaFormField extends StatelessWidget {
@@ -38,7 +38,7 @@ class LabRequestTextAreaFormField extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: _labelFontSize,
                 fontWeight: FontWeight.w400,
-                color: AppColors.gray100,
+                color: LabRequestDesignConstants.gray100,
                 fontFamily: AppConstants.fontFamily,
                 height: _lineHeight,
               ),
@@ -51,7 +51,7 @@ class LabRequestTextAreaFormField extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: _valueFontSize,
                 fontWeight: FontWeight.w400,
-                color: AppColors.gray100,
+                color: LabRequestDesignConstants.gray100,
                 fontFamily: AppConstants.fontFamily,
                 height: _lineHeight,
               ),
@@ -61,25 +61,25 @@ class LabRequestTextAreaFormField extends StatelessWidget {
             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: _valueFontSize,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.gray70,
+                  color: LabRequestDesignConstants.gray70,
                   fontFamily: AppConstants.fontFamily,
                   height: _lineHeight,
                 ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12), // Consistent with FormInputField
               borderSide: const BorderSide(
-                color: AppColors.gray20, // Consistent with FormInputField
+                color: LabRequestDesignConstants.gray20, // Consistent with FormInputField
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12), // Consistent with FormInputField
               borderSide: const BorderSide(
-                color: AppColors.gray20, // Consistent with FormInputField
+                color: LabRequestDesignConstants.gray20, // Consistent with FormInputField
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12), // Consistent with FormInputField
-              borderSide: const BorderSide(color: AppColors.primary),
+              borderSide: const BorderSide(color: LabRequestDesignConstants.primary),
             ),
             contentPadding: const EdgeInsets.all(12),
           ),

@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_base_app/core/error/failures.dart';
-import 'package:flutter_base_app/features/home/domain/entities/banner_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/company_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/dashboard_summary_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/header_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/home_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/input_data_list_data.dart';
-import 'package:flutter_base_app/features/home/domain/entities/pond_list_data.dart';
+import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/input_data_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/pond_list_data.dart';
 
 /// Repository interface for Home feature (domain layer).
 ///

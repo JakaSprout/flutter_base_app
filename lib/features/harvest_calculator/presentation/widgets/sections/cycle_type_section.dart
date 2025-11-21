@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/components/buttons/stp_choice_chip_button.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/modals/cycle_type_info_bottom_sheet.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/field_builder.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:app_mobile_afms/design_system/components/buttons/stp_choice_chip_button.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/cycle_type_info_bottom_sheet.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/field_builder.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 

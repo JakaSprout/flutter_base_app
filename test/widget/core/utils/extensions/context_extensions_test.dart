@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/utils/extensions/context_extensions.dart';
+import 'package:app_mobile_afms/core/utils/extensions/context_extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../helpers/test_helpers.dart';

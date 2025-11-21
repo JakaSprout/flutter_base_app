@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 
 /// Section widget for partial harvest information.
 ///
@@ -36,8 +36,8 @@ class PartialHarvestSection extends StatelessWidget {
                     icon: const Icon(Icons.add, size: 20),
                     label: const Text('Rencana Panen'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.primary,
+                      backgroundColor: HarvestCalculatorDesignConstants.white,
+                      foregroundColor: HarvestCalculatorDesignConstants.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -45,7 +45,7 @@ class PartialHarvestSection extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                         side: const BorderSide(
-                          color: AppColors.primary,
+                          color: HarvestCalculatorDesignConstants.primary,
                         ),
                       ),
                       elevation: 0,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';

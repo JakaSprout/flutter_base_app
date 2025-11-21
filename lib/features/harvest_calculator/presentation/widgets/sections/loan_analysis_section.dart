@@ -1,10 +1,9 @@
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:intl/intl.dart';
 
@@ -12,9 +11,9 @@ import 'package:intl/intl.dart';
 class LoanAnalysisSection extends StatelessWidget {
   /// Creates a new instance of [LoanAnalysisSection].
   const LoanAnalysisSection({
-    super.key,
     required this.simulation,
     required this.currencyFormat,
+    super.key,
   });
 
   /// Simulation data.
@@ -58,32 +57,34 @@ class LoanAnalysisSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: HarvestCalculatorDesignConstants.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.gray20),
+                    border: Border.all(
+                      color: HarvestCalculatorDesignConstants.gray20,
+                    ),
                   ),
                   child: Column(
                     children: [
                       _LegendItem(
-                        color: const Color(0xFF9333EA), // Purple
+                        color: HarvestCalculatorDesignConstants.chartPurple,
                         label: HarvestCalculatorConstants.labelTotalCostNeeds,
                         value: currencyFormat.format(totalCostNeeds),
                       ),
                       const SizedBox(height: 12),
                       _LegendItem(
-                        color: const Color(0xFF3B82F6), // Blue-500 for Plafon Yang Diambil
+                        color: HarvestCalculatorDesignConstants.chartBlue500,
                         label: HarvestCalculatorConstants.labelLoanCeilingTaken,
                         value: currencyFormat.format(loanCeilingTaken),
                       ),
                       const SizedBox(height: 12),
                       _LegendItem(
-                        color: const Color(0xFF93C5FD), // Blue-300 for Sisa Kredit
+                        color: HarvestCalculatorDesignConstants.chartBlue300,
                         label: HarvestCalculatorConstants.labelRemainingCredit,
                         value: currencyFormat.format(remainingCredit),
                       ),
                       const SizedBox(height: 12),
                       _LegendItem(
-                        color: AppColors.error, // Red
+                        color: HarvestCalculatorDesignConstants.error,
                         label: HarvestCalculatorConstants.labelCreditLimit,
                         value: currencyFormat.format(creditLimit),
                       ),
@@ -111,8 +112,11 @@ class LoanAnalysisSection extends StatelessWidget {
     final loanCeilingTakenM = loanCeilingTaken / 1000000;
     final remainingCreditM = remainingCredit / 1000000;
     final creditLimitM = creditLimit / 1000000;
-    final maxValue = [costNeedsM, recommendedLoanM, creditLimitM]
-        .reduce((a, b) => a > b ? a : b);
+    final maxValue = [
+      costNeedsM,
+      recommendedLoanM,
+      creditLimitM,
+    ].reduce((a, b) => a > b ? a : b);
 
     return '''
     {
@@ -172,24 +176,24 @@ class LoanAnalysisSection extends StatelessWidget {
           name: 'Total Kebutuhan Biaya',
           type: 'bar',
           stack: 'cost',
-          data: [${costNeedsM}, 0],
-          itemStyle: { color: '#9333EA' },
+          data: [$costNeedsM, 0],
+          itemStyle: { color: '#${HarvestCalculatorDesignConstants.chartPurple.value.toRadixString(16).substring(2)}' },
           barWidth: 60
         },
         {
           name: 'Plafon Yang Diambil',
           type: 'bar',
           stack: 'loan',
-          data: [0, ${loanCeilingTakenM}],
-          itemStyle: { color: '#3B82F6' },
+          data: [0, $loanCeilingTakenM],
+          itemStyle: { color: '#${HarvestCalculatorDesignConstants.chartBlue500.value.toRadixString(16).substring(2)}' },
           barWidth: 60
         },
         {
           name: 'Sisa Kredit',
           type: 'bar',
           stack: 'loan',
-          data: [0, ${remainingCreditM}],
-          itemStyle: { color: '#93C5FD' },
+          data: [0, $remainingCreditM],
+          itemStyle: { color: '#${HarvestCalculatorDesignConstants.chartBlue300.value.toRadixString(16).substring(2)}' },
           barWidth: 60
         }
       ]
@@ -241,8 +245,8 @@ class _LegendItem extends StatelessWidget {
           value,
           style: const TextStyle(
             fontFamily: 'Open Sans',
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontSize: HarvestCalculatorDesignConstants.fontSize12,
+            fontWeight: HarvestCalculatorDesignConstants.fontWeightBold,
             color: HarvestCalculatorDesignConstants.textPrimary,
           ),
         ),
@@ -250,4 +254,3 @@ class _LegendItem extends StatelessWidget {
     );
   }
 }
-

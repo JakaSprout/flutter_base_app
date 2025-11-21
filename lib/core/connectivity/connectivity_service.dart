@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart' as connectivity_plus;
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
 
 /// Service for monitoring network connectivity.
 class ConnectivityService {

@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:flutter_base_app/core/config/app_config.dart';
-import 'package:flutter_base_app/core/di/providers/connectivity_provider.dart';
-import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/core/sync/models/sync_item.dart';
-import 'package:flutter_base_app/core/sync/models/sync_status.dart';
-import 'package:flutter_base_app/core/sync/services/batch_sync_service.dart';
-import 'package:flutter_base_app/core/sync/services/sse_service.dart';
-import 'package:flutter_base_app/core/sync/services/sync_queue.dart';
+import 'package:app_mobile_afms/core/config/app_config.dart';
+import 'package:app_mobile_afms/core/di/providers/connectivity_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:app_mobile_afms/core/sync/models/sync_status.dart';
+import 'package:app_mobile_afms/core/sync/services/batch_sync_service.dart';
+import 'package:app_mobile_afms/core/sync/services/sse_service.dart';
+import 'package:app_mobile_afms/core/sync/services/sync_queue.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';

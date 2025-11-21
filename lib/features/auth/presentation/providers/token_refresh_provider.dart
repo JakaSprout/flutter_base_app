@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter_base_app/core/events/auth_event_bus.dart';
-import 'package:flutter_base_app/core/logging/logger.dart';
-import 'package:flutter_base_app/features/auth/domain/services/auth_service.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/core/events/auth_event_bus.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/features/auth/domain/services/auth_service.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_provider.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'token_refresh_provider.g.dart';

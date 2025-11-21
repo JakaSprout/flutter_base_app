@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/lab_request/domain/entities/lab_request.dart';
-import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
 import 'package:intl/intl.dart';
 
 /// Lab request list item widget.
@@ -57,7 +56,7 @@ class LabRequestListItem extends StatelessWidget {
     if (status.toLowerCase().contains('dikerjakan')) {
       return Colors.orange;
     }
-    return AppColors.gray100;
+    return LabRequestDesignConstants.gray100;
   }
 }
 

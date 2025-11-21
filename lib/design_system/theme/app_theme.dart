@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
 
 /// Material Design 3 theme configuration for the application.
 class AppTheme {

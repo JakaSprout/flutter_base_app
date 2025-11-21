@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/home/presentation/constants/home_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 
 /// Pond list item widget for displaying a single pond entry.
 ///
@@ -35,9 +34,9 @@ class PondListItem extends StatelessWidget {
   final VoidCallback? onTap;
 
   // Design tokens - using shared colors from design system
-  static const Color _gray100 = AppColors.gray100;
-  static const Color _gray70 = AppColors.gray70;
-  static const Color _gray05 = AppColors.gray05;
+  static const Color _gray100 = HomeDesignConstants.gray100;
+  static const Color _gray70 = HomeDesignConstants.gray70;
+  static const Color _gray05 = HomeDesignConstants.gray05;
 
   @override
   Widget build(BuildContext context) {

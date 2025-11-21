@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 
 /// Mode switch button widget for login screen.
 ///
@@ -30,7 +30,7 @@ class LoginModeSwitch extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       icon: Icon(
         isPhoneMode ? Icons.email_outlined : Icons.phone_outlined,
-        color: isLoading ? AppColors.gray70 : AppColors.primary,
+        color: isLoading ? LoginDesignConstants.gray70 : LoginDesignConstants.primary,
       ),
       label: Text(
         isPhoneMode
@@ -39,7 +39,7 @@ class LoginModeSwitch extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: isLoading ? AppColors.gray70 : AppColors.primary,
+          color: isLoading ? LoginDesignConstants.gray70 : LoginDesignConstants.primary,
           fontFamily: AppConstants.fontFamily,
         ),
       ),

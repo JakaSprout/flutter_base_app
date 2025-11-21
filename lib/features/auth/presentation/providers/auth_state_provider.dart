@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/core/di/providers/secure_storage_provider.dart';
-import 'package:flutter_base_app/features/auth/domain/services/auth_service.dart';
+import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
+import 'package:app_mobile_afms/features/auth/domain/services/auth_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_state_provider.g.dart';

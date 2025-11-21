@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/config/navigation_constants.dart';
-import 'package:flutter_base_app/gen/assets.gen.dart';
-import 'package:flutter_base_app/router/routes.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 

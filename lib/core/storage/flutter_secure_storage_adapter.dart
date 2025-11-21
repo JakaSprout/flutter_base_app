@@ -1,4 +1,4 @@
-import 'package:flutter_base_app/core/storage/secure_storage_interface.dart';
+import 'package:app_mobile_afms/core/storage/secure_storage_interface.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Adapter for [FlutterSecureStorage] to implement [SecureStorageInterface].

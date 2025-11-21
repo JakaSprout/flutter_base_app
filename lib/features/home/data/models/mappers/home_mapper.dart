@@ -1,6 +1,6 @@
-import 'package:flutter_base_app/features/home/data/models/home_model.dart';
-import 'package:flutter_base_app/features/home/data/models/mappers/pond_mapper.dart';
-import 'package:flutter_base_app/features/home/domain/entities/home_data.dart';
+import 'package:app_mobile_afms/features/home/data/models/home_model.dart';
+import 'package:app_mobile_afms/features/home/data/models/mappers/pond_mapper.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
 
 /// Mapper for converting between data models and domain entities.
 class HomeMapper {

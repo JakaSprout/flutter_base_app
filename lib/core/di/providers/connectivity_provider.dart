@@ -1,5 +1,5 @@
-import 'package:flutter_base_app/core/connectivity/connectivity_models.dart';
-import 'package:flutter_base_app/core/connectivity/connectivity_service.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
+import 'package:app_mobile_afms/core/connectivity/connectivity_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'connectivity_provider.g.dart';

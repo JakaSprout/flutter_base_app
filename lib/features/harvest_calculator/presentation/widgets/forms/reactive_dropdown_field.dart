@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/design_system/components/inputs/stp_dropdown.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:reactive_forms/reactive_forms.dart' as reactive_forms;
 
 /// Reactive dropdown field widget with label and required indicator.
@@ -77,7 +76,7 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: _labelFontSize,
                 fontWeight: FontWeight.w400,
-                color: AppColors.gray100,
+                color: HarvestCalculatorDesignConstants.gray100,
                 fontFamily: AppConstants.fontFamily,
                 height: _lineHeight,
               ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/constants.dart';
-import 'package:flutter_base_app/core/config/navigation_constants.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/auth/presentation/providers/logout_provider.dart';
+import 'package:app_mobile_afms/core/config/constants.dart';
+import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/logout_provider.dart';
+import 'package:app_mobile_afms/features/profile/presentation/constants/profile_design_constants.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Profile (Profil) screen.
@@ -105,7 +105,7 @@ class _LogoutButtonState extends ConsumerState<_LogoutButton> {
               height: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: AppColors.white,
+                color: ProfileDesignConstants.white,
               ),
             )
           : const Icon(Icons.logout, size: 20),
@@ -114,14 +114,14 @@ class _LogoutButtonState extends ConsumerState<_LogoutButton> {
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: AppColors.white,
+          color: ProfileDesignConstants.white,
           fontFamily: AppConstants.fontFamily,
         ),
       ),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         backgroundColor: Colors.red,
-        foregroundColor: AppColors.white,
+        foregroundColor: ProfileDesignConstants.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         elevation: 0,
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/design_system/theme/app_colors.dart';
-import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 
 /// Chart statistics card displaying DOC and related metrics.
 class ChartStatCard extends StatelessWidget {
@@ -19,9 +18,11 @@ class ChartStatCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.gray20),
+        border: Border.all(
+          color: HarvestCalculatorDesignConstants.gray20,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
