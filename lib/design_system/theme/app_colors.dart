@@ -22,6 +22,12 @@ class AppColors {
   /// Gray/70 - Medium gray for inactive states
   static const Color gray70 = Color(0xFF6D6D6D);
 
+  /// Gray/60 - Medium gray for labels
+  static const Color gray60 = Color(0xFF8A8A8A);
+
+  /// Gray/40 - Border gray
+  static const Color gray40 = Color(0xFFBDBDBD);
+
   /// Gray/20 - Light gray for borders
   static const Color gray20 = Color(0xFFE3E3E3);
 
@@ -41,6 +47,22 @@ class AppColors {
 
   /// Neutral/Black
   static const Color black = Color(0xFF000000);
+
+  // Semantic Colors
+  /// Success base
+  static const Color success = Color(0xFF1BAA69);
+
+  /// Success light background
+  static const Color successLight = Color(0xFFE8F8F0);
+
+  /// Success dark text
+  static const Color successDark = Color(0xFF0F6B44);
+
+  /// Error base
+  static const Color error = Color(0xFFD84639);
+
+  /// Error light background
+  static const Color errorLight = Color(0xFFFCE9E7);
 
   // Secondary Colors
   /// Secondary/60 (Base) - Orange for CTAs and links

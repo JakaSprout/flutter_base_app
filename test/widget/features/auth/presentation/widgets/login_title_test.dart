@@ -43,16 +43,16 @@ void main() {
 
     testWidgets('should update title when mode changes', (tester) async {
       // Arrange
-      var isPhoneMode = true;
+      const isPhoneMode = true;
 
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
           child: StatefulBuilder(
             builder: (context, setState) {
-              return LoginTitle(
+              return const LoginTitle(
                 isPhoneMode: isPhoneMode,
-                key: const Key('login_title'),
+                key: Key('login_title'),
               );
             },
           ),
@@ -68,9 +68,9 @@ void main() {
         TestHelpers.createTestApp(
           child: StatefulBuilder(
             builder: (context, setState) {
-              return LoginTitle(
+              return const LoginTitle(
                 isPhoneMode: false,
-                key: const Key('login_title'),
+                key: Key('login_title'),
               );
             },
           ),

@@ -91,46 +91,28 @@ class STPMetricCard extends StatelessWidget {
               children: [
                 // Only apply color filter if icon doesn't have hardcoded colors
                 // (_color suffix)
-                if (iconPath.contains('_color'))
-                  SvgPicture.asset(
-                    iconPath,
-                    width: _iconSize,
-                    height: _iconSize,
-                    placeholderBuilder: (context) => const Icon(
-                      Icons.help_outline,
-                      size: _iconSize,
-                      color: _gray100,
-                    ),
-                  )
-                else
-                  ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                      _gray100,
-                      BlendMode.srcIn,
-                    ),
-                    child: SvgPicture.asset(
-                      iconPath,
-                      width: _iconSize,
-                      height: _iconSize,
-                      placeholderBuilder: (context) => const Icon(
-                        Icons.help_outline,
-                        size: _iconSize,
-                        color: _gray100,
-                      ),
-                    ),
+                SvgPicture.asset(
+                  iconPath,
+                  width: _iconSize,
+                  height: _iconSize,
+                  placeholderBuilder: (context) => const Icon(
+                    Icons.help_outline,
+                    size: _iconSize,
+                    color: _gray100,
                   ),
+                ),
                 const SizedBox(width: _spacingSmall),
                 // Title
                 Flexible(
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: _fontSizeSmall,
-                          fontWeight: FontWeight.w400, // Regular
-                          color: _gray100,
-                          fontFamily: AppConstants.fontFamily,
-                          height: 1.5, // Figma: lineHeight 1.5em
-                        ),
+                      fontSize: _fontSizeSmall,
+                      fontWeight: FontWeight.w400, // Regular
+                      color: _gray100,
+                      fontFamily: AppConstants.fontFamily,
+                      height: 1.5, // Figma: lineHeight 1.5em
+                    ),
                     textAlign: TextAlign.left,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -152,9 +134,7 @@ class STPMetricCard extends StatelessWidget {
                       // Value
                       Text(
                         value,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
+                        style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontSize: _fontSizeValue,
                               fontWeight: FontWeight.w700, // Bold
@@ -169,9 +149,7 @@ class STPMetricCard extends StatelessWidget {
                         Center(
                           child: Text(
                             unit!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
+                            style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   fontSize: _fontSizeUnit,
                                   fontWeight: FontWeight.w400, // Regular
@@ -189,12 +167,12 @@ class STPMetricCard extends StatelessWidget {
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: _fontSizeSubtitle,
-                        fontWeight: FontWeight.w400, // Regular
-                        color: _gray70, // Figma: Gray/70
-                        fontFamily: AppConstants.fontFamily,
-                        height: _lineHeight,
-                      ),
+                    fontSize: _fontSizeSubtitle,
+                    fontWeight: FontWeight.w400, // Regular
+                    color: _gray70, // Figma: Gray/70
+                    fontFamily: AppConstants.fontFamily,
+                    height: _lineHeight,
+                  ),
                 ),
               ],
             ),

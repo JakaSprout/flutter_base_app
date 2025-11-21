@@ -14,6 +14,7 @@ import 'package:flutter_base_app/router/app_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Root widget of the application.
@@ -38,8 +39,10 @@ class App extends HookConsumerWidget {
       );
     });
 
-    // Create router with auth guard
-    final router = AppRouter.createRouter(ref, authStateAsync);
+    // Create router with auth guard (memoized to avoid recreating on rebuilds)
+    final routerRef = useRef<GoRouter?>(null);
+    routerRef.value ??= AppRouter.createRouter(ref, authStateAsync);
+    final router = routerRef.value!;
 
     return ScreenUtilInit(
       // Design size from Figma (adjust according to design system)

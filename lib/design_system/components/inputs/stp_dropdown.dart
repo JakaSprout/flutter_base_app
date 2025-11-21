@@ -105,8 +105,6 @@ class STPDropdown<T> extends StatefulWidget {
 }
 
 class _STPDropdownState<T> extends State<STPDropdown<T>> {
-  final GlobalKey _dropdownKey = GlobalKey();
-
   // Design tokens
   static const double _chevronSize = 20;
   static const double _spacingSmall = 8;
@@ -124,13 +122,13 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
   static const double _headerPaddingVertical = 16;
   static const double _headerPaddingHorizontal = 16;
   static const double _bottomSheetPadding = 16;
+  static const double _bottomSheetBottomPadding = 40; // Extra spacing at bottom for list items
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.enabled ? () => _showDropdown(context) : null,
       child: Container(
-        key: _dropdownKey,
         padding: const EdgeInsets.symmetric(
           horizontal: _spacingMedium,
           vertical: 10,
@@ -220,62 +218,64 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
             top: Radius.circular(_borderRadius),
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              width: _handleWidth,
-              height: _handleHeight,
-              decoration: BoxDecoration(
-                color: AppColors.gray20,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Title and Close button (only show if hint is provided)
-            if (widget.hint != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: _headerPaddingHorizontal,
-                  vertical: _headerPaddingVertical,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: _handleWidth,
+                height: _handleHeight,
+                decoration: BoxDecoration(
+                  color: AppColors.gray20,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.hint!,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                              fontSize: _titleFontSize,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.gray100,
-                              fontFamily: AppConstants.fontFamily,
-                            ),
+              ),
+              // Title and Close button (only show if hint is provided)
+              if (widget.hint != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: _headerPaddingHorizontal,
+                    vertical: _headerPaddingVertical,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.hint!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                                fontSize: _titleFontSize,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.gray100,
+                                fontFamily: AppConstants.fontFamily,
+                              ),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 24),
-                      color: AppColors.gray100,
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 24),
+                        color: AppColors.gray100,
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            // List of items
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.only(
-                  left: _bottomSheetPadding,
-                  right: _bottomSheetPadding,
-                  bottom: _bottomSheetPadding,
-                  top: widget.hint != null ? 0 : _spacingSmall,
-                ),
+              // List of items
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.only(
+                    left: _bottomSheetPadding,
+                    right: _bottomSheetPadding,
+                    bottom: _bottomSheetBottomPadding,
+                    top: widget.hint != null ? 0 : _spacingSmall,
+                  ),
                 itemCount: widget.items.length,
                 itemBuilder: (context, index) {
                   final item = widget.items[index];
@@ -348,7 +348,8 @@ class _STPDropdownState<T> extends State<STPDropdown<T>> {
                 },
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

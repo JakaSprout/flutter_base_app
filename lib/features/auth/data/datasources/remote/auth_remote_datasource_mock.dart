@@ -4,6 +4,7 @@ import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_mock_data.dart';
 import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:flutter_base_app/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart' show AuthRemoteDataSourceImpl;
 import 'package:flutter_base_app/features/auth/data/models/login_response_model.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_request.dart';
 import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';

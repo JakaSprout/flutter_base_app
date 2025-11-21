@@ -200,6 +200,12 @@ class HomeScreen extends HookConsumerWidget {
       return;
     }
 
+    // Navigate to harvest calculator if banner is "Kalkulator Panen"
+    if (cardId == 'harvest_calculator' || cardId == 'kalkulator_panen') {
+      context.push(Routes.harvestCalculatorHome);
+      return;
+    }
+
     // TODO(sproutdigital): Handle other banner card tap navigation.
     debugPrint('Banner card tapped: $cardId');
   }

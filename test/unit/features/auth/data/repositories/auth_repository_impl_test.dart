@@ -37,7 +37,6 @@ void main() {
             accessToken: 'access_token',
             refreshToken: 'refresh_token',
             expiresIn: 3600,
-            tokenType: 'Bearer',
             userId: 'user_123',
             phoneNumber: '81234567890',
           );
@@ -131,7 +130,6 @@ void main() {
             accessToken: 'access_token',
             refreshToken: 'refresh_token',
             expiresIn: 3600,
-            tokenType: 'Bearer',
             userId: 'user_456',
             email: 'test@example.com',
           );

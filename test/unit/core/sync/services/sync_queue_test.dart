@@ -54,7 +54,7 @@ void main() {
         final lowPriority = createTestSyncItem(
           id: 'item-1',
           priority: SyncPriority.low,
-          createdAt: DateTime(2024, 1, 1),
+          createdAt: DateTime(2024),
         );
         final highPriority = createTestSyncItem(
           id: 'item-2',
@@ -83,7 +83,7 @@ void main() {
         final item1 = createTestSyncItem(
           id: 'item-1',
           priority: SyncPriority.normal,
-          createdAt: DateTime(2024, 1, 1),
+          createdAt: DateTime(2024),
         );
         final item2 = createTestSyncItem(
           id: 'item-2',

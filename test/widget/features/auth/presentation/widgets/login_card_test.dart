@@ -44,7 +44,7 @@ void main() {
           matching: find.byType(Container).first,
         ),
       );
-      final decoration = container.decoration as BoxDecoration;
+      final decoration = container.decoration! as BoxDecoration;
       expect(decoration.color, isNotNull);
 
       // Cleanup to prevent timersPending error
@@ -70,7 +70,7 @@ void main() {
           matching: find.byType(Container).first,
         ),
       );
-      final decoration = container.decoration as BoxDecoration;
+      final decoration = container.decoration! as BoxDecoration;
       expect(decoration.borderRadius, isNotNull);
 
       // Cleanup to prevent timersPending error

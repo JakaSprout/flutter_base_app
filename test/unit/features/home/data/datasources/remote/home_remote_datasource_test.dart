@@ -25,19 +25,18 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, HomeModel>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (homeModel) {
-            expect(homeModel.activePonds, equals(8));
-            expect(homeModel.estimasiBiomassa, equals('1250'));
-            expect(homeModel.totalPakan, equals('1.000'));
-            expect(homeModel.biayaPakan, equals('20'));
-            expect(homeModel.estimasiSR, equals('100'));
-            expect(homeModel.ponds.length, equals(8));
-            expect(homeModel.companies.length, equals(3));
-            expect(homeModel.selectedCompany, equals('PT. Tambak Bersama'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (
+          homeModel,
+        ) {
+          expect(homeModel.activePonds, equals(8));
+          expect(homeModel.estimasiBiomassa, equals('1250'));
+          expect(homeModel.totalPakan, equals('1.000'));
+          expect(homeModel.biayaPakan, equals('20'));
+          expect(homeModel.estimasiSR, equals('100'));
+          expect(homeModel.ponds.length, equals(8));
+          expect(homeModel.companies.length, equals(3));
+          expect(homeModel.selectedCompany, equals('PT. Tambak Bersama'));
+        });
       });
 
       test('should return correct pond data', () async {
@@ -45,15 +44,14 @@ void main() {
         final result = await dataSource.getHomeData();
 
         // Assert
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (homeModel) {
-            expect(homeModel.ponds[0].id, equals('TKH00A1'));
-            expect(homeModel.ponds[0].name, equals('Kolam A1'));
-            expect(homeModel.ponds.last.id, equals('TKH00D1'));
-            expect(homeModel.ponds.last.name, equals('Kolam D1'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (
+          homeModel,
+        ) {
+          expect(homeModel.ponds[0].id, equals('TKH00A1'));
+          expect(homeModel.ponds[0].name, equals('Kolam A1'));
+          expect(homeModel.ponds.last.id, equals('TKH00D1'));
+          expect(homeModel.ponds.last.name, equals('Kolam D1'));
+        });
       });
 
       test('should return correct company data', () async {
@@ -61,14 +59,13 @@ void main() {
         final result = await dataSource.getHomeData();
 
         // Assert
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (homeModel) {
-            expect(homeModel.companies, contains('PT. Tambak Bersama'));
-            expect(homeModel.companies, contains('PT. Company Lain'));
-            expect(homeModel.companies, contains('PT. Company Lain Lagi'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (
+          homeModel,
+        ) {
+          expect(homeModel.companies, contains('PT. Tambak Bersama'));
+          expect(homeModel.companies, contains('PT. Company Lain'));
+          expect(homeModel.companies, contains('PT. Company Lain Lagi'));
+        });
       });
     });
 
@@ -79,16 +76,13 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, Map<String, dynamic>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (data) {
-            expect(data['activePonds'], equals(8));
-            expect(data['estimasiBiomassa'], equals('1250'));
-            expect(data['totalPakan'], equals('1.000'));
-            expect(data['biayaPakan'], equals('20'));
-            expect(data['estimasiSR'], equals('100'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (data) {
+          expect(data['activePonds'], equals(8));
+          expect(data['estimasiBiomassa'], equals('1250'));
+          expect(data['totalPakan'], equals('1.000'));
+          expect(data['biayaPakan'], equals('20'));
+          expect(data['estimasiSR'], equals('100'));
+        });
       });
     });
 
@@ -99,14 +93,11 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, List<PondModel>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (ponds) {
-            expect(ponds.length, equals(8));
-            expect(ponds[0].id, equals('TKH00A1'));
-            expect(ponds[0].name, equals('Kolam A1'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (ponds) {
+          expect(ponds.length, equals(8));
+          expect(ponds[0].id, equals('TKH00A1'));
+          expect(ponds[0].name, equals('Kolam A1'));
+        });
       });
     });
 
@@ -117,14 +108,11 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, Map<String, dynamic>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (data) {
-            expect(data['companies'], isA<List>());
-            expect((data['companies'] as List).length, equals(3));
-            expect(data['selectedCompany'], equals('PT. Tambak Bersama'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (data) {
+          expect(data['companies'], isA<List>());
+          expect((data['companies'] as List).length, equals(3));
+          expect(data['selectedCompany'], equals('PT. Tambak Bersama'));
+        });
       });
     });
 
@@ -135,12 +123,9 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, Map<String, dynamic>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (data) {
-            expect(data['notificationCount'], equals(3));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (data) {
+          expect(data['notificationCount'], equals(3));
+        });
       });
     });
 
@@ -151,16 +136,13 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, List<BannerModel>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (banners) {
-            expect(banners.length, equals(2));
-            expect(banners[0].id, equals('harvest_calculator'));
-            expect(banners[0].title, equals('Kalkulator Panen'));
-            expect(banners[1].id, equals('lab_analysis'));
-            expect(banners[1].title, equals('Analisis Lab'));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (banners) {
+          expect(banners.length, equals(2));
+          expect(banners[0].id, equals('harvest_calculator'));
+          expect(banners[0].title, equals('Kalkulator Panen'));
+          expect(banners[1].id, equals('lab_analysis'));
+          expect(banners[1].title, equals('Analisis Lab'));
+        });
       });
     });
 
@@ -171,18 +153,15 @@ void main() {
 
         // Assert
         expect(result, isA<Right<Failure, List<InputDataItemModel>>>());
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (items) {
-            expect(items.length, equals(8));
-            expect(items[0].id, equals('pakan'));
-            expect(items[0].label, equals('Pakan'));
-            expect(items[0].order, equals(1));
-            expect(items.last.id, equals('kematian'));
-            expect(items.last.label, equals('Kematian'));
-            expect(items.last.order, equals(8));
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (items) {
+          expect(items.length, equals(8));
+          expect(items[0].id, equals('pakan'));
+          expect(items[0].label, equals('Pakan'));
+          expect(items[0].order, equals(1));
+          expect(items.last.id, equals('kematian'));
+          expect(items.last.label, equals('Kematian'));
+          expect(items.last.order, equals(8));
+        });
       });
 
       test('should return input data items in correct order', () async {
@@ -190,14 +169,11 @@ void main() {
         final result = await dataSource.getInputDataListData();
 
         // Assert
-        result.fold(
-          (failure) => fail('Should not return failure'),
-          (items) {
-            for (int i = 0; i < items.length; i++) {
-              expect(items[i].order, equals(i + 1));
-            }
-          },
-        );
+        result.fold((failure) => fail('Should not return failure'), (items) {
+          for (var i = 0; i < items.length; i++) {
+            expect(items[i].order, equals(i + 1));
+          }
+        });
       });
     });
 
@@ -216,4 +192,3 @@ void main() {
     });
   });
 }
-

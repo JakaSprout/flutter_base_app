@@ -25,10 +25,7 @@ void main() {
   group('fromJson', () {
     test('should create PondModel from valid JSON', () {
       // Arrange
-      final json = {
-        'id': 'TKH00A1',
-        'name': 'Kolam A1',
-      };
+      final json = {'id': 'TKH00A1', 'name': 'Kolam A1'};
 
       // Act
       final model = PondModel.fromJson(json);
@@ -40,10 +37,7 @@ void main() {
 
     test('should handle empty strings', () {
       // Arrange
-      final json = {
-        'id': '',
-        'name': '',
-      };
+      final json = {'id': '', 'name': ''};
 
       // Act
       final model = PondModel.fromJson(json);
@@ -55,12 +49,9 @@ void main() {
 
     test('should handle long strings', () {
       // Arrange
-      final longId = 'TKH' + '0' * 100;
-      final longName = 'Kolam ' + 'A' * 100;
-      final json = {
-        'id': longId,
-        'name': longName,
-      };
+      final longId = 'TKH${'0' * 100}';
+      final longName = 'Kolam ${'A' * 100}';
+      final json = {'id': longId, 'name': longName};
 
       // Act
       final model = PondModel.fromJson(json);
@@ -86,10 +77,7 @@ void main() {
 
     test('should maintain round-trip conversion', () {
       // Arrange
-      final originalJson = {
-        'id': 'TKH00A1',
-        'name': 'Kolam A1',
-      };
+      final originalJson = {'id': 'TKH00A1', 'name': 'Kolam A1'};
 
       // Act
       final model = PondModel.fromJson(originalJson);
@@ -100,4 +88,3 @@ void main() {
     });
   });
 }
-

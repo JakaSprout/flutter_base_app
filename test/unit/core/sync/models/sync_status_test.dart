@@ -22,7 +22,7 @@ void main() {
 
     test('should create sync status with all fields', () {
       // Arrange
-      final lastSyncTime = DateTime(2024, 1, 1);
+      final lastSyncTime = DateTime(2024);
 
       // Act
       final status = SyncStatusModel(

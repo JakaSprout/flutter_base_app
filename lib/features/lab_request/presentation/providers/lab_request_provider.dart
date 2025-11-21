@@ -1,3 +1,4 @@
+import 'package:flutter_base_app/core/config/app_config.dart' show AppConfig;
 import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
 import 'package:flutter_base_app/features/lab_request/data/datasources/remote/lab_request_remote_datasource.dart';
 import 'package:flutter_base_app/features/lab_request/data/repositories/lab_request_repository_impl.dart';

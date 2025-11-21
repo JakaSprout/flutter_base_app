@@ -114,8 +114,8 @@ void main() {
 
     test('should create override for dioClient', () {
       // Arrange
-      final testConfig = AppConfig.dev;
-      final testStorage = const FlutterSecureStorage();
+      const testConfig = AppConfig.dev;
+      const testStorage = FlutterSecureStorage();
       final testDioClient = DioClient(
         config: testConfig,
         secureStorage: testStorage,

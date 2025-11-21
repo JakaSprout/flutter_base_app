@@ -1,3 +1,4 @@
+import 'package:flutter_base_app/core/config/app_config.dart' show AppConfig;
 import 'package:flutter_base_app/core/di/providers/dio_provider.dart';
 import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/home/data/datasources/remote/home_remote_datasource.dart';

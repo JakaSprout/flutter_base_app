@@ -3,8 +3,8 @@ import 'package:flutter_base_app/core/error/failures.dart';
 import 'package:flutter_base_app/features/auth/domain/entities/login_response.dart';
 import 'package:flutter_base_app/features/auth/domain/services/auth_service.dart';
 import 'package:flutter_base_app/features/auth/presentation/constants/auth_constants.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
@@ -196,7 +196,7 @@ void main() {
 
       test('should save token expiration when expiresIn is provided', () async {
         // Arrange
-        final loginResponse = LoginResponse(
+        const loginResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
           userId: 'user_123',
@@ -527,7 +527,7 @@ void main() {
 
       test('should use custom threshold when provided', () async {
         // Arrange
-        final customThreshold = const Duration(minutes: 10);
+        const customThreshold = Duration(minutes: 10);
         final expiration = DateTime.now().add(
           customThreshold - const Duration(minutes: 1),
         );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
+import 'package:flutter_base_app/gen/assets.gen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Standard AppBar component for the application.
 ///
@@ -10,6 +12,7 @@ import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 /// - White background with gray divider
 /// - No elevation or color changes on scroll
 /// - Consistent styling across the app
+/// - Custom back button using arrow-back.svg icon when navigating inward
 ///
 /// Example:
 /// ```dart
@@ -76,7 +79,19 @@ class STPAppBar extends StatelessWidget implements PreferredSizeWidget {
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      leading: leading,
+      leading:
+          leading ??
+          (automaticallyImplyLeading && Navigator.canPop(context)
+              ? IconButton(
+                  icon: SvgPicture.asset(
+                    Assets.icons.general.arrowBack,
+                    width: 24,
+                    height: 24,
+                    color: AppColors.gray70,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null),
       actions: actions,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(_dividerHeight),

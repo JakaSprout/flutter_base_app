@@ -416,7 +416,7 @@ void main() {
             matching: find.byType(Container).first,
           ),
         );
-        final decoration = container.decoration as BoxDecoration;
+        final decoration = container.decoration! as BoxDecoration;
         expect(decoration.border, isNotNull);
 
         // Cleanup
@@ -451,7 +451,7 @@ void main() {
             matching: find.byType(Container).first,
           ),
         );
-        final decoration = container.decoration as BoxDecoration;
+        final decoration = container.decoration! as BoxDecoration;
         expect(decoration.border, isNull);
 
         // Cleanup

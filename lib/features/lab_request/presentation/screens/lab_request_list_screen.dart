@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/utils/status_bar_config.dart';
+import 'package:flutter_base_app/design_system/components/buttons/stp_bottom_action_button.dart';
 import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
 import 'package:flutter_base_app/design_system/theme/app_colors.dart';
 import 'package:flutter_base_app/features/lab_request/presentation/constants/lab_request_constants.dart';
@@ -188,52 +189,20 @@ class LabRequestListScreen extends HookConsumerWidget {
               ),
             ),
             // Bottom Button - Request Baru
-            Container(
-              padding: const EdgeInsets.all(
-                LabRequestDesignConstants.screenHorizontalPadding,
-              ),
-              decoration: const BoxDecoration(
-                color: AppColors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.gray20,
-                    blurRadius: 4,
-                    offset: Offset(0, -2),
+            STPBottomActionButton(
+              onPressed: () {
+                context.push(Routes.labRequestForm);
+              },
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    LabRequestConstants.buttonNewRequest,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.push(Routes.labRequestForm);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.add, size: 20),
-                        const SizedBox(width: 8),
-                        const Text(
-                          LabRequestConstants.buttonNewRequest,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ),
             ),
           ],

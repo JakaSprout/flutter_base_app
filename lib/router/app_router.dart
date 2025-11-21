@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_app/core/config/navigation_constants.dart';
 import 'package:flutter_base_app/core/logging/logger.dart';
 import 'package:flutter_base_app/design_system/components/navigation/stp_bottom_nav_bar.dart';
 import 'package:flutter_base_app/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:flutter_base_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:flutter_base_app/features/graph/presentation/screens/graph_screen.dart';
+import 'package:flutter_base_app/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
+import 'package:flutter_base_app/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:flutter_base_app/features/harvest_calculator/presentation/screens/create_simulation_screen.dart';
+import 'package:flutter_base_app/features/harvest_calculator/presentation/screens/simulation_list_screen.dart';
+import 'package:flutter_base_app/features/harvest_calculator/presentation/screens/simulation_results_screen.dart';
 import 'package:flutter_base_app/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter_base_app/features/input_data/presentation/screens/input_data_screen.dart';
 import 'package:flutter_base_app/features/lab_request/presentation/screens/lab_request_form_screen.dart';
@@ -184,6 +188,41 @@ class AppRouter {
           name: Routes.labRequestFormName,
           builder: (context, state) => const LabRequestFormScreen(),
         ),
+        // Harvest Calculator routes (outside shell route, no bottom nav)
+        GoRoute(
+          path: Routes.harvestCalculatorHome,
+          name: Routes.harvestCalculatorHomeName,
+          builder: (context, state) => const SimulationListScreen(),
+        ),
+        GoRoute(
+          path: Routes.harvestCalculatorCreate,
+          name: Routes.harvestCalculatorCreateName,
+          builder: (context, state) => const CreateSimulationScreen(
+            simulationType: HarvestCalculatorConstants.simulationTypeCycle,
+          ),
+        ),
+        GoRoute(
+          path: Routes.harvestCalculatorCreateAgent,
+          name: Routes.harvestCalculatorCreateAgentName,
+          builder: (context, state) => const CreateSimulationScreen(
+            simulationType: HarvestCalculatorConstants.simulationTypeAgent,
+          ),
+        ),
+        GoRoute(
+          path: Routes.harvestCalculatorResults,
+          name: Routes.harvestCalculatorResultsName,
+          builder: (context, state) {
+            final args = state.extra;
+            return SimulationResultsScreen(
+              args: args is SimulationResultsScreenArgs ? args : null,
+            );
+          },
+        ),
+        GoRoute(
+          path: Routes.harvestCalculatorSaved,
+          name: Routes.harvestCalculatorSavedName,
+          builder: (context, state) => const SimulationListScreen(),
+        ),
       ],
       // Add TalkerRouteObserver for logging route changes
       observers: [TalkerRouteObserver(AppLogger.instance)],
@@ -209,97 +248,6 @@ class AppRouter {
         path == Routes.labRequestList ||
         path == Routes.labRequestForm;
   }
-
-  /// GoRouter instance for navigation.
-  ///
-  /// Note: This is a legacy static router. For new code, use [createRouter]
-  /// with a WidgetRef to enable authentication redirects.
-  static final GoRouter router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    initialLocation: Routes.login,
-    routes: [
-      // Shell route with bottom navigation bar
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        observers: [TalkerRouteObserver(AppLogger.instance)],
-        builder: (context, state, child) {
-          return Scaffold(
-            body: child,
-            bottomNavigationBar: STPBottomNavBar(
-              currentLocation: state.uri.path,
-            ),
-            floatingActionButton: STPBottomNavBar.buildFAB(context),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-          );
-        },
-        routes: [
-          GoRoute(
-            path: Routes.home,
-            name: Routes.homeName,
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: Routes.graph,
-            name: Routes.graphName,
-            builder: (context, state) => const GraphScreen(),
-          ),
-          GoRoute(
-            path: Routes.inputData,
-            name: Routes.inputDataName,
-            builder: (context, state) => const InputDataScreen(),
-          ),
-          GoRoute(
-            path: Routes.pond,
-            name: Routes.pondName,
-            builder: (context, state) => const PondScreen(),
-          ),
-          GoRoute(
-            path: Routes.profile,
-            name: Routes.profileName,
-            builder: (context, state) => const ProfileScreen(),
-          ),
-        ],
-      ),
-      // Splash route (outside shell route, no bottom nav)
-      GoRoute(
-        path: Routes.splash,
-        name: Routes.splashName,
-        builder: (context, state) {
-          return const Scaffold(
-            body: Center(child: Text(NavigationConstants.screenSplashTitle)),
-          );
-        },
-      ),
-      // Login route (outside shell route, no bottom nav)
-      GoRoute(
-        path: Routes.login,
-        name: Routes.loginName,
-        builder: (context, state) => const LoginScreen(),
-      ),
-      // Lab Request routes (outside shell route, no bottom nav)
-      GoRoute(
-        path: Routes.labRequestList,
-        name: Routes.labRequestListName,
-        builder: (context, state) => const LabRequestListScreen(),
-      ),
-      GoRoute(
-        path: Routes.labRequestForm,
-        name: Routes.labRequestFormName,
-        builder: (context, state) => const LabRequestFormScreen(),
-      ),
-    ],
-    // Add TalkerRouteObserver for logging route changes
-    observers: [TalkerRouteObserver(AppLogger.instance)],
-    // Log navigation errors
-    onException: (context, state, exception) {
-      AppLogger.error(
-        'Navigation error: ${state.uri}',
-        exception,
-        StackTrace.current,
-      );
-    },
-  );
 }
 
 /// Notifier for auth state changes to trigger router refresh.

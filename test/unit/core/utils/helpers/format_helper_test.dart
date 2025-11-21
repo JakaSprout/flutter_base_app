@@ -22,8 +22,8 @@ void main() {
       });
 
       test('should format currency with custom symbol', () {
-        final formatted = FormatHelper.formatCurrency(1000, symbol: '\$');
-        expect(formatted, contains('\$'));
+        final formatted = FormatHelper.formatCurrency(1000, symbol: r'$');
+        expect(formatted, contains(r'$'));
       });
 
       test('should format currency with decimals', () {
@@ -39,7 +39,7 @@ void main() {
       });
 
       test('should format percentage with decimals', () {
-        final formatted = FormatHelper.formatPercentage(50.5, decimals: 2);
+        final formatted = FormatHelper.formatPercentage(50.5);
         expect(formatted, contains('50.50'));
       });
     });
@@ -64,7 +64,7 @@ void main() {
 
     group('formatDuration', () {
       test('should format duration with hours', () {
-        final duration = const Duration(hours: 2, minutes: 30, seconds: 45);
+        const duration = Duration(hours: 2, minutes: 30, seconds: 45);
         final formatted = FormatHelper.formatDuration(duration);
         expect(formatted, contains('2h'));
         expect(formatted, contains('30m'));
@@ -72,7 +72,7 @@ void main() {
       });
 
       test('should format duration with minutes only', () {
-        final duration = const Duration(minutes: 5, seconds: 30);
+        const duration = Duration(minutes: 5, seconds: 30);
         final formatted = FormatHelper.formatDuration(duration);
         expect(formatted, contains('5m'));
         expect(formatted, contains('30s'));
@@ -80,7 +80,7 @@ void main() {
       });
 
       test('should format duration with seconds only', () {
-        final duration = const Duration(seconds: 30);
+        const duration = Duration(seconds: 30);
         final formatted = FormatHelper.formatDuration(duration);
         expect(formatted, contains('30s'));
         expect(formatted, isNot(contains('m')));

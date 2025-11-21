@@ -154,7 +154,7 @@ void main() {
 
     group('age', () {
       test('should calculate age correctly', () {
-        final birthDate = DateTime(2000, 1, 1);
+        final birthDate = DateTime(2000);
         final age = birthDate.age;
         // Age should be approximately current year - 2000
         expect(age, greaterThanOrEqualTo(24));

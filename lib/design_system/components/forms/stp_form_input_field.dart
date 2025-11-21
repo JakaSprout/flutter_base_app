@@ -74,6 +74,17 @@ class STPFormInputField extends StatelessWidget {
         // Label with required indicator
         Row(
           children: [
+            if (isRequired) ...[
+              const Text(
+                '*',
+                style: TextStyle(
+                  color: Color(0xFFD84639), // Destructive/60
+                  fontSize: _labelFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 2), // Gap 2px
+            ],
             Text(
               label,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -84,16 +95,6 @@ class STPFormInputField extends StatelessWidget {
                     height: _lineHeight,
                   ),
             ),
-            if (isRequired) ...[
-              const SizedBox(width: 4),
-              const Text(
-                '*',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: _labelFontSize,
-                ),
-              ),
-            ],
           ],
         ),
         const SizedBox(height: _gap),

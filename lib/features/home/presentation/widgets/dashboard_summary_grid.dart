@@ -149,7 +149,7 @@ class _DashboardSummaryGridState extends State<DashboardSummaryGrid>
         subtitle: subtitle,
       ),
       STPMetricCard(
-        iconPath: Assets.icons.general.paymentColor,
+        iconPath: Assets.icons.general.paymentNegative,
         title: HomeConstants.cardBiayaPakanTitle,
         value: widget.biayaPakan ?? HomeConstants.defaultBiayaPakan,
         unit: 'juta',

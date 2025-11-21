@@ -34,6 +34,10 @@ components/
 
 ## Available Components
 
+### Banners
+
+- **STPStatusBanner**: Status banner for info/success notifications with appropriate icons and colors
+
 ### Forms
 
 - **STPFormInputField**: Consistent input field with label, required indicator, and icon support

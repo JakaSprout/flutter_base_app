@@ -55,6 +55,8 @@ dependencies:
   flutter_svg: ^1.1.6 # SVG icons from Figma (Outline, Solid variants) - compatible with eventsource
   flutter_screenutil: ^5.9.3 # Responsive design utilities - match Figma design size
   reactive_forms: ^18.1.1
+  flutter_echarts: ^2.5.0
+  data_table_2: ^2.7.1
 
 dev_dependencies:
   flutter_test:
@@ -79,8 +81,8 @@ dev_dependencies:
   flutter_flavorizr: ^2.2.1
 
   # App Configuration Tools
-  flutter_native_splash: ^2.4.6
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
   # Asset Code Generation
   flutter_gen_runner: ^5.4.0 # Type-safe asset code generation

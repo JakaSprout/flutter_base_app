@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_base_app/core/config/constants.dart';
 import 'package:flutter_base_app/core/sync/services/sse_service.dart';
@@ -246,9 +245,7 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       final statuses = <SSEConnectionStatus>[];
-      final subscription = service.onStatusChanged.listen((status) {
-        statuses.add(status);
-      });
+      final subscription = service.onStatusChanged.listen(statuses.add);
 
       // Act
       await service.disconnect();

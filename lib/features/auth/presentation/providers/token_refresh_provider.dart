@@ -23,9 +23,7 @@ class TokenRefreshMonitor extends _$TokenRefreshMonitor {
   FutureOr<void> build() {
     // Start monitoring
     _startMonitoring();
-    ref.onDispose(() {
-      _stopMonitoring();
-    });
+    ref.onDispose(_stopMonitoring);
   }
 
   /// Start monitoring token expiration.
@@ -87,9 +85,7 @@ class TokenRefreshMonitor extends _$TokenRefreshMonitor {
     _refreshTimer?.cancel();
 
     // Check every minute
-    _refreshTimer = Timer(const Duration(minutes: 1), () {
-      _checkAndRefreshToken();
-    });
+    _refreshTimer = Timer(const Duration(minutes: 1), _checkAndRefreshToken);
   }
 
   /// Refresh the access token.
@@ -130,7 +126,7 @@ class TokenRefreshMonitor extends _$TokenRefreshMonitor {
       AppLogger.error('Token refresh failed: $e', e, stackTrace);
       // If refresh fails, emit logged out event
       AuthEventBus.instance.emitLoggedOut(
-        message: 'Token refresh failed: ${e.toString()}',
+        message: 'Token refresh failed: $e',
         data: {'error': e.toString()},
       );
     }

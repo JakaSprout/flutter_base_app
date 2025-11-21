@@ -7,7 +7,7 @@ part of 'token_refresh_provider.dart';
 // **************************************************************************
 
 String _$tokenRefreshMonitorHash() =>
-    r'd11b65226be6623989d292ac3f70f37c1c6638da';
+    r'86b5413ff5f2fb611321406d5d15f124bce8771e';
 
 /// Provider for automatic token refresh.
 ///

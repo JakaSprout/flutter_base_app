@@ -1,5 +1,5 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_base_app/features/home/domain/entities/input_data_item_entity.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'input_data_item_model.freezed.dart';
 part 'input_data_item_model.g.dart';
@@ -51,4 +51,3 @@ extension InputDataItemEntityExtension on InputDataItemEntity {
     );
   }
 }
-

@@ -106,14 +106,14 @@ class HomeConstants {
         id: 'harvest_calculator',
         title: 'Kalkulator Panen',
         description: 'Hitung potensi hasil panen Kamu.',
-        imagePath: 'assets/images/kalkulator_panen.jpg',
+        imagePath: 'assets/images/kalkulator-panen.jpg',
         backgroundColor: AppColors.white,
       ),
       HarvestCalculatorCardData(
         id: 'lab_analysis',
         title: 'Analisis Lab',
         description: 'Lakukan analisis laboratorium untuk kualitas air.',
-        imagePath: 'assets/images/analisis_lab.jpg',
+        imagePath: 'assets/images/analisis-lab.jpg',
         backgroundColor: AppColors.white,
       ),
     ];

@@ -25,7 +25,7 @@ AuthService authService(AuthServiceRef ref) {
 Future<bool> authState(AuthStateRef ref) async {
   final authService = ref.watch(authServiceProvider);
   // Use validateSession to check both token existence and expiration
-  return await authService.validateSession();
+  return authService.validateSession();
 }
 
 /// Provider for checking if user is authenticated (synchronous check).

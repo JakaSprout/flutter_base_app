@@ -19,7 +19,7 @@ class StatusBarConfig {
     // Ensure status bar is enabled (for Android)
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
-      overlays: [SystemUiOverlay.top],
+      overlays: const [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -42,7 +42,7 @@ class StatusBarConfig {
     // Ensure status bar is enabled (for Android)
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
-      overlays: [SystemUiOverlay.top],
+      overlays: const [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -117,7 +117,7 @@ class StatusBarConfig {
     // Ensure status bar is enabled (for Android)
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
-      overlays: [SystemUiOverlay.top],
+      overlays: const [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(

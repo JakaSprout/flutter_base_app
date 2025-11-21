@@ -13,6 +13,6 @@ class Logout {
   ///
   /// Returns [Either] containing [Failure] on error or void on success.
   Future<Either<Failure, void>> call() async {
-    return await _repository.logout();
+    return _repository.logout();
   }
 }

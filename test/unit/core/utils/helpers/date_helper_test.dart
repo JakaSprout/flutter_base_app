@@ -128,7 +128,7 @@ void main() {
 
     group('parseIsoString', () {
       test('should parse ISO string', () {
-        final iso = '2024-01-15T14:30:45.000Z';
+        const iso = '2024-01-15T14:30:45.000Z';
         final parsed = DateHelper.parseIsoString(iso);
         expect(parsed, isNotNull);
         expect(parsed?.year, equals(2024));
@@ -194,8 +194,8 @@ void main() {
 
     group('isSameDay', () {
       test('should return true for same day', () {
-        final date1 = DateTime(2024, 1, 15, 10, 0);
-        final date2 = DateTime(2024, 1, 15, 20, 0);
+        final date1 = DateTime(2024, 1, 15, 10);
+        final date2 = DateTime(2024, 1, 15, 20);
         expect(DateHelper.isSameDay(date1, date2), isTrue);
       });
 

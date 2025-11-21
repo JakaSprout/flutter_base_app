@@ -44,7 +44,7 @@ class _LabRequestDatePickerFormFieldState
     final isRequired = widget.isRequired;
     final onDateSelected = widget.onDateSelected;
 
-    String formattedValue = '';
+    var formattedValue = '';
     IconData? fieldIcon;
 
     if (label.toLowerCase().contains('tanggal') ||

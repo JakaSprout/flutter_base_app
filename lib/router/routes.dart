@@ -56,4 +56,37 @@ class Routes {
 
   /// Lab Request Form route name.
   static const String labRequestFormName = 'lab-request-form';
+
+  /// Harvest Calculator Home route path.
+  static const String harvestCalculatorHome = '/harvest-calculator';
+
+  /// Harvest Calculator Home route name.
+  static const String harvestCalculatorHomeName = 'harvest-calculator';
+
+  /// Harvest Calculator Create route path.
+  static const String harvestCalculatorCreate = '/harvest-calculator/create';
+
+  /// Harvest Calculator Create route name.
+  static const String harvestCalculatorCreateName = 'harvest-calculator-create';
+
+  /// Harvest Calculator Results route path.
+  static const String harvestCalculatorResults = '/harvest-calculator/results';
+
+  /// Harvest Calculator Results route name.
+  static const String harvestCalculatorResultsName =
+      'harvest-calculator-results';
+
+  /// Harvest Calculator Saved route path.
+  static const String harvestCalculatorSaved = '/harvest-calculator/saved';
+
+  /// Harvest Calculator Saved route name.
+  static const String harvestCalculatorSavedName = 'harvest-calculator-saved';
+
+  /// Harvest Calculator Create Agent route path.
+  static const String harvestCalculatorCreateAgent =
+      '/harvest-calculator/create-agent';
+
+  /// Harvest Calculator Create Agent route name.
+  static const String harvestCalculatorCreateAgentName =
+      'harvest-calculator-create-agent';
 }

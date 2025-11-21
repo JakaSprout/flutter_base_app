@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/core/utils/status_bar_config.dart';
 import 'package:flutter_base_app/core/utils/validators/input_validators.dart';
+import 'package:flutter_base_app/design_system/components/buttons/stp_bottom_action_button.dart';
 import 'package:flutter_base_app/design_system/components/forms/stp_dropdown_form_field.dart';
 import 'package:flutter_base_app/design_system/components/forms/stp_info_banner.dart';
 import 'package:flutter_base_app/design_system/components/navigation/stp_app_bar.dart';
@@ -332,53 +333,21 @@ class LabRequestFormScreen extends HookConsumerWidget {
                 ),
               ),
               // Bottom Button
-              Container(
-                padding: const EdgeInsets.all(
-                  LabRequestDesignConstants.screenHorizontalPadding,
-                ),
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gray20,
-                      blurRadius: 4,
-                      offset: Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isLoading.value ? null : handleSubmit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+              STPBottomActionButton(
+                text: LabRequestConstants.buttonSubmit,
+                isLoading: isLoading.value,
+                enabled: !isLoading.value,
+                onPressed: handleSubmit,
+                child: isLoading.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.white,
                         ),
-                      ),
-                      child: isLoading.value
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.white,
-                              ),
-                            )
-                          : const Text(
-                              LabRequestConstants.buttonSubmit,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
+                      )
+                    : null,
               ),
             ],
           ),

@@ -15,6 +15,6 @@ class LoginWithEmail {
   ///
   /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
   Future<Either<Failure, LoginResponse>> call(EmailLoginRequest request) async {
-    return await _repository.loginWithEmail(request);
+    return _repository.loginWithEmail(request);
   }
 }

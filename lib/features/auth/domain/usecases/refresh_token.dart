@@ -14,6 +14,6 @@ class RefreshToken {
   ///
   /// Returns [Either] containing [Failure] on error or [LoginResponse] on success.
   Future<Either<Failure, LoginResponse>> call(String refreshToken) async {
-    return await _repository.refreshToken(refreshToken);
+    return _repository.refreshToken(refreshToken);
   }
 }

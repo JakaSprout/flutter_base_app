@@ -12,7 +12,7 @@ void main() {
       const data = {'name': 'Test Pond'};
 
       // Act
-      final item = SyncItem(
+      const item = SyncItem(
         id: id,
         operationType: operationType,
         entityType: entityType,
@@ -37,7 +37,7 @@ void main() {
 
     test('should create sync item with all fields', () {
       // Arrange
-      final createdAt = DateTime(2024, 1, 1);
+      final createdAt = DateTime(2024);
       final updatedAt = DateTime(2024, 1, 2);
       const metadata = {'source': 'mobile'};
 
@@ -69,14 +69,13 @@ void main() {
 
     test('canRetry should return true when retryCount is less than maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 1,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -85,14 +84,13 @@ void main() {
 
     test('canRetry should return false when retryCount equals maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 3,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -101,14 +99,13 @@ void main() {
 
     test('canRetry should return false when retryCount exceeds maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 4,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -117,14 +114,13 @@ void main() {
 
     test('hasExceededMaxRetries should return false when retryCount is less than maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 1,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -133,14 +129,13 @@ void main() {
 
     test('hasExceededMaxRetries should return true when retryCount equals maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 3,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -149,14 +144,13 @@ void main() {
 
     test('hasExceededMaxRetries should return true when retryCount exceeds maxRetries', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 4,
-        maxRetries: 3,
       );
 
       // Act & Assert
@@ -165,15 +159,12 @@ void main() {
 
     test('copyWith should create new instance with updated fields', () {
       // Arrange
-      final original = SyncItem(
+      const original = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {'name': 'Original'},
-        priority: SyncPriority.normal,
-        retryCount: 0,
-        maxRetries: 3,
       );
 
       // Act
@@ -199,7 +190,7 @@ void main() {
 
     test('copyWith should keep original values when fields are not provided', () {
       // Arrange
-      final original = SyncItem(
+      const original = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
@@ -227,14 +218,13 @@ void main() {
 
     test('toString should return formatted string', () {
       // Arrange
-      final item = SyncItem(
+      const item = SyncItem(
         id: 'test-id',
         operationType: SyncOperationType.create,
         entityType: 'pond',
         entityId: 'pond-123',
         data: {},
         retryCount: 1,
-        maxRetries: 3,
       );
 
       // Act

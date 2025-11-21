@@ -15,7 +15,7 @@ class _TestWidget extends HookConsumerWidget {
     return Container(
       child: Column(
         children: [
-          Text('Form created'),
+          const Text('Form created'),
           Text(
             'Phone control: ${form.controls.containsKey(LoginFormControls.phone)}',
           ),

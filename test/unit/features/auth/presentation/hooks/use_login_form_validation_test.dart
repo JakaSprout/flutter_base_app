@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_app/features/auth/presentation/constants/login_form_controls.dart';
 import 'package:flutter_base_app/features/auth/presentation/hooks/use_login_form_validation.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+
 import '../../../../../helpers/test_helpers.dart';
 
 /// Test widget that uses the hook
 class _TestWidget extends HookConsumerWidget {
-  final bool isPhoneMode;
   const _TestWidget({required this.isPhoneMode});
+  final bool isPhoneMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +75,7 @@ void main() {
 
     testWidgets('should update validators when mode changes', (tester) async {
       // Arrange
-      bool isPhoneMode = true;
+      var isPhoneMode = true;
 
       await tester.pumpWidget(
         TestHelpers.createTestApp(child: _TestWidget(isPhoneMode: isPhoneMode)),
