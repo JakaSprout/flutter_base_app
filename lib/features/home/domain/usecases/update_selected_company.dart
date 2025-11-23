@@ -1,7 +1,7 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
+import 'package:dartz/dartz.dart';
 
 /// Use case for updating selected company.
 class UpdateSelectedCompany {

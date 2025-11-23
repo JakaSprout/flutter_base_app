@@ -1,14 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/chart_builder.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/segmented_toggle.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
-import 'package:intl/intl.dart';
 
 /// Section widget for feed expenditure vs revenue chart and table.
 class FeedSection extends StatelessWidget {
@@ -29,19 +28,12 @@ class FeedSection extends StatelessWidget {
   /// Callback when toggle changes.
   final ValueChanged<bool> onToggle;
 
-  FeedChartPoint? get _latestPoint =>
-      simulation.feedVsRevenuePoints.isNotEmpty
-          ? simulation.feedVsRevenuePoints.last
-          : null;
+  FeedChartPoint? get _latestPoint => simulation.feedVsRevenuePoints.isNotEmpty
+      ? simulation.feedVsRevenuePoints.last
+      : null;
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    );
-
     return SectionFieldPadding.wrapSection(
       child: FormSection(
         title: HarvestCalculatorConstants.chartFeedExpenditureVsRevenue,
@@ -77,14 +69,12 @@ class FeedSection extends StatelessWidget {
                     stats: [
                       ChartStatValue(
                         label: 'Potensi Pendapatan',
-                        value: currencyFormat.format(
-                          _latestPoint?.revenue ?? 0,
-                        ),
+                        value: '',
                         color: HarvestCalculatorDesignConstants.blueAccent,
                       ),
                       ChartStatValue(
                         label: 'Pengeluaran Pakan Kumulatif',
-                        value: currencyFormat.format(_latestPoint?.feed ?? 0),
+                        value: '',
                         color: HarvestCalculatorDesignConstants.warningColor,
                       ),
                     ],
@@ -97,5 +87,3 @@ class FeedSection extends StatelessWidget {
     );
   }
 }
-
-

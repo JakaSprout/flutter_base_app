@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Modal bottom sheet for selecting cultivation system.
 class SelectCultivationSystemModal extends StatefulWidget {
@@ -72,7 +72,8 @@ class _SelectCultivationSystemModalState
                         Text(
                           HarvestCalculatorConstants
                               .titleSelectCultivationSystem,
-                          style: HarvestCalculatorDesignConstants.cardTitleTextStyle,
+                          style: HarvestCalculatorDesignConstants
+                              .cardTitleTextStyle,
                         ),
                         SizedBox(height: 4),
                         Text(
@@ -152,7 +153,11 @@ class _SelectCultivationSystemModalState
             // Spacing before divider
             const SizedBox(height: 20),
             // Divider above button
-            const Divider(height: 1, thickness: 1, color: HarvestCalculatorDesignConstants.gray20),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: HarvestCalculatorDesignConstants.gray20,
+            ),
             // Save button without shadow
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -226,7 +231,10 @@ class _CultivationSystemOption extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
-          color: isSelected ? HarvestCalculatorDesignConstants.simulationCardIconBackgroundBlue : HarvestCalculatorDesignConstants.white,
+          color: isSelected
+              ? HarvestCalculatorDesignConstants
+                    .simulationCardIconBackgroundBlue
+              : HarvestCalculatorDesignConstants.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected
@@ -238,7 +246,9 @@ class _CultivationSystemOption extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           splashColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.3),
-          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.1),
+          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(
+            0.1,
+          ),
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -250,16 +260,15 @@ class _CultivationSystemOption extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: HarvestCalculatorDesignConstants.bodyTextStyle.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: HarvestCalculatorDesignConstants.bodyTextStyle
+                            .copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         description,
-                        style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle.copyWith(
-                          height: 1.5,
-                        ),
+                        style: HarvestCalculatorDesignConstants
+                            .smallTextSecondaryStyle
+                            .copyWith(height: 1.5),
                       ),
                     ],
                   ),

@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/events/auth_event_bus.dart';
 import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
@@ -11,6 +9,8 @@ import 'package:app_mobile_afms/features/auth/presentation/providers/logout_prov
 import 'package:app_mobile_afms/features/auth/presentation/providers/session_timeout_provider.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/token_refresh_provider.dart';
 import 'package:app_mobile_afms/router/app_router.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Modal bottom sheet for selecting commodity.
 class SelectCommodityModal extends StatefulWidget {
@@ -145,7 +145,11 @@ class _SelectCommodityModalState extends State<SelectCommodityModal> {
             // Spacing before divider
             const SizedBox(height: 20),
             // Divider above button
-            const Divider(height: 1, thickness: 1, color: HarvestCalculatorDesignConstants.gray20),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: HarvestCalculatorDesignConstants.gray20,
+            ),
             // Save button without shadow
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -230,7 +234,9 @@ class _CommodityOption extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           splashColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.3),
-          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.1),
+          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(
+            0.1,
+          ),
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Row(

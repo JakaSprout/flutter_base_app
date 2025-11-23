@@ -1,5 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:dio/dio.dart';
 
 /// Maps exceptions to failures.
 class ErrorMapper {

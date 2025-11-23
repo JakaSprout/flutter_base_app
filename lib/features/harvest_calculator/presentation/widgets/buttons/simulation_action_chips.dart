@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/buttons/action_chip_button.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 
 /// Action chips for filtering and sorting simulations.
 class SimulationActionChips extends StatelessWidget {

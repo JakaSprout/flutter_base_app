@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Login button widget for login screen.
 class LoginButton extends StatelessWidget {
@@ -58,7 +58,9 @@ class LoginButton extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: _isButtonEnabled ? LoginDesignConstants.white : LoginDesignConstants.gray70,
+                  color: _isButtonEnabled
+                      ? LoginDesignConstants.white
+                      : LoginDesignConstants.gray70,
                   fontFamily: AppConstants.fontFamily,
                 ),
               ),

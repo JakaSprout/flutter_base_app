@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 /// A custom switch widget that provides a toggle control with smooth animations.
 ///

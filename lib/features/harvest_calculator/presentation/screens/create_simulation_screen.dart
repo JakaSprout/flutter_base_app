@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/banners/stp_status_banner.dart';
 import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
@@ -9,6 +8,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/use_registered_pond_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/conditional_sections_wrapper.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -38,6 +38,7 @@ class CreateSimulationScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final form = useCreateSimulationForm();
+    final scrollController = useScrollController();
     final infoTextStyle = HarvestCalculatorDesignConstants.smallTextStyle
         .copyWith(height: 18 / 12);
 
@@ -58,6 +59,105 @@ class CreateSimulationScreen extends HookWidget {
         ? HarvestCalculatorConstants.titleCreateSimulationAgent
         : HarvestCalculatorConstants.titleCreateSimulation;
 
+    // Update stocking default value based on mode
+    // Update field validators and defaults based on simulation mode
+    useEffect(() {
+      final cultivationSystemControl =
+          form.control(HarvestCalculatorFormControls.cultivationSystem)
+              as FormControl<String>;
+      final pondAreaControl =
+          form.control(HarvestCalculatorFormControls.pondArea)
+              as FormControl<String>;
+      final pondDepthControl =
+          form.control(HarvestCalculatorFormControls.pondDepth)
+              as FormControl<String>;
+      final capacityKgPerM2Control =
+          form.control(HarvestCalculatorFormControls.capacityKgPerM2)
+              as FormControl<String>;
+      final feedingRateControl =
+          form.control(HarvestCalculatorFormControls.feedingRate)
+              as FormControl<String>;
+      final currentCommodityWeightControl =
+          form.control(HarvestCalculatorFormControls.currentCommodityWeight)
+              as FormControl<String>;
+      final targetCommodityWeightControl =
+          form.control(HarvestCalculatorFormControls.targetCommodityWeight)
+              as FormControl<String>;
+      final sellingPriceControl =
+          form.control(HarvestCalculatorFormControls.sellingPrice)
+              as FormControl<String>;
+      final stockingControl =
+          form.control(HarvestCalculatorFormControls.stocking)
+              as FormControl<String>;
+
+      if (isAgentMode) {
+        // Agent mode: pond-related fields, feeding rate, and commodity weight fields not used
+        cultivationSystemControl.clearValidators();
+        pondAreaControl.clearValidators();
+        pondDepthControl.clearValidators();
+        capacityKgPerM2Control.clearValidators();
+        feedingRateControl.clearValidators();
+        currentCommodityWeightControl.clearValidators();
+        targetCommodityWeightControl.clearValidators();
+        sellingPriceControl.clearValidators();
+        // For agent mode: empty default for stocking
+        if (stockingControl.value == '0') {
+          stockingControl.value = '';
+        }
+      } else {
+        // Cycle mode: cultivation system required, pond fields, feeding rate, and commodity weights may be required
+        cultivationSystemControl.setValidators([Validators.required]);
+        feedingRateControl.setValidators([Validators.required]);
+        currentCommodityWeightControl.setValidators([Validators.required]);
+        targetCommodityWeightControl.setValidators([Validators.required]);
+        sellingPriceControl.setValidators([Validators.required]);
+        // pondArea, pondDepth, capacityKgPerM2 validators will be set based on useRegisteredPond
+        // For cycle mode: '0' default for stocking (will be auto-calculated)
+        if (stockingControl.value == '') {
+          stockingControl.value = '0';
+        }
+      }
+      return null;
+    }, [isAgentMode]);
+
+    // Update pond-related validators based on useRegisteredPond (cycle mode only)
+    useEffect(
+      () {
+        if (!isAgentMode) {
+          final useRegisteredPondControl =
+              form.control(HarvestCalculatorFormControls.useRegisteredPond)
+                  as FormControl<bool>;
+          final pondAreaControl =
+              form.control(HarvestCalculatorFormControls.pondArea)
+                  as FormControl<String>;
+          final pondDepthControl =
+              form.control(HarvestCalculatorFormControls.pondDepth)
+                  as FormControl<String>;
+          final capacityKgPerM2Control =
+              form.control(HarvestCalculatorFormControls.capacityKgPerM2)
+                  as FormControl<String>;
+
+          final useRegisteredPond = useRegisteredPondControl.value ?? true;
+          if (!useRegisteredPond) {
+            // Manual input: pond fields required
+            pondAreaControl.setValidators([Validators.required]);
+            pondDepthControl.setValidators([Validators.required]);
+            capacityKgPerM2Control.setValidators([Validators.required]);
+          } else {
+            // Registered pond: pond fields not required
+            pondAreaControl.clearValidators();
+            pondDepthControl.clearValidators();
+            capacityKgPerM2Control.clearValidators();
+          }
+        }
+        return null;
+      },
+      [
+        form.control(HarvestCalculatorFormControls.useRegisteredPond).value,
+        isAgentMode,
+      ],
+    );
+
     return Scaffold(
       backgroundColor: HarvestCalculatorDesignConstants.white,
       resizeToAvoidBottomInset: false,
@@ -69,10 +169,15 @@ class CreateSimulationScreen extends HookWidget {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.only(
+                  controller: scrollController,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
                     top: HarvestCalculatorDesignConstants.screenPaddingVertical,
                     bottom:
-                        HarvestCalculatorDesignConstants.screenPaddingVertical,
+                        HarvestCalculatorDesignConstants.screenPaddingVertical +
+                        MediaQuery.of(context).viewInsets.bottom +
+                        100, // Extra padding for keyboard + safe area
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,15 +220,16 @@ class CreateSimulationScreen extends HookWidget {
 
                       /// Conditional Sections (Cultivation Info, Pond Capacity, Cycle Type, Growth Target, Price Info)
                       const ConditionalSectionsWrapper(),
-
-                      const SizedBox(height: 32),
                     ],
                   ),
                 ),
               ),
 
               /// Bottom Button
-              CreateSimulationBottomButton(form: form),
+              CreateSimulationBottomButton(
+                form: form,
+                scrollController: scrollController,
+              ),
             ],
           ),
         ),

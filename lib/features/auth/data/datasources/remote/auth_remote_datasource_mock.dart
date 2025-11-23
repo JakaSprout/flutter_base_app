@@ -1,13 +1,14 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_mock_data.dart';
 import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart' show AuthRemoteDataSourceImpl;
+import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart'
+    show AuthRemoteDataSourceImpl;
 import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Mock implementation of [AuthRemoteDataSource].
@@ -69,19 +70,14 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       final accessToken = AuthMockData.generateAccessToken();
       final refreshToken = AuthMockData.generateRefreshToken();
 
-      // ✅ Priority 3: Create user object
-      final userObject = AuthMockData.createPhoneUserObject(
-        phoneNumber: requestPayload['phone'] as String,
-      );
-
       // ✅ Priority 1: Create nested response structure (matches Real API)
       final mockResponseData = AuthMockData.createLoginResponseData(
         sessionId: sessionId,
+        employeeId: AuthMockData.mockPhoneEmployeeId,
         accessToken: accessToken,
         refreshToken: refreshToken,
         expiresIn: AuthMockData.defaultTokenExpirationSeconds,
         tokenType: AuthMockData.defaultTokenType,
-        user: userObject,
       );
 
       // ✅ Priority 1: Parse nested structure like Real API
@@ -106,10 +102,8 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
         sessionId: innerData['sessionId'] as String?,
         expiresIn: innerData['expiresIn'] as int?,
         tokenType: innerData['tokenType'] as String? ?? 'Bearer',
-        user:
-            innerData['user'] as Map<String, dynamic>? ??
-            outerData['user'] as Map<String, dynamic>?,
-        phoneNumber: requestPayload['phone'] as String,
+        employeeId:
+            (innerData['employeeId'] ?? outerData['employeeId']) as int?,
       );
 
       return Right(loginResponse);
@@ -154,19 +148,14 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       final accessToken = AuthMockData.generateAccessToken();
       final refreshToken = AuthMockData.generateRefreshToken();
 
-      // ✅ Priority 3: Create user object
-      final userObject = AuthMockData.createEmailUserObject(
-        email: requestPayload['email'] as String,
-      );
-
       // ✅ Priority 1: Create nested response structure (matches Real API)
       final mockResponseData = AuthMockData.createLoginResponseData(
         sessionId: sessionId,
+        employeeId: AuthMockData.mockEmailEmployeeId,
         accessToken: accessToken,
         refreshToken: refreshToken,
         expiresIn: AuthMockData.defaultTokenExpirationSeconds,
         tokenType: AuthMockData.defaultTokenType,
-        user: userObject,
       );
 
       // ✅ Priority 1: Parse nested structure like Real API
@@ -191,10 +180,8 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
         sessionId: innerData['sessionId'] as String?,
         expiresIn: innerData['expiresIn'] as int?,
         tokenType: innerData['tokenType'] as String? ?? 'Bearer',
-        user:
-            innerData['user'] as Map<String, dynamic>? ??
-            outerData['user'] as Map<String, dynamic>?,
-        email: requestPayload['email'] as String,
+        employeeId:
+            (innerData['employeeId'] ?? outerData['employeeId']) as int?,
       );
 
       return Right(loginResponse);
@@ -219,16 +206,14 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       // ✅ Priority 1: Generate refreshed access token
       final refreshedAccessToken = AuthMockData.generateRefreshedAccessToken();
 
-      // ✅ Priority 3: Create user object
-      final userObject = AuthMockData.createRefreshUserObject();
-
       // ✅ Priority 1: Create nested response structure (matches Real API)
       final mockResponseData = AuthMockData.createRefreshTokenResponseData(
         accessToken: refreshedAccessToken,
         refreshToken: refreshToken, // Keep same refresh token
         expiresIn: AuthMockData.defaultTokenExpirationSeconds,
         tokenType: AuthMockData.defaultTokenType,
-        user: userObject,
+        employeeId: AuthMockData.mockRefreshEmployeeId,
+        sessionId: AuthMockData.generateSessionId(),
       );
 
       // ✅ Priority 1: Parse nested structure like Real API
@@ -241,11 +226,12 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
 
       // Map to LoginResponseModel (same as Real API)
       final loginResponse = LoginResponseModel(
-        accessToken: data['accessToken'] as String,
+        accessToken: data['accessToken'] as String?,
         refreshToken: data['refreshToken'] as String? ?? refreshToken,
-        expiresIn: data['expiresIn'] as int,
+        expiresIn: data['expiresIn'] as int?,
         tokenType: data['tokenType'] as String? ?? 'Bearer',
-        user: data['user'] as Map<String, dynamic>?,
+        employeeId: data['employeeId'] as int?,
+        sessionId: data['sessionId'] as String?,
       );
 
       return Right(loginResponse);

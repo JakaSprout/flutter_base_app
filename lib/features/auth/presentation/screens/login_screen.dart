@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/hooks/use_login.dart';
 import 'package:app_mobile_afms/features/auth/presentation/hooks/use_login_form.dart';
@@ -12,6 +11,8 @@ import 'package:app_mobile_afms/features/auth/presentation/widgets/login_logo.da
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_mode_switch.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_separator.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_title.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -56,6 +57,7 @@ class LoginScreen extends HookConsumerWidget {
 
     // Listen to loading state changes
     final isLoading = useValueListenable(loginResult.isLoading);
+    final progressStage = useValueListenable(loginResult.progressStage);
 
     // Set status bar for dark background immediately on mount
     useEffect(() {
@@ -66,73 +68,117 @@ class LoginScreen extends HookConsumerWidget {
       return null;
     }, []);
 
-    return Scaffold(
-      backgroundColor: LoginDesignConstants.backgroundBlue,
-      body: SafeArea(
-        bottom: false, // Don't add bottom safe area
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: StatusBarConfig.getStatusBarStyleForDarkBackground(),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(LoginDesignConstants.spacingLarge),
-              child: LoginCard(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const LoginLogo(),
-                    const SizedBox(height: LoginDesignConstants.spacingXLarge),
-                    LoginTitle(isPhoneMode: isPhoneMode.value),
-                    const SizedBox(height: LoginDesignConstants.spacingXLarge),
-                    ReactiveForm(
-                      formGroup: form,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ReactiveFormConsumer(
-                            builder: (context, form, child) {
-                              return LoginInputFields(
-                                form: form,
-                                isPhoneMode: isPhoneMode.value,
-                                isPasswordVisible: isPasswordVisible.value,
-                                isLoading: isLoading,
-                                onPasswordVisibilityToggle: () =>
-                                    isPasswordVisible.value =
-                                        !isPasswordVisible.value,
-                              );
-                            },
-                          ),
-                          const SizedBox(
-                            height: LoginDesignConstants.spacingLarge,
-                          ),
-                          ReactiveFormConsumer(
-                            builder: (context, form, child) {
-                              return LoginButton(
-                                isLoading: isLoading,
-                                isFormValid: form.valid,
-                                onPressed: loginResult.handleLogin,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+    final content = SafeArea(
+      bottom: false, // Don't add bottom safe area
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: StatusBarConfig.getStatusBarStyleForDarkBackground(),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(LoginDesignConstants.spacingLarge),
+            child: LoginCard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const LoginLogo(),
+                  const SizedBox(height: LoginDesignConstants.spacingXLarge),
+                  LoginTitle(isPhoneMode: isPhoneMode.value),
+                  const SizedBox(height: LoginDesignConstants.spacingXLarge),
+                  ReactiveForm(
+                    formGroup: form,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ReactiveFormConsumer(
+                          builder: (context, form, child) {
+                            return LoginInputFields(
+                              form: form,
+                              isPhoneMode: isPhoneMode.value,
+                              isPasswordVisible: isPasswordVisible.value,
+                              isLoading: isLoading,
+                              onPasswordVisibilityToggle: () =>
+                                  isPasswordVisible.value =
+                                      !isPasswordVisible.value,
+                            );
+                          },
+                        ),
+                        const SizedBox(
+                          height: LoginDesignConstants.spacingLarge,
+                        ),
+                        ReactiveFormConsumer(
+                          builder: (context, form, child) {
+                            return LoginButton(
+                              isLoading: isLoading,
+                              isFormValid: form.valid,
+                              onPressed: loginResult.handleLogin,
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: LoginDesignConstants.spacingLarge),
-                    const LoginSeparator(),
-                    const SizedBox(height: LoginDesignConstants.spacingLarge),
-                    LoginModeSwitch(
-                      isPhoneMode: isPhoneMode.value,
-                      isLoading: isLoading,
-                      onPressed: () {
-                        // Unfocus any focused text field when switching mode
-                        FocusScope.of(context).unfocus();
-                        isPhoneMode.value = !isPhoneMode.value;
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: LoginDesignConstants.spacingLarge),
+                  const LoginSeparator(),
+                  const SizedBox(height: LoginDesignConstants.spacingLarge),
+                  LoginModeSwitch(
+                    isPhoneMode: isPhoneMode.value,
+                    isLoading: isLoading,
+                    onPressed: () {
+                      // Unfocus any focused text field when switching mode
+                      FocusScope.of(context).unfocus();
+                      isPhoneMode.value = !isPhoneMode.value;
+                    },
+                  ),
+                ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+
+    return Scaffold(
+      backgroundColor: LoginDesignConstants.backgroundBlue,
+      body: Stack(
+        children: [
+          content,
+          if (progressStage == LoginProgressStage.seeding)
+            const _LoginSeedingOverlay(),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginSeedingOverlay extends StatelessWidget {
+  const _LoginSeedingOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Positioned.fill(
+      child: ColoredBox(
+        color: LoginDesignConstants.overlayScrim,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: LoginDesignConstants.overlayIndicatorSize,
+                width: LoginDesignConstants.overlayIndicatorSize,
+                child: CircularProgressIndicator(
+                  strokeWidth: LoginDesignConstants.loadingIndicatorStrokeWidth,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    LoginDesignConstants.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: LoginDesignConstants.spacingLarge),
+              Text(
+                AuthConstants.messageSeedingInProgress,
+                textAlign: TextAlign.center,
+                style: LoginDesignConstants.overlayMessageTextStyle,
+              ),
+            ],
           ),
         ),
       ),

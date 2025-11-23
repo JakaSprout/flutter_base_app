@@ -121,6 +121,7 @@ class LoanAnalysisSection extends StatelessWidget {
     return '''
     {
       grid: { left: 60, right: 16, top: 16, bottom: 60 },
+      barGap: '-50%',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
@@ -145,7 +146,7 @@ class LoanAnalysisSection extends StatelessWidget {
         axisLine: { lineStyle: { color: '#CFCFCF' } },
         axisLabel: {
           fontFamily: 'Open Sans',
-          fontSize: 12,
+          fontSize: 9,
           color: '#4A4A4A'
         }
       },
@@ -195,6 +196,31 @@ class LoanAnalysisSection extends StatelessWidget {
           data: [0, $remainingCreditM],
           itemStyle: { color: '#${HarvestCalculatorDesignConstants.chartBlue300.value.toRadixString(16).substring(2)}' },
           barWidth: 60
+        },
+        {
+          name: 'Batas Limit Kredit',
+          type: 'line',
+          data: [$creditLimitM, $creditLimitM],
+          lineStyle: {
+            color: '#${HarvestCalculatorDesignConstants.error.value.toRadixString(16).substring(2)}',
+            width: 2,
+            type: 'dashed'
+          },
+          itemStyle: {
+            color: '#${HarvestCalculatorDesignConstants.error.value.toRadixString(16).substring(2)}'
+          },
+          symbol: 'none',
+          markLine: {
+            silent: true,
+            lineStyle: {
+              color: '#${HarvestCalculatorDesignConstants.error.value.toRadixString(16).substring(2)}',
+              width: 2,
+              type: 'dashed'
+            },
+            label: {
+              show: false
+            }
+          }
         }
       ]
     }

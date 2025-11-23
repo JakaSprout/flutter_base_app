@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/buttons/stp_choice_chip_button.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_registered_pond_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/pond_option.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Section widget for selecting whether to use registered pond.
@@ -14,18 +15,55 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// - Question "Gunakan Kolam Terdaftar?"
 /// - Two options: "Ya, Gunakan" and "Isi Manual"
 /// - Dropdown "Pilih Kolam" (shown when "Ya, Gunakan" is selected)
-class UseRegisteredPondSection extends StatelessWidget {
+class UseRegisteredPondSection extends StatefulWidget {
   /// Creates a new instance of [UseRegisteredPondSection].
   const UseRegisteredPondSection({super.key});
 
-  /// Resets form fields to their default values when switching to manual input.
-  void _resetFormForManualInput(FormGroup form) {
-    // Reset Basic Info (except simulationName to keep auto-generated value)
-    // form.control(HarvestCalculatorFormControls.simulationName).value = '';
-    form.control(HarvestCalculatorFormControls.commodity).value = null;
-    form.control(HarvestCalculatorFormControls.cultivationSystem).value = null;
+  @override
+  State<UseRegisteredPondSection> createState() =>
+      _UseRegisteredPondSectionState();
+}
 
-    // Reset Pond Capacity
+class _UseRegisteredPondSectionState extends State<UseRegisteredPondSection> {
+  bool _hasPreFilled = false;
+
+  /// Pre-fills pond capacity fields with data from selected pond.
+  ///
+  /// Only fills fields that are empty to avoid overwriting user input.
+  void _preFillPondCapacityData(FormGroup form, PondOption pond) {
+    try {
+      // Only pre-fill if cultivation info is complete (basic info valid)
+      if (!FormValidationHelper.isBasicInfoValid(form)) {
+        return;
+      }
+
+      // Pre-fill pond area if available and field is empty
+      final pondAreaControl = form.control(
+        HarvestCalculatorFormControls.pondArea,
+      );
+      final currentValue = pondAreaControl.value as String?;
+      if (pond.areaSqm != null &&
+          (currentValue == null || currentValue.isEmpty)) {
+        pondAreaControl.value = pond.areaSqm!.toCleanString();
+      }
+
+      // Note: Other fields like pondDepth, capacityKgPerM2 are not pre-filled
+      // as they depend on commodity/cultivation system recommendations
+    } catch (e) {
+      // Silently handle errors to prevent crashes
+      // In development, you might want to log this
+      debugPrint('Error in _preFillPondCapacityData: $e');
+    }
+  }
+
+  /// Resets form fields to CSV test values when switching to manual input.
+  void _resetFormForManualInput(FormGroup form) {
+    // Clear all form fields when switching to manual input (remove pre-defined test data)
+    // Basic Info - keep simulationName as auto-generated, clear others
+    form.control(HarvestCalculatorFormControls.commodity).value = '';
+    form.control(HarvestCalculatorFormControls.cultivationSystem).value = '';
+
+    // Pond Capacity - clear all
     form.control(HarvestCalculatorFormControls.pondArea).value = '';
     form.control(HarvestCalculatorFormControls.pondDepth).value = '';
     form.control(HarvestCalculatorFormControls.capacityKgPerM2).value = '';
@@ -34,7 +72,7 @@ class UseRegisteredPondSection extends StatelessWidget {
         '';
     form.control(HarvestCalculatorFormControls.fryCount).value = '';
 
-    // Reset Growth Target
+    // Growth Target - clear all
     form.control(HarvestCalculatorFormControls.targetHarvest).value = '';
     form.control(HarvestCalculatorFormControls.estimatedADG).value = '';
     form.control(HarvestCalculatorFormControls.targetDOC).value = '';
@@ -42,19 +80,17 @@ class UseRegisteredPondSection extends StatelessWidget {
     form.control(HarvestCalculatorFormControls.estimatedFCR).value = '';
     form.control(HarvestCalculatorFormControls.targetBiomass).value = '';
 
-    // Reset Price Info
+    // Price Info - clear all
     form.control(HarvestCalculatorFormControls.targetSellingPrice).value = '';
     form.control(HarvestCalculatorFormControls.targetFeedPrice).value = '';
     form.control(HarvestCalculatorFormControls.sellingPrice).value = '';
     form.control(HarvestCalculatorFormControls.feedPrice).value = '';
 
-    // Reset Cycle type and related fields
-    form.control(HarvestCalculatorFormControls.cycleType).value =
-        HarvestCalculatorConstants.cycleTypeFull;
+    // Cycle type and related fields - clear all
+    form.control(HarvestCalculatorFormControls.cycleType).value = '';
     form.control(HarvestCalculatorFormControls.currentDOC).value = '';
 
-    // Reset Stocking and feeding
-    form.control(HarvestCalculatorFormControls.stocking).value = '';
+    // Feeding - clear all
     form.control(HarvestCalculatorFormControls.feedingRate).value = '';
     form.control(HarvestCalculatorFormControls.currentCommodityWeight).value =
         '';
@@ -130,6 +166,7 @@ class UseRegisteredPondSection extends StatelessWidget {
           ),
           // Registered pond selector (shown when "Ya, Gunakan" is selected)
           ReactiveFormConsumer(
+            key: const ValueKey('registered_pond_selector_consumer'),
             builder: (context, form, child) {
               final useRegisteredPondControl =
                   form.control(HarvestCalculatorFormControls.useRegisteredPond)
@@ -138,6 +175,43 @@ class UseRegisteredPondSection extends StatelessWidget {
 
               if (!useRegisteredPond) {
                 return const SizedBox.shrink();
+              }
+
+              // Check if pond capacity section should be active now
+              final isBasicInfoValid = FormValidationHelper.isBasicInfoValid(
+                form,
+              );
+              final isPondSelectionValid =
+                  FormValidationHelper.isPondSelectionValid(form);
+              final shouldEnablePondCapacity =
+                  isBasicInfoValid && isPondSelectionValid;
+
+              // Pre-fill pond capacity data when conditions are met and not already done
+              if (shouldEnablePondCapacity && !_hasPreFilled) {
+                final selectedPondControl =
+                    form.control(HarvestCalculatorFormControls.selectedPond)
+                        as FormControl<PondOption?>;
+                final selectedPond = selectedPondControl.value;
+                if (selectedPond != null) {
+                  // Use post frame callback to avoid calling setState during build
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      _preFillPondCapacityData(form, selectedPond);
+                      setState(() {
+                        _hasPreFilled = true;
+                      });
+                    }
+                  });
+                }
+              } else if (!shouldEnablePondCapacity && _hasPreFilled) {
+                // Reset pre-fill flag if conditions no longer met
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    setState(() {
+                      _hasPreFilled = false;
+                    });
+                  }
+                });
               }
 
               final selectedPondControl =
@@ -161,6 +235,19 @@ class UseRegisteredPondSection extends StatelessWidget {
                         ..value = pond
                         ..markAsDirty()
                         ..markAsTouched();
+
+                      // Pre-fill pond capacity data if conditions are met
+                      _preFillPondCapacityData(form, pond);
+
+                      // Mark as pre-filled since we just selected a pond
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _hasPreFilled = true;
+                          });
+                        }
+                      });
+
                       form.markAsDirty();
                     },
                   ),
@@ -194,8 +281,8 @@ class UseRegisteredPondSection extends StatelessWidget {
                     onTap: openPicker,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: 12,
+                        vertical: 10,
                       ),
                       decoration: BoxDecoration(
                         color: HarvestCalculatorDesignConstants.white,
@@ -204,32 +291,21 @@ class UseRegisteredPondSection extends StatelessWidget {
                           color: hasError
                               ? HarvestCalculatorDesignConstants.errorColor
                               : HarvestCalculatorDesignConstants.gray20,
-                          width: 1.2,
                         ),
                       ),
                       child: Row(
                         children: [
                           Expanded(
                             child: selectedPond != null
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        selectedPond.name,
-                                        style: HarvestCalculatorDesignConstants
-                                            .bodyTextStyle
-                                            .copyWith(
-                                          fontWeight: FontWeight.w600,
+                                ? Text(
+                                    '${selectedPond.code ?? selectedPond.id} - ${selectedPond.name}',
+                                    style: HarvestCalculatorDesignConstants
+                                        .bodyTextStyle
+                                        .copyWith(
+                                          color:
+                                              HarvestCalculatorDesignConstants
+                                                  .gray100,
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'ID: ${selectedPond.id}',
-                                        style: HarvestCalculatorDesignConstants
-                                            .smallTextSecondaryStyle,
-                                      ),
-                                    ],
                                   )
                                 : Text(
                                     HarvestCalculatorConstants.hintSelectPond,
@@ -238,13 +314,13 @@ class UseRegisteredPondSection extends StatelessWidget {
                                         .copyWith(
                                           color:
                                               HarvestCalculatorDesignConstants
-                                                  .placeholderColor,
-                                    ),
+                                                  .gray70,
+                                        ),
                                   ),
                           ),
                           const Icon(
                             Icons.keyboard_arrow_down,
-                            color: HarvestCalculatorDesignConstants.gray60,
+                            color: HarvestCalculatorDesignConstants.gray100,
                           ),
                         ],
                       ),

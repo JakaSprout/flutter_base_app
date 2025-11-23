@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 /// Shared bottom action button widget.
 ///
@@ -98,16 +98,26 @@ class STPBottomActionButton extends StatelessWidget {
                   elevation: 0,
                   minimumSize: Size(double.infinity, height ?? 56),
                 ),
-                child:
-                    child ??
-                    Text(
-                      text!,
-                      style: TextStyle(
-                        fontSize: fontSize ?? 16,
-                        fontWeight: fontWeight ?? FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                child: isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            foregroundColor ?? AppColors.white,
+                          ),
+                        ),
+                      )
+                    : child ??
+                        Text(
+                          text!,
+                          style: TextStyle(
+                            fontSize: fontSize ?? 16,
+                            fontWeight: fontWeight ?? FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
               ),
             ),
           ),

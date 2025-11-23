@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
@@ -169,9 +169,7 @@ class _InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: HarvestCalculatorDesignConstants.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: HarvestCalculatorDesignConstants.gray20,
-        ),
+        border: Border.all(color: HarvestCalculatorDesignConstants.gray20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

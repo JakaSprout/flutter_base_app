@@ -20,11 +20,11 @@ class CapacityRecommendationHelper {
     if (commodity == HarvestCalculatorConstants.commodityShrimp) {
       switch (cultivationSystem) {
         case HarvestCalculatorConstants.systemRAS:
-          return '5';
+          return '1.5';
         case HarvestCalculatorConstants.systemBiofloc:
-          return '4';
+          return '1.2';
         case HarvestCalculatorConstants.systemTraditional:
-          return '3';
+          return '1.0';
         default:
           return null;
       }

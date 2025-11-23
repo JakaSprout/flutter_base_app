@@ -159,7 +159,7 @@ void main() {
         const loginResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_123',
+          employeeId: '17',
         );
 
         when(
@@ -199,7 +199,7 @@ void main() {
         const loginResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_123',
+          employeeId: '17',
           expiresIn: 3600, // 1 hour
         );
 
@@ -239,7 +239,7 @@ void main() {
         const loginResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_123',
+          employeeId: '17',
         );
 
         when(

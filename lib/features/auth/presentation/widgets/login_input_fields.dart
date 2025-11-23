@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Input fields widget for login screen.

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/design_system/components/cards/stp_input_data_item.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
@@ -6,6 +5,7 @@ import 'package:app_mobile_afms/features/home/presentation/constants/home_design
 import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/input_data_shimmer.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -30,7 +30,7 @@ class InputDataSection extends HookConsumerWidget {
   /// Format AARRGGBB: AA = alpha, RR = red, GG = green, BB = blue
   static Color _hexToColor(String hexString) {
     final cleanHex = hexString.replaceFirst('#', '').toUpperCase();
-    
+
     try {
       if (cleanHex.length == 6) {
         // Format: RRGGBB (no alpha, assume fully opaque)
@@ -44,7 +44,7 @@ class InputDataSection extends HookConsumerWidget {
       // If parsing fails, return default
       debugPrint('Failed to parse color: $hexString, error: $e');
     }
-    
+
     return HomeDesignConstants.gray05; // Default if invalid
   }
 
@@ -115,22 +115,22 @@ class InputDataSection extends HookConsumerWidget {
                       ),
                       child: Text(
                         HomeConstants.inputDataSeeAllLabel,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontSize: HomeDesignConstants.inputDataSeeAllFontSize,
-                          fontWeight: FontWeight.w600,
-                          color: HomeDesignConstants.secondary,
-                          fontFamily: AppConstants.fontFamily,
-                          height: HomeDesignConstants.inputDataLineHeight,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              fontSize:
+                                  HomeDesignConstants.inputDataSeeAllFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: HomeDesignConstants.secondary,
+                              fontFamily: AppConstants.fontFamily,
+                              height: HomeDesignConstants.inputDataLineHeight,
+                            ),
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(
-              height: HomeDesignConstants.inputDataHeaderSpacing,
-            ),
+            const SizedBox(height: HomeDesignConstants.inputDataHeaderSpacing),
             // Grid - data from API
             Row(
               children: [

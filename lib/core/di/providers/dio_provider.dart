@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
 import 'package:app_mobile_afms/core/network/dio_client.dart';
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dio_provider.g.dart';

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
@@ -9,10 +8,10 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/pond_capacity_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/price_info_agent_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/sections/price_info_section.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-/// Wrapper widget for conditional sections that appear after basic info is filled.
-///
+/// Wrapper for conditional sections after basic info is filled.
 /// Shows sections based on simulation type (Cycle or Agent):
 /// - Cultivation Info (always shown)
 /// - Pond Capacity (only for Cycle mode)
@@ -39,13 +38,23 @@ class ConditionalSectionsWrapper extends StatelessWidget {
             simulationType == HarvestCalculatorConstants.simulationTypeAgent;
 
         final isBasicInfoValid = FormValidationHelper.isBasicInfoValid(form);
-        // For agent mode, pond selection is not required (section is hidden)
-        // For cycle mode, pond selection is required
-        final isPondSelectionValid = isAgentMode
-            ? true
-            : FormValidationHelper.isPondSelectionValid(form);
-        // Sections are active when both basic info is valid AND (pond selection is valid OR agent mode)
-        final isActive = isBasicInfoValid && isPondSelectionValid;
+        // For agent mode, sections activate after basic info is valid
+        // For cycle mode, sections activate after basic info AND pond selection is valid
+        final useRegisteredPond =
+            form
+                .control(HarvestCalculatorFormControls.useRegisteredPond)
+                .value ??
+            true;
+        final selectedPond = form
+            .control(HarvestCalculatorFormControls.selectedPond)
+            .value;
+        final isPondSelectionValid =
+            (useRegisteredPond == false) || selectedPond != null;
+
+        final isActive = isAgentMode
+            ? isBasicInfoValid // Agent mode: only need basic info
+            : isBasicInfoValid &&
+                  isPondSelectionValid; // Cycle mode: need basic info + pond selection
 
         return Column(
           key: const ValueKey('conditional_sections_column'),
@@ -63,6 +72,7 @@ class ConditionalSectionsWrapper extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
+            // Cycle Type - shown for both modes (agent also needs DOC inputs)
             CycleTypeSection(
               key: const ValueKey('cycle_type_section'),
               isActive: isActive,

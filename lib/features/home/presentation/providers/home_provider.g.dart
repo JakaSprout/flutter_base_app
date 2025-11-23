@@ -107,25 +107,30 @@ final getPondListDataProvider = Provider<GetPondListData>.internal(
 // ignore: unused_element
 typedef GetPondListDataRef = ProviderRef<GetPondListData>;
 String _$getCompanyListDataHash() =>
-    r'519343b14604e5d87d21a2988ea5be257b6af0b9';
+    r'1e214b14fa4a267536a80f98e6e1e966d7a05634';
 
 /// Provider for GetCompanyListData use case.
 ///
+/// This provider depends on [referenceDataRepositoryProvider] and [authServiceProvider]
+/// to fetch farms data from the reference data repository.
+///
 /// Copied from [getCompanyListData].
 @ProviderFor(getCompanyListData)
-final getCompanyListDataProvider = Provider<GetCompanyListData>.internal(
-  getCompanyListData,
-  name: r'getCompanyListDataProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getCompanyListDataHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final getCompanyListDataProvider =
+    AutoDisposeFutureProvider<GetCompanyListData>.internal(
+      getCompanyListData,
+      name: r'getCompanyListDataProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$getCompanyListDataHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GetCompanyListDataRef = ProviderRef<GetCompanyListData>;
+typedef GetCompanyListDataRef =
+    AutoDisposeFutureProviderRef<GetCompanyListData>;
 String _$getHeaderDataHash() => r'b9ed4f92eef966a681fe64d8addd12f332937b55';
 
 /// Provider for GetHeaderData use case.
@@ -267,9 +272,11 @@ final pondListDataProvider = AutoDisposeFutureProvider<PondListData>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PondListDataRef = AutoDisposeFutureProviderRef<PondListData>;
-String _$companyListDataHash() => r'6626058808aac99e94f9b316b35821960642f186';
+String _$companyListDataHash() => r'4c8beac177894b8e10ac1f5f692428ad68b4b846';
 
 /// Provider for company list data.
+///
+/// Fetches farms from reference data repository and maps them to company names.
 ///
 /// Copied from [companyListData].
 @ProviderFor(companyListData)
@@ -347,7 +354,7 @@ final inputDataListDataProvider =
 // ignore: unused_element
 typedef InputDataListDataRef = AutoDisposeFutureProviderRef<InputDataListData>;
 String _$companyListNotifierHash() =>
-    r'01d24822b899f0c57f32abd7e3e20e638aa7a1b1';
+    r'3d1bf5687802dc73a3fe09814c03fe559d6eb3a5';
 
 /// Notifier for company list operations (update selected company).
 ///

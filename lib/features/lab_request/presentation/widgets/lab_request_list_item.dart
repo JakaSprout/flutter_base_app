@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Lab request list item widget.

@@ -1,10 +1,40 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/config/navigation_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
+/// Custom floating action button location that stays fixed regardless of snackbar.
+/// This prevents the FAB from moving when snackbar appears.
+class FixedCenterDockedFabLocation extends FloatingActionButtonLocation {
+  const FixedCenterDockedFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    // Standard center docked position but ignore snackbar height
+    final fabX =
+        (scaffoldGeometry.scaffoldSize.width -
+            scaffoldGeometry.floatingActionButtonSize.width) /
+        2.0;
+
+    // For center docked FAB: FAB floats over bottom navigation bar
+    // so that the center of FAB lines up with the top of bottom navigation bar
+    //
+    // From Flutter docs: "the center of the floating action button lines up with the top of the bottom navigation bar"
+    // This means: FAB center Y = contentBottom (where bottom nav bar starts)
+
+    final fabCenterY = scaffoldGeometry.contentBottom;
+
+    // FAB position is from its top-left corner, so subtract half FAB height
+    // to center the FAB around the contentBottom line
+    final fabY =
+        fabCenterY - (scaffoldGeometry.floatingActionButtonSize.height / 2);
+
+    return Offset(fabX, fabY);
+  }
+}
 
 /// Bottom navigation bar component based on Figma design.
 ///

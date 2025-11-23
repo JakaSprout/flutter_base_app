@@ -120,6 +120,9 @@ class HarvestCalculatorConstants {
   /// Select pond placeholder/hint
   static const String hintSelectPond = 'Pilih Kolam';
 
+  /// Select commodity placeholder/hint
+  static const String hintSelectCommodity = 'Pilih Komoditas';
+
   /// Title for registered pond modal
   static const String titleSelectRegisteredPond = 'Pilih Kolam';
 
@@ -394,20 +397,19 @@ class HarvestCalculatorConstants {
   static const String titleLTVInfo = 'Penjelasan LTV';
   static const String descriptionLTV =
       'LTV atau Loan to Value adalah rasio pinjaman terhadap nilai aset. Aset disini merupakan Potensi Panen. Jadi artian serapannya merupakan: Rasio Pinjaman Terhadap Potensi Hasil Panen';
-  
+
   // LTV Risk Thresholds
-  static const double ltvIdealThreshold = 70.0;
-  static const double ltvWarningMin = 71.0;
-  static const double ltvWarningMax = 79.0;
-  
+  static const double ltvIdealThreshold = 70;
+  static const double ltvWarningMin = 71;
+  static const double ltvWarningMax = 79;
+
   // LTV Risk Status Labels
   static const String ltvRiskStatusIdeal = 'Ideal';
   static const String ltvRiskStatusWarning = 'Waspada';
   static const String ltvRiskStatusHigh = 'Resiko Tinggi';
 
   // Agent Mode - Metrics
-  static const String metricHarvestGuaranteePotential =
-      'Potensi Jaminan Panen';
+  static const String metricHarvestGuaranteePotential = 'Potensi Jaminan Panen';
   static const String metricCultivationProgress = 'Progres Budidaya';
   static const String metricCurrentABW = 'Estimasi ABW Saat Ini';
   static const String metricHarvestABW = 'Estimasi ABW Saat Panen';
@@ -433,7 +435,8 @@ class HarvestCalculatorConstants {
 
   // Status Messages
   /// Coming soon message for distributor agent
-  static const String messageDistributorComingSoon = 'Agen Distributor (coming soon)';
+  static const String messageDistributorComingSoon =
+      'Agen Distributor (coming soon)';
 
   // Download
   /// Download simulation title
@@ -512,7 +515,7 @@ class HarvestCalculatorConstants {
   /// Percentage unit
   static const String unitPercentage = '%';
 
-  // Validation Messages
+  // Validation Messages - Basic Form
   /// Error when simulation name is empty
   static const String errorSimulationNameRequired =
       'Nama simulasi tidak boleh kosong';
@@ -533,6 +536,83 @@ class HarvestCalculatorConstants {
   /// Error when fry count is invalid
   static const String errorFryCountInvalid = 'Jumlah benur tidak valid';
 
+  // Validation Messages - Simulation Parameters
+  /// Error when pond area is too small
+  static const String errorPondAreaTooSmall = 'Luas kolam harus lebih besar dari 0';
+
+  /// Error when stocking density is too small
+  static const String errorStockingDensityTooSmall = 'Kepadatan tebar harus lebih besar dari 0';
+
+  /// Error when initial weight is too small
+  static const String errorInitialWeightTooSmall = 'Berat awal harus lebih besar dari 0';
+
+  /// Error when target SR is out of range
+  static const String errorTargetSrOutOfRange = 'Target SR harus antara 0-100%';
+
+  /// Error when target harvest weight is too small
+  static const String errorTargetHarvestWeightTooSmall = 'Target berat panen harus lebih besar dari 0';
+
+  /// Error when estimated FCR is too small
+  static const String errorEstimatedFcrTooSmall = 'Estimasi FCR harus lebih besar dari 0';
+
+  /// Error when target DOC is too small
+  static const String errorTargetDocTooSmall = 'Target DOC harus lebih besar dari 0';
+
+  /// Error when current biomass is missing for agent mode
+  static const String errorCurrentBiomassRequired = 'Estimasi biomassa saat ini harus diisi dan lebih besar dari 0';
+
+  /// Error when stocking is missing for agent mode
+  static const String errorStockingRequired = 'Jumlah tebar harus diisi dan lebih besar dari 0';
+
+  /// Error when current DOC is missing for agent mode
+  static const String errorCurrentDocRequiredForAgent = 'DOC Saat Ini harus diisi dan lebih besar dari 0 untuk mode agen';
+
+  /// Error when current DOC is smaller than target DOC
+  static const String errorCurrentDocSmallerThanTarget = 'DOC Saat Ini harus lebih kecil dari Target DOC';
+
+  /// Error when current DOC is too small
+  static const String errorCurrentDocTooSmall = 'DOC Saat Ini harus lebih besar dari 0';
+
+  /// Error when estimated ADG is too small
+  static const String errorEstimatedAdgTooSmall = 'Estimasi ADG harus lebih besar dari 0';
+
+  /// Error when daily loss percentage is out of range
+  static const String errorDailyLossPercentageOutOfRange = 'Persentase loss harian harus antara 0-100%';
+
+  /// Error when capacity per m² is too small
+  static const String errorCapacityPerM2TooSmall = 'Kapasitas per m² harus lebih besar dari 0';
+
+  /// Error when capacity per pond is too small
+  static const String errorCapacityPerPondTooSmall = 'Kapasitas per kolam harus lebih besar dari 0';
+
+  /// Error when selling price per kg is too small
+  static const String errorSellingPricePerKgTooSmall = 'Harga jual per kg harus lebih besar dari 0';
+
+  /// Error when feed price per kg is too small
+  static const String errorFeedPricePerKgTooSmall = 'Harga pakan per kg harus lebih besar dari 0';
+
+  /// Error when feeding rate percentage is out of range
+  static const String errorFeedingRatePercentageOutOfRange = 'Persentase feeding rate harus antara 0-100%';
+
+  /// Error when manual harvest DOC is out of range
+  static String errorManualHarvestDocOutOfRange(int maxAllowedDoc) =>
+      'DOC panen manual harus antara 1-$maxAllowedDoc';
+
+  /// Error when harvest percentage is out of range
+  static const String errorHarvestPercentageOutOfRange = 'Persentase panen harus antara 0-100%';
+
+  /// Error when total feed payment obligation is missing for agent mode
+  static const String errorTotalFeedPaymentObligationRequired =
+      'Total kewajiban bayar pakan harus diisi dan lebih besar dari 0';
+
+  /// Error when estimated harvest yield is missing for agent mode
+  static const String errorEstimatedHarvestYieldRequired =
+      'Estimasi hasil panen harus diisi dan lebih besar dari 0';
+
+  /// Error when simulation execution fails
+  static String errorSimulationExecutionFailed(Object error) =>
+      'Gagal menjalankan simulasi: $error';
+
   // Default Values
   /// Default pond name
   static const String defaultPondName = 'Kolam 1';
@@ -548,4 +628,52 @@ class HarvestCalculatorConstants {
 
   /// Default target ADG
   static const double defaultTargetADG = 100;
+}
+
+/// Extension methods for double formatting
+extension DoubleFormatting on double {
+  /// Formats the number to remove trailing .0 if the number is whole
+  /// Returns string representation without unnecessary decimals
+  String toCleanString() {
+    if (this == roundToDouble()) {
+      return round().toString();
+    } else {
+      // For non-whole numbers, show one decimal place
+      return toStringAsFixed(1).replaceAll('.0', '');
+    }
+  }
+}
+
+/// Extension methods for number formatting with round half up
+extension RoundHalfUpExtension on double {
+  /// Rounds a double to specified decimal places using round half up method
+  /// (rounds up if decimal >= 5, down if < 5)
+  double roundHalfUp(int decimalPlaces) {
+    // Handle special case for very small decimals due to floating point precision
+    if (decimalPlaces == 2) {
+      // For 2 decimal places, multiply by 100, add 0.5, floor, then divide by 100
+      double scaled = this * 100.0;
+      // Add small epsilon to handle floating point precision issues
+      scaled += 0.5 + 1e-10;
+      int rounded = scaled.floor();
+      return rounded / 100.0;
+    }
+
+    // General case for other decimal places
+    double multiplier = 1.0;
+    for (int i = 0; i < decimalPlaces; i++) {
+      multiplier *= 10;
+    }
+
+    double scaled = this * multiplier;
+    scaled += 0.5;
+    int rounded = scaled.floor();
+    return rounded / multiplier;
+  }
+
+  /// Formats double to string with round half up to specified decimal places
+  String toStringAsFixedRoundHalfUp(int decimalPlaces) {
+    double rounded = roundHalfUp(decimalPlaces);
+    return rounded.toStringAsFixed(decimalPlaces);
+  }
 }

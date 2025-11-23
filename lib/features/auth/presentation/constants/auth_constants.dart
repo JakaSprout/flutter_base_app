@@ -95,4 +95,15 @@ class AuthConstants {
 
   /// Default check interval when token expiration info is not available
   static const Duration defaultSessionCheckInterval = Duration(minutes: 5);
+
+  // Loading & Sync Messages
+  /// Message shown while reference data is being seeded
+  static const String messageSeedingInProgress = 'Menyinkronkan data awal...';
+
+  /// Message shown when seeding completes successfully
+  static const String messageSeedingSuccess = 'Data siap digunakan';
+
+  /// Message shown when seeding completes with partial issues
+  static const String messageSeedingPartial =
+      'Sebagian data belum sinkron. Silakan refresh atau coba lagi.';
 }

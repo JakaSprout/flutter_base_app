@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Logo widget for login screen.

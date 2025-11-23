@@ -6,7 +6,7 @@ part of 'saved_simulations_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$savedSimulationsHash() => r'24a3532051b5911c5b6c3f858b0f2207be7dd5bd';
+String _$savedSimulationsHash() => r'df3a0ae98f54949d68d9a04082a3290a025d6a7a';
 
 /// State provider for managing saved harvest simulations.
 ///

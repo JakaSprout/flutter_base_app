@@ -12,16 +12,6 @@ class ChartBuilder {
     final biomass = points.map((p) => p.biomass).toList();
     final capacity = points.map((p) => p.capacity).toList();
     final feed = points.map((p) => p.feedCumulative).toList();
-    final partialHarvests = points
-        .where((p) => p.harvestPercentage != null)
-        .map(
-          (p) => {
-            'coord': [p.doc, p.biomass],
-            'value': '${p.harvestPercentage!.toStringAsFixed(0)}%',
-            'itemStyle': {'color': '#FA6619'},
-          },
-        )
-        .toList();
 
     return '''
   {
@@ -107,8 +97,7 @@ class ChartBuilder {
         smooth: true,
         showSymbol: false,
         areaStyle: { opacity: 0.08 },
-        data: ${jsonEncode(biomass)},
-        markPoint: { data: ${jsonEncode(partialHarvests)} }
+        data: ${jsonEncode(biomass)}
       },
       {
         name: 'Kapasitas Maks. Kolam',
@@ -128,6 +117,28 @@ class ChartBuilder {
     ]
   }
   ''';
+  }
+
+  /// Returns extra script for biomass chart event handling.
+  static String getBiomassChartExtraScript() {
+    return '''
+    setTimeout(function() {
+      if (typeof chart !== 'undefined' && chart) {
+        chart.on('click', function(params) {
+          if (params.componentType === 'series') {
+            var message = 'chart_click:' + params.dataIndex;
+            window.postMessage(message, '*');
+          }
+        });
+
+        chart.on('mouseout', function(params) {
+          if (params.componentType === 'series') {
+            window.postMessage('chart_reset', '*');
+          }
+        });
+      }
+    }, 500);
+    ''';
   }
 
   /// Builds ECharts option string for feed vs revenue chart.

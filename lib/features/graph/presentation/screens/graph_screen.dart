@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Graph screen.
 ///

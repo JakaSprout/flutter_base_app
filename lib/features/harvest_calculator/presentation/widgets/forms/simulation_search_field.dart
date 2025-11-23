@@ -1,15 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Search field widget for filtering simulations.
 class SimulationSearchField extends StatelessWidget {
   /// Creates a new instance of [SimulationSearchField].
-  const SimulationSearchField({
-    super.key,
-    this.onChanged,
-    this.controller,
-  });
+  const SimulationSearchField({super.key, this.onChanged, this.controller});
 
   /// Callback when the search text changes.
   final ValueChanged<String>? onChanged;
@@ -33,7 +29,8 @@ class SimulationSearchField extends StatelessWidget {
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: HarvestCalculatorConstants.hintSearchCycles,
-            hintStyle: HarvestCalculatorDesignConstants.formFieldPlaceholderTextStyle,
+            hintStyle:
+                HarvestCalculatorDesignConstants.formFieldPlaceholderTextStyle,
             prefixIcon: const Padding(
               padding: EdgeInsets.only(left: 12, right: 8),
               child: Icon(

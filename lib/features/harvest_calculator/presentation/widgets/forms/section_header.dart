@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Section header widget with orange section indicator.
@@ -42,12 +42,13 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: HarvestCalculatorDesignConstants.sectionTitleTextStyle.copyWith(
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              color: isActive
-                  ? HarvestCalculatorDesignConstants.textPrimary
-                  : HarvestCalculatorDesignConstants.placeholderColor,
-            ),
+            style: HarvestCalculatorDesignConstants.sectionTitleTextStyle
+                .copyWith(
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  color: isActive
+                      ? HarvestCalculatorDesignConstants.textPrimary
+                      : HarvestCalculatorDesignConstants.placeholderColor,
+                ),
           ),
         ),
       ],

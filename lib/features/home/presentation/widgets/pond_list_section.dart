@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/pond_list_item.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pond List section for Home screen.
@@ -32,8 +32,9 @@ class PondListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pondsList = ponds ?? HomeConstants.defaultPonds;
-    final visiblePonds =
-        pondsList.take(HomeDesignConstants.pondListMaxVisibleItems).toList();
+    final visiblePonds = pondsList
+        .take(HomeDesignConstants.pondListMaxVisibleItems)
+        .toList();
     final pondCount = pondsList.length;
 
     return Column(
@@ -57,9 +58,7 @@ class PondListSection extends StatelessWidget {
                     height: HomeDesignConstants.pondListLineHeight,
                   ),
                 ),
-                const SizedBox(
-                  width: HomeDesignConstants.pondListCountSpacing,
-                ),
+                const SizedBox(width: HomeDesignConstants.pondListCountSpacing),
                 // Count in orange
                 Text(
                   '($pondCount)',
@@ -106,9 +105,7 @@ class PondListSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(
-          height: HomeDesignConstants.pondListHeaderSpacing,
-        ),
+        const SizedBox(height: HomeDesignConstants.pondListHeaderSpacing),
         // List of pond items
         ...visiblePonds.asMap().entries.map((entry) {
           final index = entry.key;

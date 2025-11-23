@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/api_constants.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
+import 'package:dio/dio.dart';
 
 /// Batch sync result for individual item.
 class BatchSyncItemResult {

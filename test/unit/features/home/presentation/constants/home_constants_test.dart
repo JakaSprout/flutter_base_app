@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,7 +26,10 @@ void main() {
     test('should have correct dashboard summary constants', () {
       // Assert
       expect(HomeConstants.defaultActivePonds, equals(8));
-      expect(HomeConstants.cardEstimasiBiomassaTitle, equals('Estimasi Biomassa'));
+      expect(
+        HomeConstants.cardEstimasiBiomassaTitle,
+        equals('Estimasi Biomassa'),
+      );
       expect(HomeConstants.cardTotalPakanTitle, equals('Total Pakan'));
       expect(HomeConstants.cardBiayaPakanTitle, equals('Biaya Pakan'));
       expect(HomeConstants.cardEstimasiSRTitle, equals('Estimasi SR'));
@@ -138,4 +141,3 @@ void main() {
     });
   });
 }
-

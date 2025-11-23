@@ -1,6 +1,6 @@
-import 'package:drift/drift.dart' hide isNotNull;
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/database/app_database.dart';
+import 'package:drift/drift.dart' hide isNotNull;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

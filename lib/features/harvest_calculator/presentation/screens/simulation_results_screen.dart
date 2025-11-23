@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
@@ -16,7 +15,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/preview_status_banner.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/profit_banner.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
-import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -51,11 +50,6 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
   SimulationTableRowData? get _latestRow =>
       simulation.tableRows.isNotEmpty ? simulation.tableRows.last : null;
 
-  FeedChartPoint? get _latestFeedPoint =>
-      simulation.feedVsRevenuePoints.isNotEmpty
-      ? simulation.feedVsRevenuePoints.last
-      : null;
-
   BiomassChartPoint? get _latestBiomassPoint =>
       simulation.biomassPoints.isNotEmpty
       ? simulation.biomassPoints.last
@@ -70,18 +64,39 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
     return tableRows;
   }
 
-  double get _potentialRevenue => _latestRow?.revenue ?? 0;
+  double get _potentialRevenue {
+    // Calculate total harvest revenue from all harvest events
+    final totalHarvestKg =
+        simulation.simulationResult?.harvestSummaries.fold<double>(
+          0,
+          (sum, harvest) => sum + harvest.weight,
+        ) ??
+        0;
+    // Get selling price from simulation parameters
+    final sellingPrice = simulation.parameters?.sellingPricePerKg ?? 0;
+    return totalHarvestKg * sellingPrice;
+  }
 
-  double get _potentialFeedCost => _latestRow?.feedCost ?? 0;
+  double get _potentialFeedCost {
+    // Use cumulative feed cost from the last day (total feed cost)
+    return _latestRow?.feedCost ?? 0;
+  }
 
-  double get _potentialProfit => (_latestRow?.profit != 0)
-      ? (_latestRow?.profit ?? (_potentialRevenue - _potentialFeedCost))
-      : (_potentialRevenue - _potentialFeedCost);
+  double get _potentialProfit => _potentialRevenue - _potentialFeedCost;
 
-  double get _biomassKg => _latestRow?.biomass ?? 0;
+  double get _biomassKg {
+    // Calculate total harvest biomass from all harvest events
+    return simulation.simulationResult?.harvestSummaries.fold<double>(
+          0,
+          (sum, harvest) => sum + harvest.weight,
+        ) ??
+        0;
+  }
 
-  double get _feedKg =>
-      _latestFeedPoint?.feed ?? _latestRow?.feedCost ?? 0; // placeholder
+  double get _feedKg {
+    // Use cumulative feed consumption from the last day (total feed used)
+    return _latestRow?.cumulativeFeedConsumption ?? 0;
+  }
 
   bool get _isAgentMode =>
       simulation.simulationType ==
@@ -177,16 +192,18 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
                       const SizedBox(
                         height: HarvestCalculatorDesignConstants.spacingMedium,
                       ),
-                      // Hasil Simulasi Section
-                      AgentMetricsSection(
-                        simulation: simulation,
-                        dateFormatter: dateFormatter,
-                        currencyFormat: currencyFormat,
-                        weightFormat: weightFormat,
-                      ),
-                      const SizedBox(
-                        height: HarvestCalculatorDesignConstants.spacingMedium,
-                      ),
+                      // Hasil Simulasi Section (Agent mode only)
+                      if (simulation.simulationType == 'agent')
+                        AgentMetricsSection(
+                          simulation: simulation,
+                          dateFormatter: dateFormatter,
+                          currencyFormat: currencyFormat,
+                          weightFormat: weightFormat,
+                        ),
+                      if (simulation.simulationType == 'agent')
+                        const SizedBox(
+                          height: HarvestCalculatorDesignConstants.spacingMedium,
+                        ),
                       LoanAnalysisSection(
                         simulation: simulation,
                         currencyFormat: currencyFormat,
@@ -234,7 +251,8 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
                           });
                         },
                       ),
-                      if (!_isFeedChartSelected) ...[
+                      // Show table only when table is selected in feed chart toggle
+                      if (!_isFeedChartSelected)
                         TableSection(
                           sortedTableRows: _sortedTableRows,
                           isDocAscending: _isDocAscending,
@@ -243,8 +261,8 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
                               _isDocAscending = !_isDocAscending;
                             });
                           },
+                          simulation: simulation,
                         ),
-                      ],
                     ],
                   ],
                 ),
@@ -258,7 +276,11 @@ class _SimulationResultsScreenState extends State<SimulationResultsScreen> {
                     content: Text('Simulasi berhasil disimpan (mock).'),
                   ),
                 );
-                context.push(Routes.harvestCalculatorSaved);
+                // Pop back to simulation list without deleting home history
+                // Using Go Router extension for clean navigation
+                context.pop(); // Remove preview
+                context.pop(); // Remove create
+                // Now we're back at the original simulation list with home history preserved
               },
             ),
           ],

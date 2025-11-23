@@ -1,7 +1,7 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/repositories/lab_request_repository.dart';
+import 'package:dartz/dartz.dart';
 
 /// Use case for creating a lab request.
 class CreateLabRequest {

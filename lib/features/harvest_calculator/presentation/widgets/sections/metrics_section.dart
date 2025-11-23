@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
@@ -6,21 +5,14 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/summary_card.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Section displaying simulation metrics including summary and performance tiles.
 class MetricsSection extends StatelessWidget {
   /// Creates a new instance of [MetricsSection].
   const MetricsSection({
-    super.key,
-    required this.simulation,
-    required this.potentialRevenue,
-    required this.potentialFeedCost,
-    required this.biomassKg,
-    required this.feedKg,
-    required this.dateFormatter,
-    required this.currencyFormat,
-    required this.weightFormat,
+    required this.simulation, required this.potentialRevenue, required this.potentialFeedCost, required this.biomassKg, required this.feedKg, required this.dateFormatter, required this.currencyFormat, required this.weightFormat, super.key,
   });
 
   /// Simulation data.

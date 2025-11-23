@@ -16,22 +16,14 @@ class AuthMockData {
   /// Default token type
   static const String defaultTokenType = 'Bearer';
 
-  // Mock User IDs
-  /// Mock user ID for phone login
-  static const String mockPhoneUserId = 'user_123';
+  /// Mock employee ID for phone login
+  static const int mockPhoneEmployeeId = 101;
 
-  /// Mock user ID for email login
-  static const String mockEmailUserId = 'user_456';
+  /// Mock employee ID for email login
+  static const int mockEmailEmployeeId = 202;
 
-  /// Mock user ID for refresh token
-  static const String mockRefreshUserId = 'user_mock';
-
-  // Mock User Names
-  /// Mock user name for phone login
-  static const String mockPhoneUserName = 'Mock Phone User';
-
-  /// Mock user name for email login
-  static const String mockEmailUserName = 'Mock Email User';
+  /// Mock employee ID for refresh token
+  static const int mockRefreshEmployeeId = 303;
 
   /// Generate mock session ID with timestamp
   static String generateSessionId() {
@@ -53,70 +45,41 @@ class AuthMockData {
     return 'mock_refreshed_token_${DateTime.now().millisecondsSinceEpoch}';
   }
 
-  /// Create mock user object for phone login
-  static Map<String, dynamic> createPhoneUserObject({
-    required String phoneNumber,
-  }) {
-    return {
-      'id': mockPhoneUserId,
-      'phone': phoneNumber,
-      'name': mockPhoneUserName,
-      'email': null,
-    };
-  }
-
-  /// Create mock user object for email login
-  static Map<String, dynamic> createEmailUserObject({required String email}) {
-    return {
-      'id': mockEmailUserId,
-      'email': email,
-      'name': mockEmailUserName,
-      'phone': null,
-    };
-  }
-
-  /// Create mock user object for refresh token
-  static Map<String, dynamic> createRefreshUserObject() {
-    return {'id': mockRefreshUserId, 'name': 'Mock Refresh User'};
-  }
-
   /// Create mock nested response structure for login
   ///
-  /// This matches the Real API response structure:
-  /// { "data": { "success": true, "data": { ... }, "metadata": { ... } } }
+  /// Matches current API response returning sessionId & employeeId.
   static Map<String, dynamic> createLoginResponseData({
     required String sessionId,
+    required int employeeId,
     String? accessToken,
     String? refreshToken,
     int? expiresIn,
     String? tokenType,
-    Map<String, dynamic>? user,
   }) {
     return {
       'data': {
         'success': true,
         'data': {
           'sessionId': sessionId,
+          'employeeId': employeeId,
           if (accessToken != null) 'accessToken': accessToken,
           if (refreshToken != null) 'refreshToken': refreshToken,
           'expiresIn': expiresIn ?? defaultTokenExpirationSeconds,
           'tokenType': tokenType ?? defaultTokenType,
-          if (user != null) 'user': user,
         },
         'metadata': {'timestamp': DateTime.now().toIso8601String()},
       },
     };
   }
 
-  /// Create mock nested response structure for refresh token
-  ///
-  /// This matches the Real API response structure for refresh token endpoint
+  /// Create mock nested response structure for refresh token.
   static Map<String, dynamic> createRefreshTokenResponseData({
     required String accessToken,
     String? refreshToken,
     int? expiresIn,
     String? tokenType,
-    Map<String, dynamic>? user,
+    int? employeeId,
+    String? sessionId,
   }) {
     return {
       'data': {
@@ -124,7 +87,8 @@ class AuthMockData {
         if (refreshToken != null) 'refreshToken': refreshToken,
         'expiresIn': expiresIn ?? defaultTokenExpirationSeconds,
         'tokenType': tokenType ?? defaultTokenType,
-        if (user != null) 'user': user,
+        if (employeeId != null) 'employeeId': employeeId,
+        if (sessionId != null) 'sessionId': sessionId,
       },
     };
   }

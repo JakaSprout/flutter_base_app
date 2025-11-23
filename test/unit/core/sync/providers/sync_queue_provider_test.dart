@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
 import 'package:app_mobile_afms/core/di/providers/secure_storage_provider.dart';
@@ -6,6 +5,7 @@ import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
 import 'package:app_mobile_afms/core/sync/providers/sync_queue_provider.dart';
 import 'package:app_mobile_afms/core/sync/services/sync_queue.dart';
 import 'package:app_mobile_afms/core/sync/services/sync_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

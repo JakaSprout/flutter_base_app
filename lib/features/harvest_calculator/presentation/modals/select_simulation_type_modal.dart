@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -149,7 +149,9 @@ class _SimulationTypeOption extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           splashColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.3),
-          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(0.1),
+          highlightColor: HarvestCalculatorDesignConstants.gray20.withOpacity(
+            0.1,
+          ),
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Row(

@@ -4,276 +4,108 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LoginResponseModel', () {
-    test('should create LoginResponseModel with all fields', () {
-      // Act
+    test('should create LoginResponseModel with employeeId', () {
       const model = LoginResponseModel(
         accessToken: 'access_token_123',
         refreshToken: 'refresh_token_456',
-        userId: 'user_123',
-        email: 'test@example.com',
-        phoneNumber: '81234567890',
+        expiresIn: 3600,
+        employeeId: 17,
+        sessionId: 'session_abc',
       );
 
-      // Assert
       expect(model.accessToken, equals('access_token_123'));
       expect(model.refreshToken, equals('refresh_token_456'));
-      expect(model.userId, equals('user_123'));
-      expect(model.email, equals('test@example.com'));
-      expect(model.phoneNumber, equals('81234567890'));
+      expect(model.expiresIn, equals(3600));
+      expect(model.employeeId, equals(17));
+      expect(model.sessionId, equals('session_abc'));
     });
 
-    test('should create LoginResponseModel with required fields only', () {
-      // Act
-      const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-      );
-
-      // Assert
-      expect(model.accessToken, equals('access_token_123'));
-      expect(model.refreshToken, equals('refresh_token_456'));
-      expect(model.userId, isNull);
-      expect(model.email, isNull);
-      expect(model.phoneNumber, isNull);
-    });
-
-    test('should create LoginResponseModel with email only', () {
-      // Act
-      const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-        email: 'test@example.com',
-      );
-
-      // Assert
-      expect(model.email, equals('test@example.com'));
-      expect(model.phoneNumber, isNull);
-    });
-
-    test('should create LoginResponseModel with phoneNumber only', () {
-      // Act
-      const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-        phoneNumber: '81234567890',
-      );
-
-      // Assert
-      expect(model.phoneNumber, equals('81234567890'));
-      expect(model.email, isNull);
+    test('should allow creation without optional fields', () {
+      const model = LoginResponseModel();
+      expect(model.accessToken, isNull);
+      expect(model.refreshToken, isNull);
+      expect(model.employeeId, isNull);
+      expect(model.sessionId, isNull);
     });
   });
 
   group('LoginResponseModelExtension', () {
-    test('should convert to LoginResponse entity with all fields', () {
-      // Arrange
+    test('should convert to LoginResponse entity using employeeId', () {
       const model = LoginResponseModel(
         accessToken: 'access_token_123',
         refreshToken: 'refresh_token_456',
-        userId: 'user_123',
-        email: 'test@example.com',
-        phoneNumber: '81234567890',
+        employeeId: 99,
+        expiresIn: 1200,
       );
 
-      // Act
       final entity = model.toEntity();
 
-      // Assert
-      expect(entity, isA<LoginResponse>());
       expect(entity.accessToken, equals('access_token_123'));
       expect(entity.refreshToken, equals('refresh_token_456'));
-      expect(entity.userId, equals('user_123'));
-      expect(entity.email, equals('test@example.com'));
-      expect(entity.phoneNumber, equals('81234567890'));
+      expect(entity.employeeId, equals('99'));
+      expect(entity.expiresIn, equals(1200));
     });
 
-    test(
-      'should convert to LoginResponse entity with null optional fields',
-      () {
-        // Arrange
-        const model = LoginResponseModel(
-          accessToken: 'access_token_123',
-          refreshToken: 'refresh_token_456',
-        );
-
-        // Act
-        final entity = model.toEntity();
-
-        // Assert
-        expect(entity, isA<LoginResponse>());
-        expect(entity.accessToken, equals('access_token_123'));
-        expect(entity.refreshToken, equals('refresh_token_456'));
-        expect(entity.userId, isNull);
-        expect(entity.email, isNull);
-        expect(entity.phoneNumber, isNull);
-      },
-    );
-
-    test('should convert to LoginResponse entity with email only', () {
-      // Arrange
+    test('should fallback to sessionId when access token is null', () {
       const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-        email: 'test@example.com',
+        sessionId: 'session_only',
+        employeeId: 5,
       );
 
-      // Act
       final entity = model.toEntity();
 
-      // Assert
-      expect(entity.email, equals('test@example.com'));
-      expect(entity.phoneNumber, isNull);
-    });
-
-    test('should convert to LoginResponse entity with phoneNumber only', () {
-      // Arrange
-      const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-        phoneNumber: '81234567890',
-      );
-
-      // Act
-      final entity = model.toEntity();
-
-      // Assert
-      expect(entity.phoneNumber, equals('81234567890'));
-      expect(entity.email, isNull);
+      expect(entity.accessToken, equals('session_only'));
+      expect(entity.refreshToken, equals('session_only'));
+      expect(entity.employeeId, equals('5'));
     });
   });
 
-  group('fromJson', () {
-    test(
-      'should create LoginResponseModel from valid JSON with all fields',
-      () {
-        // Arrange
-        final json = {
-          'accessToken': 'access_token_123',
-          'refreshToken': 'refresh_token_456',
-          'userId': 'user_123',
-          'email': 'test@example.com',
-          'phoneNumber': '81234567890',
-        };
-
-        // Act
-        final model = LoginResponseModel.fromJson(json);
-
-        // Assert
-        expect(model.accessToken, equals('access_token_123'));
-        expect(model.refreshToken, equals('refresh_token_456'));
-        expect(model.userId, equals('user_123'));
-        expect(model.email, equals('test@example.com'));
-        expect(model.phoneNumber, equals('81234567890'));
-      },
-    );
-
-    test(
-      'should create LoginResponseModel from JSON with required fields only',
-      () {
-        // Arrange
-        final json = {
-          'accessToken': 'access_token_123',
-          'refreshToken': 'refresh_token_456',
-        };
-
-        // Act
-        final model = LoginResponseModel.fromJson(json);
-
-        // Assert
-        expect(model.accessToken, equals('access_token_123'));
-        expect(model.refreshToken, equals('refresh_token_456'));
-        expect(model.userId, isNull);
-        expect(model.email, isNull);
-        expect(model.phoneNumber, isNull);
-      },
-    );
-
-    test('should handle null optional fields in JSON', () {
-      // Arrange
+  group('fromJson / toJson', () {
+    test('should deserialize JSON with employeeId', () {
       final json = {
-        'accessToken': 'access_token_123',
-        'refreshToken': 'refresh_token_456',
-        'userId': null,
-        'email': null,
-        'phoneNumber': null,
+        'accessToken': 'token',
+        'refreshToken': 'refresh',
+        'employeeId': 42,
+        'sessionId': 'session',
       };
 
-      // Act
       final model = LoginResponseModel.fromJson(json);
 
-      // Assert
-      expect(model.userId, isNull);
-      expect(model.email, isNull);
-      expect(model.phoneNumber, isNull);
+      expect(model.accessToken, equals('token'));
+      expect(model.refreshToken, equals('refresh'));
+      expect(model.employeeId, equals(42));
+      expect(model.sessionId, equals('session'));
     });
-  });
 
-  group('toJson', () {
-    test('should convert LoginResponseModel to JSON with all fields', () {
-      // Arrange
+    test('should serialize to JSON with employeeId', () {
       const model = LoginResponseModel(
-        accessToken: 'access_token_123',
-        refreshToken: 'refresh_token_456',
-        userId: 'user_123',
-        email: 'test@example.com',
-        phoneNumber: '81234567890',
+        accessToken: 'token',
+        refreshToken: 'refresh',
+        employeeId: 42,
       );
 
-      // Act
       final json = model.toJson();
 
-      // Assert
-      expect(json['accessToken'], equals('access_token_123'));
-      expect(json['refreshToken'], equals('refresh_token_456'));
-      expect(json['userId'], equals('user_123'));
-      expect(json['email'], equals('test@example.com'));
-      expect(json['phoneNumber'], equals('81234567890'));
+      expect(json['accessToken'], equals('token'));
+      expect(json['refreshToken'], equals('refresh'));
+      expect(json['employeeId'], equals(42));
     });
 
-    test(
-      'should convert LoginResponseModel to JSON without optional fields',
-      () {
-        // Arrange
-        const model = LoginResponseModel(
-          accessToken: 'access_token_123',
-          refreshToken: 'refresh_token_456',
-        );
-
-        // Act
-        final json = model.toJson();
-
-        // Assert
-        expect(json['accessToken'], equals('access_token_123'));
-        expect(json['refreshToken'], equals('refresh_token_456'));
-        expect(json['userId'], isNull);
-        expect(json['email'], isNull);
-        expect(json['phoneNumber'], isNull);
-      },
-    );
-
-    test('should maintain round-trip conversion', () {
-      // Arrange
-      final originalJson = {
-        'accessToken': 'access_token_123',
-        'refreshToken': 'refresh_token_456',
-        'userId': 'user_123',
-        'email': 'test@example.com',
-        'phoneNumber': '81234567890',
+    test('should round-trip JSON conversion', () {
+      final original = {
+        'accessToken': 'token',
+        'refreshToken': 'refresh',
+        'sessionId': 'session',
+        'employeeId': 7,
       };
 
-      // Act
-      final model = LoginResponseModel.fromJson(originalJson);
-      final convertedJson = model.toJson();
+      final model = LoginResponseModel.fromJson(original);
+      final converted = model.toJson();
 
-      // Assert
-      expect(convertedJson['accessToken'], equals(originalJson['accessToken']));
-      expect(
-        convertedJson['refreshToken'],
-        equals(originalJson['refreshToken']),
-      );
-      expect(convertedJson['userId'], equals(originalJson['userId']));
-      expect(convertedJson['email'], equals(originalJson['email']));
-      expect(convertedJson['phoneNumber'], equals(originalJson['phoneNumber']));
+      expect(converted['accessToken'], equals('token'));
+      expect(converted['refreshToken'], equals('refresh'));
+      expect(converted['employeeId'], equals(7));
+      expect(converted['sessionId'], equals('session'));
     });
   });
 }

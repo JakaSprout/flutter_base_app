@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Bottom sheet displaying information about LTV (Loan-to-Value).
 class LTVInfoBottomSheet extends StatelessWidget {
@@ -56,7 +56,7 @@ class LTVInfoBottomSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 HarvestCalculatorConstants.descriptionLTV,
                 style: HarvestCalculatorDesignConstants.bodyTextStyle,
               ),

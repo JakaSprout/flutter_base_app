@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/auth/presentation/screens/login_screen.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_button.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_card.dart';
@@ -6,6 +5,7 @@ import 'package:app_mobile_afms/features/auth/presentation/widgets/login_input_f
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_logo.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_mode_switch.dart';
 import 'package:app_mobile_afms/features/auth/presentation/widgets/login_title.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';

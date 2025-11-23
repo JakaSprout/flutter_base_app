@@ -1,5 +1,3 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/api_constants.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
@@ -10,6 +8,8 @@ import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remot
 import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Real implementation of [AuthRemoteDataSource].
@@ -88,10 +88,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         sessionId: sessionId,
         expiresIn: innerData['expiresIn'] as int?,
         tokenType: innerData['tokenType'] as String? ?? 'Bearer',
-        user:
-            innerData['user'] as Map<String, dynamic>? ??
-            outerData['user'] as Map<String, dynamic>?,
-        phoneNumber: phoneNumber,
+        employeeId:
+            (innerData['employeeId'] ?? outerData['employeeId']) as int?,
       );
 
       return Right(loginResponse);
@@ -158,10 +156,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         sessionId: sessionId,
         expiresIn: innerData['expiresIn'] as int?,
         tokenType: innerData['tokenType'] as String? ?? 'Bearer',
-        user:
-            innerData['user'] as Map<String, dynamic>? ??
-            outerData['user'] as Map<String, dynamic>?,
-        email: request.email,
+        employeeId:
+            (innerData['employeeId'] ?? outerData['employeeId']) as int?,
       );
 
       return Right(loginResponse);
@@ -202,11 +198,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       // Map API response to model
       final loginResponse = LoginResponseModel(
-        accessToken: data['accessToken'] as String,
+        accessToken: data['accessToken'] as String?,
         refreshToken: data['refreshToken'] as String? ?? refreshToken,
-        expiresIn: data['expiresIn'] as int,
+        expiresIn: data['expiresIn'] as int?,
         tokenType: data['tokenType'] as String? ?? 'Bearer',
-        user: data['user'] as Map<String, dynamic>?,
+        employeeId: data['employeeId'] as int?,
+        sessionId: data['sessionId'] as String?,
       );
 
       return Right(loginResponse);

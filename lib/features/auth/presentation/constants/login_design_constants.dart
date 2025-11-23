@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 /// Design constants for Login screen.
 ///
@@ -69,6 +69,20 @@ class LoginDesignConstants {
   /// Gray 20 color
   /// Source: AppColors.gray20
   static const Color gray20 = AppColors.gray20;
+
+  /// Overlay scrim color
+  /// Source: AppColors.scrim
+  static const Color overlayScrim = AppColors.scrim;
+
+  /// Overlay indicator size
+  static const double overlayIndicatorSize = 32;
+
+  /// Overlay message text style
+  static const TextStyle overlayMessageTextStyle = TextStyle(
+    color: AppColors.white,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
 
   // Input Padding
   /// Input content padding horizontal

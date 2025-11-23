@@ -1,7 +1,7 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/registered_pond.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/repositories/harvest_simulation_repository.dart';
+import 'package:dartz/dartz.dart';
 
 /// Use case for getting all registered ponds.
 class GetRegisteredPondsUseCase {

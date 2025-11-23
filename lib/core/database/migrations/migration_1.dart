@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:drift/drift.dart';
 
 /// Initial database migration.
 ///

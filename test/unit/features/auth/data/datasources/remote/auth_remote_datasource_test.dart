@@ -1,10 +1,10 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource_mock.dart';
 import 'package:app_mobile_afms/features/auth/data/models/login_response_model.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -49,9 +49,7 @@ void main() {
             expect(data.refreshToken, isNotEmpty);
             expect(data.sessionId, isNotEmpty);
             expect(data.tokenType, equals('Bearer'));
-            expect(data.user, isNotNull);
-            expect(data.user?['id'], equals('user_123'));
-            expect(data.phoneNumber, equals('81234567890'));
+            expect(data.employeeId, isNotNull);
           });
         },
       );
@@ -139,8 +137,7 @@ void main() {
         result.fold((failure) => fail('Should not return failure'), (data) {
           expect(data.accessToken, isNotEmpty);
           expect(data.sessionId, isNotEmpty);
-          // Phone number is cleaned in request payload (non-digits removed)
-          expect(data.phoneNumber, equals('081234567890'));
+          expect(data.employeeId, isNotNull);
         });
       });
     });
@@ -165,9 +162,7 @@ void main() {
             expect(data.refreshToken, isNotEmpty);
             expect(data.sessionId, isNotEmpty);
             expect(data.tokenType, equals('Bearer'));
-            expect(data.user, isNotNull);
-            expect(data.user?['id'], equals('user_456'));
-            expect(data.email, equals('test@example.com'));
+            expect(data.employeeId, isNotNull);
           });
         },
       );
@@ -248,7 +243,7 @@ void main() {
         // Assert
         expect(result, isA<Right<Failure, LoginResponseModel>>());
         result.fold((failure) => fail('Should not return failure'), (data) {
-          expect(data.email, equals('user.name+tag@example.co.uk'));
+          expect(data.employeeId, isNotNull);
         });
       });
     });

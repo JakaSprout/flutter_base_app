@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/banners/stp_status_banner.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:flutter/material.dart';
 
 /// Status banner shown when simulation is in preview mode.
 class PreviewStatusBanner extends StatelessWidget {

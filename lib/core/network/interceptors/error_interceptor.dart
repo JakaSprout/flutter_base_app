@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
-
 import 'package:app_mobile_afms/core/error/error_mapper.dart';
+import 'package:dio/dio.dart';
 
 /// Error interceptor for Dio that maps exceptions to failures.
 class ErrorInterceptor extends Interceptor {

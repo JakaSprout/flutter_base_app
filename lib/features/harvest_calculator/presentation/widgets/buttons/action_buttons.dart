@@ -1,15 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:flutter/material.dart';
 
 /// Action buttons for cancel and save operations.
 class ActionButtons extends StatelessWidget {
   /// Creates a new instance of [ActionButtons].
   const ActionButtons({
-    super.key,
-    required this.onCancel,
-    required this.onSave,
+    required this.onCancel, required this.onSave, super.key,
   });
 
   /// Callback when cancel button is pressed.

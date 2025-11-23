@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
@@ -84,6 +86,18 @@ class AuthService {
         );
       }
 
+      final userPayload = _buildUserPayload(loginResponse);
+      if (userPayload != null) {
+        futures.add(
+          _secureStorage.write(
+            key: AppConstants.storageUserData,
+            value: jsonEncode(userPayload),
+          ),
+        );
+      } else {
+        futures.add(_secureStorage.delete(key: AppConstants.storageUserData));
+      }
+
       await Future.wait(futures);
     } catch (e) {
       throw AuthFailure(
@@ -101,6 +115,7 @@ class AuthService {
       await Future.wait([
         _secureStorage.delete(key: AppConstants.storageAuthToken),
         _secureStorage.delete(key: AppConstants.storageRefreshToken),
+        _secureStorage.delete(key: AppConstants.storageUserData),
         _clearTokenExpiration(),
       ]);
     } catch (e, stackTrace) {
@@ -225,6 +240,31 @@ class AuthService {
     } catch (e) {
       // Non-critical, just log
       AppLogger.warning('Error clearing token expiration: $e');
+    }
+  }
+
+  Map<String, String>? _buildUserPayload(LoginResponse loginResponse) {
+    final payload = <String, String>{};
+    final employeeId = loginResponse.employeeId?.trim();
+    if (employeeId != null && employeeId.isNotEmpty) {
+      payload['employeeId'] = employeeId;
+    }
+    return payload.isEmpty ? null : payload;
+  }
+
+  /// Returns stored employee id (if available).
+  Future<String?> getStoredEmployeeId() async {
+    try {
+      final content = await _secureStorage.read(
+        key: AppConstants.storageUserData,
+      );
+      if (content == null || content.isEmpty) return null;
+      final decoded = jsonDecode(content) as Map<String, dynamic>;
+      final employeeId = decoded['employeeId'] as String?;
+      return (employeeId == null || employeeId.isEmpty) ? null : employeeId;
+    } catch (e) {
+      AppLogger.warning('Failed to read stored employee id: $e');
+      return null;
     }
   }
 }

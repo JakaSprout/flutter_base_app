@@ -1,6 +1,6 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/auth/domain/repositories/auth_repository.dart';
+import 'package:dartz/dartz.dart';
 
 /// Use case for logging out.
 class Logout {

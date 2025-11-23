@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/api_constants.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/events/auth_event_bus.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Authentication interceptor for Dio that adds auth token to requests.

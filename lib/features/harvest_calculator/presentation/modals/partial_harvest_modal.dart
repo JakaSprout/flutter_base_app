@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/harvest_summary.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Data model for a partial harvest plan.
@@ -31,7 +32,21 @@ class _PartialHarvestPlan {
 /// Modal bottom sheet for partial harvest configuration.
 class PartialHarvestModal extends StatefulWidget {
   /// Creates a new instance of [PartialHarvestModal].
-  const PartialHarvestModal({super.key});
+  const PartialHarvestModal({
+    super.key,
+    this.automaticHarvestDoc,
+    this.harvestSummaries,
+    this.targetDOC,
+  });
+
+  /// DOC when automatic harvest occurred (from simulation result)
+  final int? automaticHarvestDoc;
+
+  /// Harvest summaries from simulation result
+  final List<HarvestSummary>? harvestSummaries;
+
+  /// Target DOC for final harvest
+  final int? targetDOC;
 
   @override
   State<PartialHarvestModal> createState() => _PartialHarvestModalState();
@@ -53,12 +68,42 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
   @override
   void initState() {
     super.initState();
-    _mainHarvestDocController = TextEditingController(text: '120');
+
+    // Initialize main harvest (Panen Raya) with targetDOC
+    final targetDocText = widget.targetDOC?.toString() ?? '120';
+    _mainHarvestDocController = TextEditingController(text: targetDocText);
     _mainHarvestPercentageController = TextEditingController(text: '100');
 
-    // Initialize with 2 harvest plans as default
-    _addHarvestPlan(doc: '30', percentage: '50');
-    _addHarvestPlan(doc: '50', percentage: '50');
+    // Initialize harvest plans with calculated DOC values
+    _initializeHarvestPlans();
+  }
+
+  /// Initialize harvest plans with DOC values from simulation results
+  void _initializeHarvestPlans() {
+    if (widget.harvestSummaries != null && widget.harvestSummaries!.isNotEmpty) {
+      // Filter out Panen Raya from harvest summaries
+      final partialHarvests = widget.harvestSummaries!
+          .where((summary) => !(summary.description.toLowerCase().contains('raya')))
+          .toList();
+
+      // Add existing partial harvests
+      for (final harvest in partialHarvests.take(2)) { // Max 2 partial harvests
+        _addHarvestPlan(
+          doc: harvest.doc.toString(),
+          percentage: harvest.percentage.toString(),
+        );
+      }
+
+      // If we have less than 2 harvests, add default ones
+      while (_harvestPlans.length < 2) {
+        final defaultDoc = _harvestPlans.isEmpty ? '60' : '90';
+        _addHarvestPlan(doc: defaultDoc, percentage: '50');
+      }
+    } else {
+      // No simulation data, use defaults
+      _addHarvestPlan(doc: '60', percentage: '50'); // Panen 1
+      _addHarvestPlan(doc: '90', percentage: '50'); // Panen 2
+    }
   }
 
   @override
@@ -185,7 +230,7 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                         ),
                       ),
                     ),
-                    // Panen Raya (always present)
+                    // Panen Raya (always present, fixed at targetDOC)
                     HarvestSectionCard(
                       title: HarvestCalculatorConstants.labelMainHarvest,
                       docController: _mainHarvestDocController,
@@ -202,7 +247,11 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: OutlinedButton.icon(
                 onPressed: _addHarvestPlan,
-                icon: const Icon(Icons.add, size: 20, color: HarvestCalculatorDesignConstants.gray60),
+                icon: const Icon(
+                  Icons.add,
+                  size: 20,
+                  color: HarvestCalculatorDesignConstants.gray60,
+                ),
                 label: const Text(
                   HarvestCalculatorConstants.buttonAddHarvestPlan,
                   style: HarvestCalculatorDesignConstants.bodyTextStyle,
@@ -214,7 +263,9 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                   ),
                   backgroundColor: HarvestCalculatorDesignConstants.white,
                   foregroundColor: HarvestCalculatorDesignConstants.textPrimary,
-                  side: const BorderSide(color: HarvestCalculatorDesignConstants.gray20),
+                  side: const BorderSide(
+                    color: HarvestCalculatorDesignConstants.gray20,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -292,6 +343,15 @@ class HarvestSectionCard extends StatelessWidget {
                 ),
               ],
             ],
+          ),
+          const SizedBox(height: 8),
+          // Show explanation for automatic harvest timing
+          Text(
+            'DOC dihitung otomatis berdasarkan kapasitas kolam',
+            style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
+              color: HarvestCalculatorDesignConstants.gray60,
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 8),
           // Fields row

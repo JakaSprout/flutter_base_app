@@ -1,8 +1,7 @@
-import 'package:dartz/dartz.dart';
-
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/harvest_simulation.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/repositories/harvest_simulation_repository.dart';
+import 'package:dartz/dartz.dart';
 
 /// Implementation of [HarvestSimulationRepository].
 ///
@@ -19,17 +18,23 @@ class HarvestSimulationRepositoryImpl implements HarvestSimulationRepository {
       // For now, return empty list as per current implementation
       return const Right([]);
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to load saved simulations'));
+      return const Left(
+        NetworkFailure.serverError('Failed to load saved simulations'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, HarvestSimulation>> getSimulationById(String id) async {
+  Future<Either<Failure, HarvestSimulation>> getSimulationById(
+    String id,
+  ) async {
     try {
       // TODO: Implement actual data fetching
       return const Left(NetworkFailure.serverError('Simulation not found'));
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to load simulation'));
+      return const Left(
+        NetworkFailure.serverError('Failed to load simulation'),
+      );
     }
   }
 
@@ -41,7 +46,9 @@ class HarvestSimulationRepositoryImpl implements HarvestSimulationRepository {
       // TODO: Implement actual data saving
       return Right(simulation);
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to save simulation'));
+      return const Left(
+        NetworkFailure.serverError('Failed to save simulation'),
+      );
     }
   }
 
@@ -53,7 +60,9 @@ class HarvestSimulationRepositoryImpl implements HarvestSimulationRepository {
       // TODO: Implement actual data updating
       return Right(simulation);
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to update simulation'));
+      return const Left(
+        NetworkFailure.serverError('Failed to update simulation'),
+      );
     }
   }
 
@@ -63,7 +72,9 @@ class HarvestSimulationRepositoryImpl implements HarvestSimulationRepository {
       // TODO: Implement actual data deletion
       return const Right(null);
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to delete simulation'));
+      return const Left(
+        NetworkFailure.serverError('Failed to delete simulation'),
+      );
     }
   }
 
@@ -86,9 +97,13 @@ class HarvestSimulationRepositoryImpl implements HarvestSimulationRepository {
     try {
       // TODO: Implement actual calculation logic
       // This should call a calculation service or external API
-      return const Left(NetworkFailure.serverError('Calculation not implemented yet'));
+      return const Left(
+        NetworkFailure.serverError('Calculation not implemented yet'),
+      );
     } catch (e) {
-      return const Left(NetworkFailure.serverError('Failed to calculate simulation results'));
+      return const Left(
+        NetworkFailure.serverError('Failed to calculate simulation results'),
+      );
     }
   }
 }

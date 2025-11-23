@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/states/empty_simulation_state.dart';
+import 'package:flutter/material.dart';
 
 /// Empty content widget for when no simulations are available.
 class EmptySimulationsContent extends StatelessWidget {

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Title widget for login screen.
 class LoginTitle extends StatelessWidget {

@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Banner displaying potential profit information.
 class ProfitBanner extends StatelessWidget {
   /// Creates a new instance of [ProfitBanner].
   const ProfitBanner({
-    super.key,
     required this.potentialProfit,
     required this.adg,
     required this.currencyFormat,
     required this.adgFormat,
+    super.key,
   });
 
   /// Potential profit value.
@@ -34,10 +34,7 @@ class ProfitBanner extends StatelessWidget {
       ),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: HarvestCalculatorDesignConstants.successBannerBackgroundColor,
           borderRadius: BorderRadius.circular(12),

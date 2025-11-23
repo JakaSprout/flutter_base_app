@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -40,7 +40,10 @@ void main() {
       // Assert
       expect(HomeDesignConstants.bannerCardTitleFontSize, equals(14));
       expect(HomeDesignConstants.bannerCardDescriptionFontSize, equals(12));
-      expect(HomeDesignConstants.bannerCardTitleLineHeight, equals(1.4285714285714286));
+      expect(
+        HomeDesignConstants.bannerCardTitleLineHeight,
+        equals(1.4285714285714286),
+      );
       expect(HomeDesignConstants.bannerCardDescriptionLineHeight, equals(1.5));
       expect(HomeDesignConstants.bannerCardTitleColor, isA<Color>());
       expect(HomeDesignConstants.bannerCardDescriptionColor, isA<Color>());
@@ -101,4 +104,3 @@ void main() {
     });
   });
 }
-

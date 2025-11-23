@@ -1,6 +1,9 @@
 import 'package:app_mobile_afms/core/config/app_config.dart' show AppConfig;
 import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/core/reference_data/providers/reference_data_providers.dart';
+import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/registered_ponds_provider.dart';
 import 'package:app_mobile_afms/features/home/data/datasources/remote/home_remote_datasource.dart';
 import 'package:app_mobile_afms/features/home/data/repositories/home_repository_impl.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
@@ -73,10 +76,25 @@ GetPondListData getPondListData(GetPondListDataRef ref) {
 }
 
 /// Provider for GetCompanyListData use case.
-@Riverpod(keepAlive: true)
-GetCompanyListData getCompanyListData(GetCompanyListDataRef ref) {
-  final repository = ref.watch(homeRepositoryProvider);
-  return GetCompanyListData(repository);
+///
+/// This provider depends on [referenceDataRepositoryProvider] and [authServiceProvider]
+/// to fetch farms data from the reference data repository.
+@riverpod
+Future<GetCompanyListData> getCompanyListData(GetCompanyListDataRef ref) async {
+  final repository = ref.watch(referenceDataRepositoryProvider);
+  final authService = ref.watch(authServiceProvider);
+  final employeeId = await authService.getStoredEmployeeId();
+
+  if (employeeId == null || employeeId.isEmpty) {
+    throw StateError(
+      'Employee ID tidak tersedia. Login ulang untuk menyegarkan sesi.',
+    );
+  }
+
+  return GetCompanyListData(
+    referenceDataRepository: repository,
+    employeeId: employeeId,
+  );
 }
 
 /// Provider for GetHeaderData use case.
@@ -149,10 +167,12 @@ Future<PondListData> pondListData(PondListDataRef ref) async {
 }
 
 /// Provider for company list data.
+///
+/// Fetches farms from reference data repository and maps them to company names.
 @riverpod
 Future<CompanyListData> companyListData(CompanyListDataRef ref) async {
-  final getCompanyListData = ref.read(getCompanyListDataProvider);
-  final result = await getCompanyListData();
+  final getCompanyListDataUseCase = await ref.watch(getCompanyListDataProvider.future);
+  final result = await getCompanyListDataUseCase();
 
   return result.fold<CompanyListData>(
     (Failure failure) => throw failure,
@@ -206,17 +226,38 @@ class CompanyListNotifier extends _$CompanyListNotifier {
 
   /// Update selected company.
   Future<void> updateCompany(String company) async {
-    final updateCompany = ref.read(updateSelectedCompanyProvider);
-    final result = await updateCompany(company);
-
-    result.fold(
-      (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
-      },
-      (data) {
-        state = AsyncValue.data(data);
-      },
+    // Get current company list data
+    final currentData = await ref.read(companyListDataProvider.future);
+    
+    // Find the farm ID for the selected company name
+    final authService = ref.read(authServiceProvider);
+    final employeeId = await authService.getStoredEmployeeId();
+    
+    int? selectedFarmId;
+    if (employeeId != null) {
+      final repository = ref.read(referenceDataRepositoryProvider);
+      final farms = await repository.getFarms(employeeId);
+      final matchingFarm = farms.firstWhere(
+        (farm) => farm.name == company && farm.isActive,
+        orElse: () => farms.firstWhere(
+          (farm) => farm.isActive,
+          orElse: () => farms.first,
+        ),
+      );
+      selectedFarmId = matchingFarm.id;
+    }
+    
+    // Update state with new selected company and farm ID
+    state = AsyncValue.data(
+      CompanyListData(
+        companies: currentData.companies,
+        selectedCompany: company,
+        selectedFarmId: selectedFarmId,
+      ),
     );
+    
+    // Invalidate pond options provider to refresh with new farm filter
+    ref.invalidate(registeredPondOptionsProvider);
   }
 }
 

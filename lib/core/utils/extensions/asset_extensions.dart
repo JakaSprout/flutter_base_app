@@ -1,5 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/widgets.dart';
 
 /// Extensions for easier asset usage.
 extension AssetGenImageExtension on AssetGenImage {

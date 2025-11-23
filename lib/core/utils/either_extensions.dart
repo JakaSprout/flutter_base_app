@@ -1,5 +1,5 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:dartz/dartz.dart';
 
 /// Extension methods for [Either] to simplify error handling.
 extension EitherExtensions<L extends Failure, R> on Either<L, R> {

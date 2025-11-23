@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/design_system/components/navigation/stp_bottom_nav_bar.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
@@ -16,6 +15,7 @@ import 'package:app_mobile_afms/features/lab_request/presentation/screens/lab_re
 import 'package:app_mobile_afms/features/pond/presentation/screens/pond_screen.dart';
 import 'package:app_mobile_afms/features/profile/presentation/screens/profile_screen.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -129,7 +129,7 @@ class AppRouter {
               ),
               floatingActionButton: STPBottomNavBar.buildFAB(context),
               floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
+                  const FixedCenterDockedFabLocation(),
             );
           },
           routes: [

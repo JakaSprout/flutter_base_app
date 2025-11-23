@@ -48,11 +48,9 @@ class AppConfig {
   static const AppConfig dev = AppConfig(
     flavor: AppFlavor.dev,
     appName: 'Flutter Base App Dev',
-    apiBaseUrl: 'https://0c6e6759950b.ngrok-free.app/',
+    apiBaseUrl: 'https://1b4ad6b26298.ngrok-free.app/',
     enableLogging: true,
     enableCrashReporting: false,
-    useMockApi: true,
-    mockApiDelayMs: 1000,
   );
 
   /// Staging configuration

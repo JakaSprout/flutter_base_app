@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/harvest_simulation.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 
 /// Extension to convert domain entities to presentation models
 extension HarvestSimulationMapping on HarvestSimulation {

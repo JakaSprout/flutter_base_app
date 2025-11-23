@@ -1,6 +1,10 @@
 /// Data models for simulation results screen.
 library;
 
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_parameters.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_result.dart';
+import 'package:flutter/foundation.dart';
+
 /// Arguments holder for simulation results screen.
 class SimulationResultsScreenArgs {
   SimulationResultsScreenArgs({
@@ -15,6 +19,9 @@ class SimulationResultsScreenArgs {
     required this.tableRows,
     this.isPreview = true,
     this.simulationType = 'cycle',
+    this.automaticHarvestDoc,
+    this.simulationResult,
+    this.parameters,
     // Agent mode specific data
     this.ltvPercentage,
     this.harvestGuaranteePotential,
@@ -30,6 +37,203 @@ class SimulationResultsScreenArgs {
     this.remainingCredit,
     this.creditLimit,
   });
+
+  /// Creates args from actual simulation result
+  factory SimulationResultsScreenArgs.fromSimulationResult(
+    SimulationResult simulationResult,
+    SimulationParameters parameters, {
+    String? simulationName,
+    String? commodity,
+    String? cultivationSystem,
+    String? simulationType,
+    DateTime? createdAt,
+  }) {
+    // Calculate total pond capacity: pondArea × capacityKgPerM2
+    final totalPondCapacity = parameters.pondArea * parameters.capacityKgPerM2;
+
+    // Convert daily results to chart points (all days for detailed view)
+    final filteredDailyResults = simulationResult.dailyResults;
+
+    // Create map of harvest percentages by DOC for quick lookup
+    final harvestPercentages = <int, double>{};
+    for (final harvest in simulationResult.harvestSummaries) {
+      harvestPercentages[harvest.doc] = harvest.percentage;
+    }
+
+    final biomassPoints = filteredDailyResults.map((daily) {
+      return BiomassChartPoint(
+        doc: daily.doc,
+        biomass: daily.biomass,
+        capacity: totalPondCapacity, // Use total pond capacity, not per m²
+        feedCumulative: daily.cumulativeFeedConsumption,
+        harvestPercentage:
+            harvestPercentages[daily.doc], // Use actual harvest percentage
+      );
+    }).toList();
+
+    // Convert to feed vs revenue points (all days for detailed view)
+    // Calculate cumulative revenue: biomass × sellingPricePerKg
+    final feedVsRevenuePoints = filteredDailyResults.map((daily) {
+      final cumulativeRevenue = daily.biomass * parameters.sellingPricePerKg;
+      return FeedChartPoint(
+        doc: daily.doc,
+        feed: daily.cumulativeFeedCost,
+        revenue: cumulativeRevenue, // Calculate cumulative revenue from biomass
+      );
+    }).toList();
+
+    // Convert to table rows
+    final tableRows = simulationResult.dailyResults.map((daily) {
+      final cumulativeRevenue = daily.biomass * parameters.sellingPricePerKg;
+      final rowData = SimulationTableRowData(
+        doc: daily.doc,
+        weight: daily.weight,
+        population: daily.population,
+        biomass: daily.biomass,
+        capacityPerPond: totalPondCapacity,
+        dailyFeedConsumption: daily.dailyFeedConsumption,
+        cumulativeFeedConsumption: daily.cumulativeFeedConsumption,
+        sr: daily.survivalRate,
+        fcr: daily.fcr,
+        adg: daily.adg,
+        revenue: cumulativeRevenue, // Use calculated cumulative revenue
+        feedCost: daily.cumulativeFeedCost,
+        profit:
+            cumulativeRevenue - daily.cumulativeFeedCost, // Recalculate profit
+      );
+
+      // Debug first few DOC values to compare with CSV
+      if (daily.doc <= 5) {
+        debugPrint(
+          'TABLE DOC=${daily.doc}: weight=${daily.weight}, populasi=${daily.population.round()}, biomassa=${daily.biomass.toStringAsFixed(2)}, capacity=$totalPondCapacity, daily_feed=${daily.dailyFeedConsumption.toStringAsFixed(3)}, cumulative_feed=${daily.cumulativeFeedConsumption.toStringAsFixed(3)}',
+        );
+      }
+
+      return rowData;
+    }).toList();
+
+    // Calculate agent-specific metrics if this is agent mode
+    final isAgentMode = simulationType == 'agent';
+    double? harvestGuaranteePotential;
+    double? cultivationProgress;
+    double? currentABW;
+    double? harvestABW;
+    double? feedNeeds;
+    double? feedNeedsUntilHarvest;
+    double? maxLoanCeiling;
+    double? totalCostNeeds;
+    double? recommendedLoan;
+    double? loanCeilingTaken;
+    double? remainingCredit;
+    double? ltvPercentageValue; // Local variable for LTV calculation
+    double? creditLimitValue; // Local variable for credit limit
+
+    if (isAgentMode) {
+      // Agent mode calculations based on CSV formula
+      final currentDOC = parameters.currentDOC ?? 1;
+      final currentBiomassValue = parameters.currentBiomass ?? 0;
+      final stockingValue = parameters.stocking ?? 0;
+      final estimatedHarvestYieldValue = parameters.estimatedHarvestYield ?? 0;
+      final totalFeedObligationValue =
+          parameters.totalFeedPaymentObligation ?? 0;
+
+      // OUTPUT A: Potensi Jaminan Panen = Estimasi hasil panen × Harga beli panen
+      // Formula: I × H = 6500 × 28,000 = 182,000,000
+      // For agent mode, use harvest purchase price instead of selling price
+      harvestGuaranteePotential =
+          estimatedHarvestYieldValue *
+          (parameters.harvestPurchasePrice ?? parameters.sellingPricePerKg);
+
+      // OUTPUT C: Progress Budidaya = (DOC saat ini / Target DOC) × 100%
+      // Formula: (A / F) × 100 = (90 / 100) × 100 = 90%
+      cultivationProgress = ((currentDOC / parameters.targetDOC) * 100).clamp(
+        0,
+        100,
+      );
+
+      // OUTPUT D: Estimasi ABW Saat Ini = (Biomassa saat ini / Jumlah tebaran) × 1000
+      // Formula: (B / C) × 1000 = (5000 / 21000) × 1000 = 238.1 gram
+      currentABW = stockingValue > 0
+          ? (currentBiomassValue / stockingValue) * 1000
+          : 0;
+
+      // OUTPUT E: Estimasi ABW Saat Panen = (Hasil panen / (Tebaran × SR%)) × 1000
+      // Formula: (I / (C × E/100)) × 1000 = (6500 / (21000 × 0.9)) × 1000 = 343.9 gram
+      final survivedPopulation = stockingValue * (parameters.targetSR / 100);
+      harvestABW = survivedPopulation > 0
+          ? (estimatedHarvestYieldValue / survivedPopulation) * 1000
+          : 0;
+
+      // OUTPUT F: Estimasi Kebutuhan Pakan = (Hasil panen - Biomassa saat ini) × FCR
+      // Formula: (I - B) × J = (6500 - 5000) × 1.5 = 2250 kg
+      final biomassDifference =
+          estimatedHarvestYieldValue - currentBiomassValue;
+      feedNeeds = biomassDifference * parameters.estimatedFCR;
+
+      // OUTPUT G: Kebutuhan Pakan Hingga Panen = Kebutuhan pakan × Harga pakan
+      // Formula: F × K = 2250 × 18,000 = 40,500,000
+      feedNeedsUntilHarvest = feedNeeds * parameters.feedPricePerKg;
+
+      // OUTPUT I: Plafon Pinjaman Maksimal = Potensi jaminan - Total kewajiban bayar pakan
+      // Formula: A - G = 182,000,000 - 50,000,000 = 132,000,000
+      maxLoanCeiling = harvestGuaranteePotential - totalFeedObligationValue;
+
+      // OUTPUT B: LTV Ratio = (Total kewajiban pakan / Potensi jaminan) × 100
+      // Formula: (G / A) × 100 = (50,000,000 / 182,000,000) × 100 = 27.5%
+      ltvPercentageValue = harvestGuaranteePotential > 0
+          ? (totalFeedObligationValue / harvestGuaranteePotential) * 100
+          : 0;
+
+      // Total Cost Needs = Total kewajiban bayar pakan + Estimasi kebutuhan pakan hingga panen
+      totalCostNeeds = totalFeedObligationValue + feedNeedsUntilHarvest;
+
+      // For agent mode, recommended loan is based on feed needs until harvest
+      // Recommended Loan = Kebutuhan pakan hingga panen (business need)
+      recommendedLoan = feedNeedsUntilHarvest;
+
+      // Loan ceiling taken = Max loan ceiling (plafon penuh yang diambil)
+      loanCeilingTaken = maxLoanCeiling;
+
+      // Remaining credit = Current loan obligation (sisa kredit yang tersedia)
+      remainingCredit = totalFeedObligationValue;
+
+      // Credit limit = Harvest guarantee potential (for agent mode)
+      creditLimitValue = harvestGuaranteePotential;
+    }
+
+    return SimulationResultsScreenArgs(
+      simulationName:
+          simulationName ??
+          'Simulasi ${createdAt?.toString() ?? DateTime.now().toString()}',
+      createdAt: createdAt ?? DateTime.now(),
+      adg: parameters.estimatedADG,
+      doc: parameters.targetDOC,
+      commodity: commodity ?? 'Udang',
+      cultivationSystem: cultivationSystem ?? 'Intensif',
+      simulationType: simulationType ?? 'cycle',
+      isPreview: false, // This is actual simulation result
+      automaticHarvestDoc: simulationResult.automaticHarvestDoc,
+      simulationResult: simulationResult,
+      parameters: parameters,
+      biomassPoints: biomassPoints,
+      feedVsRevenuePoints: feedVsRevenuePoints,
+      tableRows: tableRows,
+      // Agent-specific data
+      ltvPercentage: ltvPercentageValue,
+      creditLimit: creditLimitValue,
+      harvestGuaranteePotential: harvestGuaranteePotential,
+      cultivationProgress: cultivationProgress,
+      currentABW: currentABW,
+      harvestABW: harvestABW,
+      feedNeeds: feedNeeds,
+      feedNeedsUntilHarvest: feedNeedsUntilHarvest,
+      maxLoanCeiling: maxLoanCeiling,
+      totalCostNeeds: totalCostNeeds,
+      recommendedLoan: recommendedLoan,
+      loanCeilingTaken: loanCeilingTaken,
+      remainingCredit: remainingCredit,
+    );
+  }
 
   factory SimulationResultsScreenArgs.preview() {
     const docs = [0, 20, 40, 60, 80, 100, 120];
@@ -75,6 +279,9 @@ class SimulationResultsScreenArgs {
         weight: 0.1,
         population: 0.1,
         biomass: 0.1,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.001,
+        cumulativeFeedConsumption: 0.01,
         sr: 96,
         fcr: 1.6,
         adg: 0.1,
@@ -87,6 +294,9 @@ class SimulationResultsScreenArgs {
         weight: 0.9,
         population: 0.9,
         biomass: 0.9,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.018,
+        cumulativeFeedConsumption: 0.036,
         sr: 94,
         fcr: 1.5,
         adg: 0.2,
@@ -99,6 +309,9 @@ class SimulationResultsScreenArgs {
         weight: 2,
         population: 2,
         biomass: 2,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.04,
+        cumulativeFeedConsumption: 0.08,
         sr: 92,
         fcr: 1.4,
         adg: 0.3,
@@ -111,6 +324,9 @@ class SimulationResultsScreenArgs {
         weight: 3,
         population: 3,
         biomass: 3,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.06,
+        cumulativeFeedConsumption: 0.12,
         sr: 90,
         fcr: 1.3,
         adg: 0.35,
@@ -123,6 +339,9 @@ class SimulationResultsScreenArgs {
         weight: 4.1,
         population: 4.1,
         biomass: 4.1,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.082,
+        cumulativeFeedConsumption: 0.164,
         sr: 89,
         fcr: 1.25,
         adg: 0.4,
@@ -135,6 +354,9 @@ class SimulationResultsScreenArgs {
         weight: 6.1,
         population: 6.1,
         biomass: 6.1,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.122,
+        cumulativeFeedConsumption: 0.244,
         sr: 88,
         fcr: 1.2,
         adg: 0.45,
@@ -147,6 +369,9 @@ class SimulationResultsScreenArgs {
         weight: 8,
         population: 8,
         biomass: 8,
+        capacityPerPond: 7.5,
+        dailyFeedConsumption: 0.16,
+        cumulativeFeedConsumption: 0.32,
         sr: 87,
         fcr: 1.2,
         adg: 0.5,
@@ -166,7 +391,6 @@ class SimulationResultsScreenArgs {
       biomassPoints: biomassPoints,
       feedVsRevenuePoints: feedVsRevenuePoints,
       tableRows: tableRows,
-      simulationType: 'cycle',
     );
   }
 
@@ -191,11 +415,11 @@ class SimulationResultsScreenArgs {
       feedNeeds: 2250,
       feedNeedsUntilHarvest: 40500000,
       maxLoanCeiling: 132000000,
-      totalCostNeeds: 90500000,
-      recommendedLoan: 80000000,
-      loanCeilingTaken: 132000000,
-      remainingCredit: 50000000,
-      creditLimit: 182000000,
+      totalCostNeeds: 90500000, // 50M + 40.5M
+      recommendedLoan: 40500000, // feedNeedsUntilHarvest (business need)
+      loanCeilingTaken: 132000000, // maxLoanCeiling (plafon penuh yang diambil)
+      remainingCredit: 50000000, // current obligation (sisa kredit tersedia)
+      creditLimit: 182000000, // harvestGuaranteePotential
     );
   }
 
@@ -207,6 +431,9 @@ class SimulationResultsScreenArgs {
   final String cultivationSystem;
   final bool isPreview;
   final String simulationType;
+  final int? automaticHarvestDoc;
+  final SimulationResult? simulationResult;
+  final SimulationParameters? parameters;
   // Agent mode specific data
   final double? ltvPercentage;
   final double? harvestGuaranteePotential;
@@ -316,6 +543,9 @@ class SimulationTableRowData {
     required this.weight,
     required this.population,
     required this.biomass,
+    required this.capacityPerPond,
+    required this.dailyFeedConsumption,
+    required this.cumulativeFeedConsumption,
     required this.sr,
     required this.fcr,
     required this.adg,
@@ -328,6 +558,9 @@ class SimulationTableRowData {
   final double weight;
   final double population;
   final double biomass;
+  final double capacityPerPond;
+  final double dailyFeedConsumption;
+  final double cumulativeFeedConsumption;
   final double sr;
   final double fcr;
   final double adg;

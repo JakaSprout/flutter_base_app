@@ -39,10 +39,9 @@ FormGroup useCreateSimulationForm() {
       HarvestCalculatorFormControls.commodity: FormControl<String>(
         validators: [Validators.required],
       ),
-      // Cultivation system is optional (not required for agent mode)
-      // Validators will be added conditionally in the UI
+      // Cultivation system - required for cycle mode only
       HarvestCalculatorFormControls.cultivationSystem: FormControl<String>(),
-      // Pond Capacity (will be enabled later)
+      // Pond Capacity - required for cycle mode (manual input) only
       HarvestCalculatorFormControls.pondArea: FormControl<String>(value: ''),
       HarvestCalculatorFormControls.pondDepth: FormControl<String>(value: ''),
       HarvestCalculatorFormControls.capacityKgPerM2: FormControl<String>(
@@ -52,7 +51,7 @@ FormGroup useCreateSimulationForm() {
         value: '',
       ),
       HarvestCalculatorFormControls.pondCapacityKgPerPond: FormControl<String>(
-        value: '',
+        value: '0',
       ),
       HarvestCalculatorFormControls.fryCount: FormControl<String>(value: ''),
       // Growth Target (will be enabled later)
@@ -62,10 +61,17 @@ FormGroup useCreateSimulationForm() {
       HarvestCalculatorFormControls.estimatedADG: FormControl<String>(
         value: '',
       ),
-      HarvestCalculatorFormControls.targetDOC: FormControl<String>(value: ''),
-      HarvestCalculatorFormControls.targetSR: FormControl<String>(value: ''),
+      HarvestCalculatorFormControls.targetDOC: FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+      HarvestCalculatorFormControls.targetSR: FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
       HarvestCalculatorFormControls.estimatedFCR: FormControl<String>(
         value: '',
+        validators: [Validators.required],
       ),
       HarvestCalculatorFormControls.targetBiomass: FormControl<String>(
         value: '',
@@ -80,22 +86,32 @@ FormGroup useCreateSimulationForm() {
       HarvestCalculatorFormControls.sellingPrice: FormControl<String>(
         value: '',
       ),
-      HarvestCalculatorFormControls.feedPrice: FormControl<String>(value: ''),
+      HarvestCalculatorFormControls.feedPrice: FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
       // Cycle type (Full Cycle or Mid Cycle)
       HarvestCalculatorFormControls.cycleType: FormControl<String>(
         value: HarvestCalculatorConstants.cycleTypeFull,
       ),
       // Current DOC (when Mid Cycle is selected)
       HarvestCalculatorFormControls.currentDOC: FormControl<String>(value: ''),
-      // Stocking density (Tebar)
-      HarvestCalculatorFormControls.stocking: FormControl<String>(value: ''),
-      // Feeding rate
+      // Stocking density (Tebar) - auto-calculated from pondArea × pondDepth (cycle mode)
+      // Manual input for agent mode
+      HarvestCalculatorFormControls.stocking: FormControl<String>(
+        value:
+            '0', // Default '0' for cycle mode, will be cleared for agent mode
+        validators: [
+          Validators.required,
+        ], // Required for both modes, but validated differently
+      ),
+      // Feeding rate - required for cycle mode only
       HarvestCalculatorFormControls.feedingRate: FormControl<String>(value: ''),
-      // Current commodity weight
+      // Current commodity weight - required for cycle mode only
       HarvestCalculatorFormControls.currentCommodityWeight: FormControl<String>(
         value: '',
       ),
-      // Target commodity weight
+      // Target commodity weight - required for cycle mode only
       HarvestCalculatorFormControls.targetCommodityWeight: FormControl<String>(
         value: '',
       ),
@@ -106,16 +122,31 @@ FormGroup useCreateSimulationForm() {
       // Agent mode specific fields
       HarvestCalculatorFormControls.currentBiomass: FormControl<String>(
         value: '',
+        validators: [Validators.required],
       ),
       HarvestCalculatorFormControls.totalFeedPaymentObligation:
-          FormControl<String>(
-        value: '',
-      ),
+          FormControl<String>(value: '', validators: [Validators.required]),
       HarvestCalculatorFormControls.harvestPurchasePrice: FormControl<String>(
         value: '',
+        validators: [Validators.required],
       ),
-      HarvestCalculatorFormControls.estimatedHarvestYield:
-          FormControl<String>(
+      HarvestCalculatorFormControls.estimatedHarvestYield: FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+      // Harvest events (Partial harvest)
+      HarvestCalculatorFormControls.harvest1Percentage: FormControl<String>(
+        value: '50',
+      ),
+      HarvestCalculatorFormControls.harvest1DOC: FormControl<String>(value: ''),
+      HarvestCalculatorFormControls.harvest2Percentage: FormControl<String>(
+        value: '50',
+      ),
+      HarvestCalculatorFormControls.harvest2DOC: FormControl<String>(value: ''),
+      HarvestCalculatorFormControls.finalHarvestPercentage: FormControl<String>(
+        value: '100',
+      ),
+      HarvestCalculatorFormControls.finalHarvestDOC: FormControl<String>(
         value: '',
       ),
     });

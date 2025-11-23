@@ -1,19 +1,18 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/partial_harvest_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/chart_builder.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
-import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 
 /// Section widget for biomass and partial harvest chart.
-class BiomassSection extends StatelessWidget {
+class BiomassSection extends StatefulWidget {
   /// Creates a new instance of [BiomassSection].
   const BiomassSection({
     required this.simulation,
@@ -28,8 +27,16 @@ class BiomassSection extends StatelessWidget {
   final BiomassChartPoint? latestPoint;
 
   @override
+  State<BiomassSection> createState() => _BiomassSectionState();
+}
+
+class _BiomassSectionState extends State<BiomassSection> {
+  /// Currently selected point from chart interaction
+  BiomassChartPoint? _selectedPoint;
+
+  @override
   Widget build(BuildContext context) {
-    final weightFormat = NumberFormat('0.0');
+    final displayPoint = _selectedPoint ?? widget.latestPoint;
 
     return SectionFieldPadding.wrapSection(
       child: FormSection(
@@ -49,7 +56,15 @@ class BiomassSection extends StatelessWidget {
                           context: context,
                           backgroundColor: Colors.transparent,
                           isScrollControlled: true,
-                          builder: (context) => const PartialHarvestModal(),
+                          builder: (context) => PartialHarvestModal(
+                            automaticHarvestDoc:
+                                widget.simulation.automaticHarvestDoc,
+                            harvestSummaries: widget
+                                .simulation
+                                .simulationResult
+                                ?.harvestSummaries,
+                            targetDOC: widget.simulation.doc,
+                          ),
                         );
                       },
                       icon: SvgPicture.asset(
@@ -59,17 +74,15 @@ class BiomassSection extends StatelessWidget {
                       ),
                       label: Text(
                         HarvestCalculatorConstants.actionAdjustPartialHarvest,
-                        style: HarvestCalculatorDesignConstants.bodyTextStyle.copyWith(
-                          height: 20 / 14,
-                        ),
+                        style: HarvestCalculatorDesignConstants.bodyTextStyle
+                            .copyWith(height: 20 / 14),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 6,
                         ),
-                        backgroundColor:
-                            HarvestCalculatorDesignConstants.white,
+                        backgroundColor: HarvestCalculatorDesignConstants.white,
                         foregroundColor:
                             HarvestCalculatorDesignConstants.textPrimary,
                         side: const BorderSide(
@@ -89,8 +102,26 @@ class BiomassSection extends StatelessWidget {
                   height: HarvestCalculatorDesignConstants.chartHeight,
                   child: Echarts(
                     option: ChartBuilder.buildBiomassChartOption(
-                      simulation.biomassPoints,
+                      widget.simulation.biomassPoints,
                     ),
+                    extraScript: ChartBuilder.getBiomassChartExtraScript(),
+                    onMessage: (String message) {
+                      // Handle chart interaction messages
+                      if (message.startsWith('chart_click:')) {
+                        final docIndex = int.tryParse(message.substring(12));
+                        if (docIndex != null &&
+                            docIndex < widget.simulation.biomassPoints.length) {
+                          setState(() {
+                            _selectedPoint =
+                                widget.simulation.biomassPoints[docIndex];
+                          });
+                        }
+                      } else if (message == 'chart_reset') {
+                        setState(() {
+                          _selectedPoint = null;
+                        });
+                      }
+                    },
                     reloadAfterInit: true,
                   ),
                 ),
@@ -98,24 +129,21 @@ class BiomassSection extends StatelessWidget {
                   height: HarvestCalculatorDesignConstants.spacingMedium,
                 ),
                 ChartStatCard(
-                  doc: latestPoint?.doc ?? 0,
+                  doc: displayPoint?.doc ?? 0,
                   stats: [
                     ChartStatValue(
                       label: 'Biomassa',
-                      value:
-                          '${weightFormat.format(latestPoint?.biomass ?? 0)} kg',
+                      value: '',
                       color: HarvestCalculatorDesignConstants.darkBlueAccent,
                     ),
                     ChartStatValue(
                       label: 'Kapasitas Maks. Kolam',
-                      value:
-                          '${weightFormat.format(latestPoint?.capacity ?? 0)} kg',
+                      value: '',
                       color: HarvestCalculatorDesignConstants.orangeAccent,
                     ),
                     ChartStatValue(
                       label: 'Pakan Kumulatif',
-                      value:
-                          '${weightFormat.format(latestPoint?.feedCumulative ?? 0)} kg',
+                      value: '',
                       color: HarvestCalculatorDesignConstants.greenAccent,
                     ),
                   ],
@@ -128,4 +156,3 @@ class BiomassSection extends StatelessWidget {
     );
   }
 }
-

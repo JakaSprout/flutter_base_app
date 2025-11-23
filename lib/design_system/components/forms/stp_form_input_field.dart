@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 /// Form input field component.
 ///

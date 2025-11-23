@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/simulation_card.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// List view for displaying simulations.
 class SimulationListView extends StatelessWidget {
   /// Creates a new instance of [SimulationListView].
   const SimulationListView({
-    super.key,
-    required this.simulations,
+    required this.simulations, super.key,
   });
 
   /// List of simulations to display.

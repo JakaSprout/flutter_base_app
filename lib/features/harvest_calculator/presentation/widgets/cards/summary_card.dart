@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Summary card widget displaying simulation metadata.
@@ -34,9 +34,8 @@ class SummaryCard extends StatelessWidget {
             children: [
               Text(
                 dateFormatter.format(simulation.createdAt),
-                style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle.copyWith(
-                  height: 18 / 12,
-                ),
+                style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle
+                    .copyWith(height: 18 / 12),
               ),
               const SizedBox(height: 8),
               Text(
@@ -49,9 +48,8 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '${simulation.commodity} • ${simulation.cultivationSystem}',
-                style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle.copyWith(
-                  height: 18 / 12,
-                ),
+                style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle
+                    .copyWith(height: 18 / 12),
               ),
             ],
           ),
@@ -83,5 +81,3 @@ class SummaryCard extends StatelessWidget {
     );
   }
 }
-
-

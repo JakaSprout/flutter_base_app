@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:eventsource/eventsource.dart';
 import 'package:app_mobile_afms/core/config/api_constants.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:eventsource/eventsource.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Server-Sent Events (SSE) event model.

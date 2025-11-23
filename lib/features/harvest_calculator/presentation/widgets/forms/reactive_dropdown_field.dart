@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart' as reactive_forms;
 
 /// Reactive dropdown field widget with label and required indicator.
@@ -45,7 +45,8 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
   final String Function(T)? displayText;
 
   /// Validation messages
-  final Map<String, reactive_forms.ValidationMessageFunction>? validationMessages;
+  final Map<String, reactive_forms.ValidationMessageFunction>?
+  validationMessages;
 
   // Design tokens
   static const double _labelFontSize = 12;
@@ -64,7 +65,8 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
               const Text(
                 '*',
                 style: TextStyle(
-                  color: HarvestCalculatorDesignConstants.errorColor, // Destructive/60
+                  color: HarvestCalculatorDesignConstants
+                      .errorColor, // Destructive/60
                   fontSize: _labelFontSize,
                   fontWeight: FontWeight.w600,
                 ),
@@ -89,7 +91,8 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
           key: ValueKey('reactive_dropdown_field_$formControlName'),
           formControlName: formControlName,
           validationMessages: validationMessages,
-          showErrors: (control) => control.invalid && (control.dirty || control.touched),
+          showErrors: (control) =>
+              control.invalid && (control.dirty || control.touched),
           builder: (field) {
             final errorText = field.errorText;
 
@@ -111,12 +114,12 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
                   Text(
                     errorText,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontSize: _labelFontSize,
-                          fontWeight: FontWeight.w400,
-                          color: HarvestCalculatorDesignConstants.errorColor,
-                          fontFamily: AppConstants.fontFamily,
-                          height: _lineHeight,
-                        ),
+                      fontSize: _labelFontSize,
+                      fontWeight: FontWeight.w400,
+                      color: HarvestCalculatorDesignConstants.errorColor,
+                      fontFamily: AppConstants.fontFamily,
+                      height: _lineHeight,
+                    ),
                   ),
                 ],
               ],
@@ -127,4 +130,3 @@ class ReactiveDropdownFieldWidget<T> extends StatelessWidget {
     );
   }
 }
-

@@ -1,9 +1,9 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
 import 'package:app_mobile_afms/features/auth/domain/repositories/auth_repository.dart';
 import 'package:app_mobile_afms/features/auth/domain/usecases/login_with_email.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -36,8 +36,7 @@ void main() {
         const expectedResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_123',
-          email: 'test@example.com',
+          employeeId: '17',
         );
 
         when(
@@ -53,8 +52,7 @@ void main() {
           expect(response, equals(expectedResponse));
           expect(response.accessToken, equals('access_token'));
           expect(response.refreshToken, equals('refresh_token'));
-          expect(response.userId, equals('user_123'));
-          expect(response.email, equals('test@example.com'));
+          expect(response.employeeId, equals('17'));
         });
         verify(() => mockRepository.loginWithEmail(request)).called(1);
         verifyNoMoreInteractions(mockRepository);

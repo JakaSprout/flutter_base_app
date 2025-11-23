@@ -5,9 +5,7 @@ class LoginResponse {
     required this.accessToken,
     required this.refreshToken,
     this.expiresIn,
-    this.userId,
-    this.email,
-    this.phoneNumber,
+    this.employeeId,
   });
 
   /// Access token for API authentication
@@ -19,14 +17,8 @@ class LoginResponse {
   /// Token expiration time in seconds
   final int? expiresIn;
 
-  /// User ID (optional)
-  final String? userId;
-
-  /// User email (optional)
-  final String? email;
-
-  /// User phone number (optional)
-  final String? phoneNumber;
+  /// Employee ID returned by the backend (preferred unique identifier)
+  final String? employeeId;
 
   /// Get token expiration DateTime.
   ///

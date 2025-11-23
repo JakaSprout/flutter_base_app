@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Reusable dropdown field widget with label and required indicator.
 ///
@@ -50,8 +50,8 @@ class FormDropdownField<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayValue = selectedValue != null
         ? (displayText != null
-            ? displayText!(selectedValue as T)
-            : selectedValue.toString())
+              ? displayText!(selectedValue as T)
+              : selectedValue.toString())
         : null;
 
     return Column(
@@ -113,7 +113,8 @@ class FormDropdownField<T> extends StatelessWidget {
                       displayValue ?? hint ?? 'Pilih $label',
                       style: displayValue != null
                           ? HarvestCalculatorDesignConstants.formFieldTextStyle
-                          : HarvestCalculatorDesignConstants.formFieldPlaceholderTextStyle,
+                          : HarvestCalculatorDesignConstants
+                                .formFieldPlaceholderTextStyle,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -189,4 +190,3 @@ class FormDropdownField<T> extends StatelessWidget {
     );
   }
 }
-

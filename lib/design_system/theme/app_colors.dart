@@ -48,6 +48,9 @@ class AppColors {
   /// Neutral/Black
   static const Color black = Color(0xFF000000);
 
+  /// Scrim color for blocking overlays (80% black)
+  static const Color scrim = Color(0xCC000000);
+
   // Semantic Colors
   /// Success base
   static const Color success = Color(0xFF1BAA69);

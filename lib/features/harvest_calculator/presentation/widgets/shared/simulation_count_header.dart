@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Header displaying the count of simulations.
 class SimulationCountHeader extends StatelessWidget {
   /// Creates a new instance of [SimulationCountHeader].
   const SimulationCountHeader({
-    super.key,
-    required this.count,
+    required this.count, super.key,
   });
 
   /// Number of simulations to display.

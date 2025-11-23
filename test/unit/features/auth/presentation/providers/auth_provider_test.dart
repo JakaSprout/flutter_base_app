@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/auth/data/datasources/remote/auth_remote_datasource.dart';
@@ -8,6 +7,7 @@ import 'package:app_mobile_afms/features/auth/domain/repositories/auth_repositor
 import 'package:app_mobile_afms/features/auth/domain/usecases/login_with_email.dart';
 import 'package:app_mobile_afms/features/auth/domain/usecases/login_with_phone.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_provider.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
@@ -99,8 +99,7 @@ void main() {
         const expectedResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_123',
-          phoneNumber: '81234567890',
+          employeeId: '17',
         );
 
         when(
@@ -143,8 +142,7 @@ void main() {
         const expectedResponse = LoginResponse(
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
-          userId: 'user_456',
-          email: 'test@example.com',
+          employeeId: '21',
         );
 
         when(

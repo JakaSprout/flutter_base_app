@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Card container widget for login screen.
 class LoginCard extends StatelessWidget {

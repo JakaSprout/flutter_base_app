@@ -205,7 +205,7 @@ class LTVRiskSection extends StatelessWidget {
             text: HarvestCalculatorConstants.messageLTVHealthyPrefix,
           ),
           TextSpan(
-            text: '${ltvPercentage.toStringAsFixed(1)}%',
+            text: '${ltvPercentage.toCleanString()}%',
             style: const TextStyle(
               fontWeight: HarvestCalculatorDesignConstants.fontWeightBold,
             ),

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Constants for Home feature.
 ///

@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/error/error_mapper.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../helpers/mock_factories.dart';

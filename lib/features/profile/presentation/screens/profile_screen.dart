@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/config/navigation_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/logout_provider.dart';
 import 'package:app_mobile_afms/features/profile/presentation/constants/profile_design_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Profile (Profil) screen.

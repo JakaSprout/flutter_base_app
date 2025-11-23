@@ -1,7 +1,7 @@
-import 'package:dartz/dartz.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/lab_request/data/models/lab_request_model.dart';
+import 'package:dartz/dartz.dart';
 
 /// Remote data source interface for Lab Request feature.
 abstract class LabRequestRemoteDataSource {

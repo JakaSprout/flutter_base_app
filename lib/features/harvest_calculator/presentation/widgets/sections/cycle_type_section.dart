@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/buttons/stp_choice_chip_button.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
@@ -8,6 +7,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -15,7 +15,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 ///
 /// Contains:
 /// - Cycle type selection (Full Cycle or Mid Cycle)
-/// - Current DOC field (enabled when Mid Cycle is selected)
+/// - Current DOC field (always enabled for agent mode, enabled when Mid Cycle for cycle mode)
 /// - Target DOC field
 class CycleTypeSection extends StatelessWidget {
   /// Creates a new instance of [CycleTypeSection].
@@ -70,8 +70,9 @@ class CycleTypeSection extends StatelessWidget {
                           form.control(HarvestCalculatorFormControls.cycleType)
                               as FormControl<String>;
                       final selectedCycleType =
-                          cycleTypeControl.value ??
-                          HarvestCalculatorConstants.cycleTypeFull;
+                          (cycleTypeControl.value?.isEmpty ?? true)
+                              ? HarvestCalculatorConstants.cycleTypeFull
+                              : cycleTypeControl.value!;
 
                       return Row(
                         mainAxisSize: MainAxisSize.min,
@@ -122,36 +123,89 @@ class CycleTypeSection extends StatelessWidget {
                         form.control(HarvestCalculatorFormControls.cycleType)
                             as FormControl<String>;
                     final selectedCycleType =
-                        cycleTypeControl.value ??
-                        HarvestCalculatorConstants.cycleTypeFull;
+                        (cycleTypeControl.value?.isEmpty ?? true)
+                            ? HarvestCalculatorConstants.cycleTypeFull
+                            : cycleTypeControl.value!;
                     final isMidCycle =
                         selectedCycleType ==
                         HarvestCalculatorConstants.cycleTypeMid;
 
+                    // Check if this is agent mode
+                    final simulationTypeControl =
+                        form.control(
+                              HarvestCalculatorFormControls.simulationType,
+                            )
+                            as FormControl<String>;
+                    final simulationType =
+                        simulationTypeControl.value ??
+                        HarvestCalculatorConstants.simulationTypeCycle;
+                    final isAgentMode =
+                        simulationType ==
+                        HarvestCalculatorConstants.simulationTypeAgent;
+
+                    // Current DOC is always enabled for agent mode, enabled when Mid Cycle for cycle mode
+                    // Current DOC logic:
+                    // - Always enabled for Mid Cycle (both agent and cycle mode)
+                    // - Disabled for Full Cycle (both agent and cycle mode, auto-set = 1)
+                    final isCurrentDOCEnabled = isMidCycle;
+
+                    // For full cycle (both agent and cycle mode), set currentDOC to 1 automatically
+                    if (!isMidCycle) {
+                      final currentDOCControl = form.control(
+                        HarvestCalculatorFormControls.currentDOC,
+                      );
+                      if (currentDOCControl.value == null ||
+                          currentDOCControl.value == '') {
+                        currentDOCControl.value = '1';
+                      }
+                    }
+
                     return SectionFieldPadding.wrap(
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: FieldBuilder.number(
-                              formControlName:
-                                  HarvestCalculatorFormControls.currentDOC,
-                              label: HarvestCalculatorConstants.labelCurrentDOC,
-                              hint: '0',
-                              suffix: 'hari',
-                              readOnly: !isMidCycle,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: 80, // Reserve space for label + field + error message
+                              ),
+                              child: FieldBuilder.number(
+                                formControlName:
+                                    HarvestCalculatorFormControls.currentDOC,
+                                label: HarvestCalculatorConstants.labelCurrentDOC,
+                                hint: '1', // Full cycle always shows 1
+                                suffix: 'hari',
+                                readOnly: !isCurrentDOCEnabled,
+                                isRequired:
+                                    isAgentMode &&
+                                    isMidCycle, // Required only for agent + mid cycle
+                                validationMessages: {
+                                  'required': (_) => 'DOC Saat Ini harus diisi untuk mode mid-cycle',
+                                  'min': (_) => 'DOC Saat Ini harus lebih besar dari 0',
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(
                             width: SectionFieldPadding.fieldSpacing,
                           ),
                           Expanded(
-                            child: FieldBuilder.number(
-                              formControlName:
-                                  HarvestCalculatorFormControls.targetDOC,
-                              label: HarvestCalculatorConstants.labelTargetDOC,
-                              hint: '120',
-                              suffix: 'hari',
-                              isRequired: true,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: 80, // Reserve space for label + field + error message
+                              ),
+                              child: FieldBuilder.number(
+                                formControlName:
+                                    HarvestCalculatorFormControls.targetDOC,
+                                label: HarvestCalculatorConstants.labelTargetDOC,
+                                hint: '120',
+                                suffix: 'hari',
+                                isRequired: true,
+                                validationMessages: {
+                                  'required': (_) => 'Target DOC harus diisi',
+                                  'min': (_) => 'Target DOC harus lebih besar dari 0',
+                                },
+                              ),
                             ),
                           ),
                         ],

@@ -1,13 +1,110 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart' as reactive_forms;
+
+/// Number text input formatter with thousand separators.
+/// Uses pattern_formatter library for robust number formatting.
+/// Automatically adds thousand separators (,) and handles decimals.
+/// Example: 1000 becomes 1,000, 1500.25 becomes 1,500.25
+class NumberTextInputFormatter extends TextInputFormatter {
+  const NumberTextInputFormatter({this.allowDecimal = false});
+
+  /// Whether to allow decimal points (for fields like FCR: 1.2, 1.5, etc.)
+  final bool allowDecimal;
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Only process if the new value is different
+    if (oldValue.text == newValue.text) {
+      return newValue;
+    }
+
+    final text = newValue.text;
+
+    // Allow digits, commas, and optionally decimal point
+    final allowedChars = allowDecimal
+        ? RegExp(r'^[\d,.]*$')
+        : RegExp(r'^[\d,]*$');
+    if (!allowedChars.hasMatch(text)) {
+      return oldValue;
+    }
+
+    // Don't allow multiple decimal points
+    if (allowDecimal && '.'.allMatches(text).length > 1) {
+      return oldValue;
+    }
+
+    // For integer fields, don't allow leading zeros except for "0" itself
+    if (!allowDecimal && text.length > 1 && text.startsWith('0')) {
+      return oldValue;
+    }
+
+    // Format with thousand separators
+    final formattedText = _formatWithThousandSeparators(text);
+
+    // Calculate cursor position (keep it at the end for simplicity)
+    final cursorPosition = formattedText.length;
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: cursorPosition),
+    );
+  }
+
+  String _formatWithThousandSeparators(String text) {
+    if (text.isEmpty) return text;
+
+    // Remove existing commas first
+    final cleanText = text.replaceAll(',', '');
+
+    // If no decimal point, format the whole number
+    if (!cleanText.contains('.')) {
+      return _addThousandSeparators(cleanText);
+    }
+
+    // Split into integer and decimal parts
+    final parts = cleanText.split('.');
+    final integerPart = parts[0];
+    final decimalPart = parts[1];
+
+    // Format integer part with thousand separators
+    final formattedInteger = _addThousandSeparators(integerPart);
+
+    return '$formattedInteger.$decimalPart';
+  }
+
+  String _addThousandSeparators(String numberString) {
+    if (numberString.length <= 3) return numberString;
+
+    final buffer = StringBuffer();
+    final length = numberString.length;
+
+    for (var i = 0; i < length; i++) {
+      if (i > 0 && (length - i) % 3 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(numberString[i]);
+    }
+
+    return buffer.toString();
+  }
+
+  /// Convert formatted number string back to clean number string
+  /// Example: "1,000,000" becomes "1000000"
+  static String cleanNumberString(String formattedString) {
+    return formattedString.replaceAll(',', '');
+  }
+}
 
 /// Reactive text field widget with label and required indicator.
 ///
 /// Uses reactive_forms for form management.
 /// Figma: Label with required indicator (*), gap 8px, field with padding 8px 16px,
 /// height fixed, border radius 8px, border Gray/20
-class ReactiveTextFieldWidget extends StatelessWidget {
+class ReactiveTextFieldWidget extends StatefulWidget {
   /// Creates a new instance of [ReactiveTextFieldWidget].
   const ReactiveTextFieldWidget({
     required this.formControlName,
@@ -17,6 +114,7 @@ class ReactiveTextFieldWidget extends StatelessWidget {
     this.prefix,
     this.suffix,
     this.keyboardType,
+    this.inputFormatters,
     this.validationMessages,
     this.readOnly = false,
     super.key,
@@ -43,12 +141,52 @@ class ReactiveTextFieldWidget extends StatelessWidget {
   /// Keyboard type
   final TextInputType? keyboardType;
 
+  /// Input formatters for text input
+  final List<TextInputFormatter>? inputFormatters;
+
   /// Validation messages
   final Map<String, reactive_forms.ValidationMessageFunction>?
   validationMessages;
 
   /// Whether the field is read-only (disabled)
   final bool readOnly;
+
+  @override
+  State<ReactiveTextFieldWidget> createState() =>
+      _ReactiveTextFieldWidgetState();
+}
+
+class _ReactiveTextFieldWidgetState extends State<ReactiveTextFieldWidget> {
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      // Scroll to make field visible when focused
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          Scrollable.ensureVisible(
+            context,
+            alignment: 0.3, // Position field at 30% from top
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+  }
 
   // Design tokens from Figma
   static const double _gap = 8;
@@ -64,7 +202,7 @@ class ReactiveTextFieldWidget extends StatelessWidget {
         // Label Container with required indicator
         Row(
           children: [
-            if (isRequired) ...[
+            if (widget.isRequired) ...[
               Text(
                 '*',
                 style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
@@ -75,7 +213,7 @@ class ReactiveTextFieldWidget extends StatelessWidget {
               const SizedBox(width: 2), // Gap 2px
             ],
             Text(
-              label,
+              widget.label,
               style: HarvestCalculatorDesignConstants.formLabelTextStyle,
             ),
           ],
@@ -85,7 +223,7 @@ class ReactiveTextFieldWidget extends StatelessWidget {
         Container(
           height: _fieldHeight,
           decoration: BoxDecoration(
-            color: readOnly
+            color: widget.readOnly
                 ? HarvestCalculatorDesignConstants.disabledFieldBackgroundColor
                 : null,
             border: Border.all(
@@ -101,32 +239,39 @@ class ReactiveTextFieldWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                if (prefix != null) ...[
+                if (widget.prefix != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(
                       left: _fieldPaddingHorizontal,
                       right: 8,
                     ),
-                    child: prefix,
+                    child: widget.prefix,
                   ),
                 ],
                 Expanded(
                   child: reactive_forms.ReactiveTextField<String>(
-                    key: ValueKey('reactive_text_field_$formControlName'),
-                    formControlName: formControlName,
-                    keyboardType: keyboardType,
-                    validationMessages: validationMessages,
-                    readOnly: readOnly,
+                    key: ValueKey(
+                      'reactive_text_field_${widget.formControlName}',
+                    ),
+                    formControlName: widget.formControlName,
+                    focusNode: _focusNode,
+                    keyboardType: widget.keyboardType,
+                    inputFormatters: _getInputFormatters(),
+                    validationMessages: widget.validationMessages,
+                    readOnly: widget.readOnly,
                     showErrors: (control) => false,
                     decoration: InputDecoration(
-                      hintText: hint,
-                      hintStyle: HarvestCalculatorDesignConstants.formFieldPlaceholderTextStyle,
+                      hintText: widget.hint,
+                      hintStyle: HarvestCalculatorDesignConstants
+                          .formFieldPlaceholderTextStyle,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
                       contentPadding: EdgeInsets.only(
-                        left: prefix == null ? _fieldPaddingHorizontal : 0,
+                        left: widget.prefix == null
+                            ? _fieldPaddingHorizontal
+                            : 0,
                         right: _fieldPaddingHorizontal,
                         top: _fieldPaddingVertical,
                         bottom: _fieldPaddingVertical,
@@ -134,19 +279,21 @@ class ReactiveTextFieldWidget extends StatelessWidget {
                       isDense: true,
                       filled: false,
                     ),
-                    style: HarvestCalculatorDesignConstants.formFieldTextStyle.copyWith(
-                      color: readOnly
-                          ? HarvestCalculatorDesignConstants.disabledTextColor
-                          : HarvestCalculatorDesignConstants.textPrimary,
-                    ),
+                    style: HarvestCalculatorDesignConstants.formFieldTextStyle
+                        .copyWith(
+                          color: widget.readOnly
+                              ? HarvestCalculatorDesignConstants
+                                    .disabledTextColor
+                              : HarvestCalculatorDesignConstants.textPrimary,
+                        ),
                   ),
                 ),
-                if (suffix != null) ...[
+                if (widget.suffix != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(
                       right: _fieldPaddingHorizontal,
                     ),
-                    child: suffix,
+                    child: widget.suffix,
                   ),
                 ],
               ],
@@ -154,7 +301,7 @@ class ReactiveTextFieldWidget extends StatelessWidget {
           ),
         ),
         reactive_forms.ReactiveValueListenableBuilder<String>(
-          formControlName: formControlName,
+          formControlName: widget.formControlName,
           builder: (context, control, child) {
             final errorText = _resolveErrorText(control);
             if (errorText == null) {
@@ -178,9 +325,9 @@ class ReactiveTextFieldWidget extends StatelessWidget {
     final errors = control.errors;
     if (errors.isEmpty) return null;
 
-    if (validationMessages != null) {
+    if (widget.validationMessages != null) {
       for (final entry in errors.entries) {
-        final messageBuilder = validationMessages![entry.key];
+        final messageBuilder = widget.validationMessages![entry.key];
         if (messageBuilder != null) {
           return messageBuilder(entry.value);
         }
@@ -191,6 +338,22 @@ class ReactiveTextFieldWidget extends StatelessWidget {
     final dynamic value = firstError.value;
     if (value == null) return 'Field tidak valid';
     return value.toString();
+  }
+
+  List<TextInputFormatter>? _getInputFormatters() {
+    final formatters = <TextInputFormatter>[];
+
+    // Default number formatter for number fields
+    if (widget.keyboardType == TextInputType.number) {
+      formatters.add(FilteringTextInputFormatter.allow(RegExp('[0-9.]')));
+    }
+
+    // Add custom formatters
+    if (widget.inputFormatters != null) {
+      formatters.addAll(widget.inputFormatters!);
+    }
+
+    return formatters.isEmpty ? null : formatters;
   }
 
   bool _shouldShowError(reactive_forms.AbstractControl<dynamic> control) {

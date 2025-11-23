@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
@@ -7,6 +6,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/saved_simulations_provider.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/simulations_content.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/states/empty_simulations_content.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// List screen for Harvest Calculator feature.

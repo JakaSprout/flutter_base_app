@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/connectivity/connectivity_models.dart';
 import 'package:app_mobile_afms/core/di/providers/connectivity_provider.dart';
@@ -10,6 +9,7 @@ import 'package:app_mobile_afms/core/sync/models/sync_item.dart';
 import 'package:app_mobile_afms/core/sync/models/sync_status.dart';
 import 'package:app_mobile_afms/core/sync/providers/sync_queue_provider.dart';
 import 'package:app_mobile_afms/core/sync/services/sync_queue.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';

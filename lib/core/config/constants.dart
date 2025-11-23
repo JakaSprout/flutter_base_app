@@ -18,7 +18,7 @@ class AppConstants {
   static const String databaseName = 'flutter_base_app.db';
 
   /// Database version
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
 
   // Storage Keys
   /// Secure storage key for auth token

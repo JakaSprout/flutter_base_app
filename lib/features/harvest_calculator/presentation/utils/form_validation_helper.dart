@@ -16,7 +16,8 @@ class FormValidationHelper {
     final simulationTypeControl =
         form.control(HarvestCalculatorFormControls.simulationType)
             as FormControl<String>;
-    final simulationType = simulationTypeControl.value ??
+    final simulationType =
+        simulationTypeControl.value ??
         HarvestCalculatorConstants.simulationTypeCycle;
     final isAgentMode =
         simulationType == HarvestCalculatorConstants.simulationTypeAgent;
@@ -75,6 +76,167 @@ class FormValidationHelper {
   static bool shouldShowCultivationInfo(FormGroup form) {
     return isPondSelectionValid(form);
   }
+
+  /// Checks if agent-specific parameters are valid for agent mode.
+  ///
+  /// Validates: totalFeedPaymentObligation, harvestPurchasePrice, estimatedHarvestYield
+  /// Uses manual parsing since form validation may not be triggered yet
+  static bool isAgentParametersValid(FormGroup form) {
+    // Check simulation type
+    final simulationTypeControl =
+        form.control(HarvestCalculatorFormControls.simulationType)
+            as FormControl<String>;
+    final simulationType =
+        simulationTypeControl.value ??
+        HarvestCalculatorConstants.simulationTypeCycle;
+    final isAgentMode =
+        simulationType == HarvestCalculatorConstants.simulationTypeAgent;
+
+    if (!isAgentMode) {
+      return true; // Skip validation for non-agent modes
+    }
+
+    // Validate total feed payment obligation
+    final totalFeedPaymentObligationControl =
+        form.control(HarvestCalculatorFormControls.totalFeedPaymentObligation)
+            as FormControl<String>;
+    final totalFeedPaymentObligation = double.tryParse(
+      totalFeedPaymentObligationControl.value ?? '',
+    );
+    if (totalFeedPaymentObligation == null || totalFeedPaymentObligation <= 0) {
+      return false;
+    }
+
+    // Validate harvest purchase price
+    final harvestPurchasePriceControl =
+        form.control(HarvestCalculatorFormControls.harvestPurchasePrice)
+            as FormControl<String>;
+    final harvestPurchasePrice = double.tryParse(
+      harvestPurchasePriceControl.value ?? '',
+    );
+    if (harvestPurchasePrice == null || harvestPurchasePrice <= 0) {
+      return false;
+    }
+
+    // Validate estimated harvest yield
+    final estimatedHarvestYieldControl =
+        form.control(HarvestCalculatorFormControls.estimatedHarvestYield)
+            as FormControl<String>;
+    final estimatedHarvestYield = double.tryParse(
+      estimatedHarvestYieldControl.value ?? '',
+    );
+    if (estimatedHarvestYield == null || estimatedHarvestYield <= 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /// Checks if all required fields are valid across all sections.
+  ///
+  /// This is a comprehensive validation that includes basic info,
+  /// pond selection (for cycle mode), and agent parameters (for agent mode).
+  static bool isFormCompletelyValid(FormGroup form) {
+    // Check simulation type
+    final simulationTypeControl =
+        form.control(HarvestCalculatorFormControls.simulationType)
+            as FormControl<String>;
+    final simulationType =
+        simulationTypeControl.value ??
+        HarvestCalculatorConstants.simulationTypeCycle;
+    final isAgentMode =
+        simulationType == HarvestCalculatorConstants.simulationTypeAgent;
+
+    // Basic info validation (required for all modes)
+    if (!isBasicInfoValid(form)) {
+      return false;
+    }
+
+    // Pond selection validation (required for cycle mode only)
+    if (!isAgentMode && !isPondSelectionValid(form)) {
+      return false;
+    }
+
+    // Agent parameters validation (required for agent mode only)
+    if (isAgentMode && !isAgentParametersValid(form)) {
+      return false;
+    }
+
+    // 🔍 CRITICAL: Check ALL required field validations
+    // This ensures individual field validations are also satisfied
+    if (!isAllRequiredFieldsValid(form, isAgentMode)) {
+      return false;
+    }
+
+    // All critical sections and field validations are valid
+    return true;
+  }
+
+  /// Checks if all required fields are valid for the current mode
+  static bool isAllRequiredFieldsValid(FormGroup form, bool isAgentMode) {
+    // For cycle mode, check cycle-specific required fields
+    if (!isAgentMode) {
+      // Check pond-related fields (only required when using manual input)
+      final useRegisteredPond =
+          form.control(HarvestCalculatorFormControls.useRegisteredPond).value
+              as bool? ??
+          false;
+      if (!useRegisteredPond) {
+        // Manual input mode - these fields are required
+        final requiredCycleFields = [
+          HarvestCalculatorFormControls.pondArea,
+          HarvestCalculatorFormControls.stocking,
+          HarvestCalculatorFormControls.targetDOC,
+          HarvestCalculatorFormControls.feedingRate,
+          HarvestCalculatorFormControls.targetSR,
+          HarvestCalculatorFormControls.estimatedFCR,
+          HarvestCalculatorFormControls.sellingPrice,
+          HarvestCalculatorFormControls.feedPrice,
+        ];
+
+        for (final fieldName in requiredCycleFields) {
+          final control = form.control(fieldName);
+          if (control is FormControl && !control.valid) {
+            return false;
+          }
+        }
+      }
+
+      // Check cycle type fields
+      final cycleTypeControl =
+          form.control(HarvestCalculatorFormControls.cycleType)
+              as FormControl<String>;
+      final isMidCycle =
+          cycleTypeControl.value == HarvestCalculatorConstants.cycleTypeMid;
+      if (isMidCycle) {
+        final currentDOCControl =
+            form.control(HarvestCalculatorFormControls.currentDOC)
+                as FormControl<String>;
+        if (!currentDOCControl.valid) {
+          return false;
+        }
+      }
+    } else {
+      // For agent mode, check agent-specific required fields
+      final requiredAgentFields = [
+        HarvestCalculatorFormControls.currentBiomass,
+        HarvestCalculatorFormControls.stocking,
+        HarvestCalculatorFormControls.targetSR,
+        HarvestCalculatorFormControls.estimatedFCR,
+        HarvestCalculatorFormControls.totalFeedPaymentObligation,
+        HarvestCalculatorFormControls.harvestPurchasePrice,
+        HarvestCalculatorFormControls.estimatedHarvestYield,
+        HarvestCalculatorFormControls.targetDOC,
+      ];
+
+      for (final fieldName in requiredAgentFields) {
+        final control = form.control(fieldName);
+        if (control is FormControl && !control.valid) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
 }
-
-

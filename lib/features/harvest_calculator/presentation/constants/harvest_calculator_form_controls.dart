@@ -97,4 +97,22 @@ class HarvestCalculatorFormControls {
 
   /// Estimated harvest yield control name (for Agent mode).
   static const String estimatedHarvestYield = 'estimatedHarvestYield';
+
+  /// Harvest 1 percentage control name.
+  static const String harvest1Percentage = 'harvest1Percentage';
+
+  /// Harvest 1 DOC control name.
+  static const String harvest1DOC = 'harvest1DOC';
+
+  /// Harvest 2 percentage control name.
+  static const String harvest2Percentage = 'harvest2Percentage';
+
+  /// Harvest 2 DOC control name.
+  static const String harvest2DOC = 'harvest2DOC';
+
+  /// Final harvest percentage control name.
+  static const String finalHarvestPercentage = 'finalHarvestPercentage';
+
+  /// Final harvest DOC control name.
+  static const String finalHarvestDOC = 'finalHarvestDOC';
 }

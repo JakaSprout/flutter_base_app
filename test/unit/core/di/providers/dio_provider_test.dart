@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
 import 'package:app_mobile_afms/core/network/dio_client.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

@@ -25,10 +25,7 @@ mixin _$LoginResponseModel {
   String? get refreshToken => throw _privateConstructorUsedError;
   int? get expiresIn => throw _privateConstructorUsedError;
   String get tokenType => throw _privateConstructorUsedError;
-  Map<String, dynamic>? get user => throw _privateConstructorUsedError;
-  String? get userId => throw _privateConstructorUsedError;
-  String? get email => throw _privateConstructorUsedError;
-  String? get phoneNumber => throw _privateConstructorUsedError;
+  int? get employeeId => throw _privateConstructorUsedError;
   String? get sessionId => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponseModel to a JSON map.
@@ -53,10 +50,7 @@ abstract class $LoginResponseModelCopyWith<$Res> {
     String? refreshToken,
     int? expiresIn,
     String tokenType,
-    Map<String, dynamic>? user,
-    String? userId,
-    String? email,
-    String? phoneNumber,
+    int? employeeId,
     String? sessionId,
   });
 }
@@ -80,10 +74,7 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
     Object? refreshToken = freezed,
     Object? expiresIn = freezed,
     Object? tokenType = null,
-    Object? user = freezed,
-    Object? userId = freezed,
-    Object? email = freezed,
-    Object? phoneNumber = freezed,
+    Object? employeeId = freezed,
     Object? sessionId = freezed,
   }) {
     return _then(
@@ -104,22 +95,10 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
                 ? _value.tokenType
                 : tokenType // ignore: cast_nullable_to_non_nullable
                       as String,
-            user: freezed == user
-                ? _value.user
-                : user // ignore: cast_nullable_to_non_nullable
-                      as Map<String, dynamic>?,
-            userId: freezed == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            email: freezed == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            phoneNumber: freezed == phoneNumber
-                ? _value.phoneNumber
-                : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            employeeId: freezed == employeeId
+                ? _value.employeeId
+                : employeeId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             sessionId: freezed == sessionId
                 ? _value.sessionId
                 : sessionId // ignore: cast_nullable_to_non_nullable
@@ -144,10 +123,7 @@ abstract class _$$LoginResponseModelImplCopyWith<$Res>
     String? refreshToken,
     int? expiresIn,
     String tokenType,
-    Map<String, dynamic>? user,
-    String? userId,
-    String? email,
-    String? phoneNumber,
+    int? employeeId,
     String? sessionId,
   });
 }
@@ -170,10 +146,7 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
     Object? refreshToken = freezed,
     Object? expiresIn = freezed,
     Object? tokenType = null,
-    Object? user = freezed,
-    Object? userId = freezed,
-    Object? email = freezed,
-    Object? phoneNumber = freezed,
+    Object? employeeId = freezed,
     Object? sessionId = freezed,
   }) {
     return _then(
@@ -194,22 +167,10 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
             ? _value.tokenType
             : tokenType // ignore: cast_nullable_to_non_nullable
                   as String,
-        user: freezed == user
-            ? _value._user
-            : user // ignore: cast_nullable_to_non_nullable
-                  as Map<String, dynamic>?,
-        userId: freezed == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        email: freezed == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        phoneNumber: freezed == phoneNumber
-            ? _value.phoneNumber
-            : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        employeeId: freezed == employeeId
+            ? _value.employeeId
+            : employeeId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         sessionId: freezed == sessionId
             ? _value.sessionId
             : sessionId // ignore: cast_nullable_to_non_nullable
@@ -227,12 +188,9 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
     this.refreshToken,
     this.expiresIn,
     this.tokenType = 'Bearer',
-    final Map<String, dynamic>? user,
-    this.userId,
-    this.email,
-    this.phoneNumber,
+    this.employeeId,
     this.sessionId,
-  }) : _user = user;
+  });
 
   factory _$LoginResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$LoginResponseModelImplFromJson(json);
@@ -246,28 +204,14 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
   @override
   @JsonKey()
   final String tokenType;
-  final Map<String, dynamic>? _user;
   @override
-  Map<String, dynamic>? get user {
-    final value = _user;
-    if (value == null) return null;
-    if (_user is EqualUnmodifiableMapView) return _user;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
-  }
-
-  @override
-  final String? userId;
-  @override
-  final String? email;
-  @override
-  final String? phoneNumber;
+  final int? employeeId;
   @override
   final String? sessionId;
 
   @override
   String toString() {
-    return 'LoginResponseModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, tokenType: $tokenType, user: $user, userId: $userId, email: $email, phoneNumber: $phoneNumber, sessionId: $sessionId)';
+    return 'LoginResponseModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, tokenType: $tokenType, employeeId: $employeeId, sessionId: $sessionId)';
   }
 
   @override
@@ -283,11 +227,8 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
                 other.expiresIn == expiresIn) &&
             (identical(other.tokenType, tokenType) ||
                 other.tokenType == tokenType) &&
-            const DeepCollectionEquality().equals(other._user, _user) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber) &&
+            (identical(other.employeeId, employeeId) ||
+                other.employeeId == employeeId) &&
             (identical(other.sessionId, sessionId) ||
                 other.sessionId == sessionId));
   }
@@ -300,10 +241,7 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
     refreshToken,
     expiresIn,
     tokenType,
-    const DeepCollectionEquality().hash(_user),
-    userId,
-    email,
-    phoneNumber,
+    employeeId,
     sessionId,
   );
 
@@ -330,10 +268,7 @@ abstract class _LoginResponseModel implements LoginResponseModel {
     final String? refreshToken,
     final int? expiresIn,
     final String tokenType,
-    final Map<String, dynamic>? user,
-    final String? userId,
-    final String? email,
-    final String? phoneNumber,
+    final int? employeeId,
     final String? sessionId,
   }) = _$LoginResponseModelImpl;
 
@@ -349,13 +284,7 @@ abstract class _LoginResponseModel implements LoginResponseModel {
   @override
   String get tokenType;
   @override
-  Map<String, dynamic>? get user;
-  @override
-  String? get userId;
-  @override
-  String? get email;
-  @override
-  String? get phoneNumber;
+  int? get employeeId;
   @override
   String? get sessionId;
 

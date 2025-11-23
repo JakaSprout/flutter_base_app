@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Chart statistics card displaying DOC and related metrics.
 class ChartStatCard extends StatelessWidget {
@@ -28,24 +28,6 @@ class ChartStatCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'DOC',
-                style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
-                  height: 18 / 12,
-                ),
-              ),
-              Text(
-                '$doc',
-                style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
-                  height: 18 / 12,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
           ...stats.asMap().entries.map((entry) {
             final index = entry.key;
             final stat = entry.value;

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:flutter/material.dart';
 
 /// Text area form field widget for lab request form.
 class LabRequestTextAreaFormField extends StatelessWidget {

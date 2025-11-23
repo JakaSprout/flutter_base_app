@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/design_system/components/inputs/stp_dropdown.dart';
 import 'package:app_mobile_afms/design_system/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 /// Dropdown form field component.
 ///

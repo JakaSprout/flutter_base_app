@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
 import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/banner_section.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_cultivation_system_modal.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart' as reactive_forms;
 
 /// Reactive cultivation system field widget with bottom sheet modal.
@@ -32,7 +32,8 @@ class ReactiveCultivationSystemFieldWidget extends StatelessWidget {
   final String? hint;
 
   /// Validation messages
-  final Map<String, reactive_forms.ValidationMessageFunction>? validationMessages;
+  final Map<String, reactive_forms.ValidationMessageFunction>?
+  validationMessages;
 
   // Design tokens
   static const double _labelFontSize = 12;
@@ -51,7 +52,8 @@ class ReactiveCultivationSystemFieldWidget extends StatelessWidget {
               const Text(
                 '*',
                 style: TextStyle(
-                  color: HarvestCalculatorDesignConstants.errorColor, // Destructive/60
+                  color: HarvestCalculatorDesignConstants
+                      .errorColor, // Destructive/60
                   fontSize: _labelFontSize,
                   fontWeight: FontWeight.w600,
                 ),
@@ -76,7 +78,8 @@ class ReactiveCultivationSystemFieldWidget extends StatelessWidget {
           key: ValueKey('reactive_cultivation_system_field_$formControlName'),
           formControlName: formControlName,
           validationMessages: validationMessages,
-          showErrors: (control) => control.invalid && (control.dirty || control.touched),
+          showErrors: (control) =>
+              control.invalid && (control.dirty || control.touched),
           builder: (field) {
             final errorText = field.errorText;
             final selectedValue = field.value;
@@ -115,16 +118,19 @@ class ReactiveCultivationSystemFieldWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            selectedValue ?? (hint ?? 'Pilih $label'),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: selectedValue != null
-                                  ? HarvestCalculatorDesignConstants.gray100
-                                  : HarvestCalculatorDesignConstants.gray70,
-                              fontFamily: AppConstants.fontFamily,
-                              height: 1.4,
-                            ),
+                            (selectedValue != null && selectedValue.isNotEmpty)
+                                ? selectedValue
+                                : (hint ?? 'Pilih $label'),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: (selectedValue != null && selectedValue.isNotEmpty)
+                                      ? HarvestCalculatorDesignConstants.gray100
+                                      : HarvestCalculatorDesignConstants.gray70,
+                                  fontFamily: AppConstants.fontFamily,
+                                  height: 1.4,
+                                ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -159,5 +165,3 @@ class ReactiveCultivationSystemFieldWidget extends StatelessWidget {
     );
   }
 }
-
-

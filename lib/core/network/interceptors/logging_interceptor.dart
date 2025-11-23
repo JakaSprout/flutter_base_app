@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
-
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:dio/dio.dart';
 
 /// Logging interceptor for Dio requests and responses.
 class LoggingInterceptor extends Interceptor {

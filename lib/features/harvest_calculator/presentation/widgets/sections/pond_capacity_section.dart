@@ -4,6 +4,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/constan
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/capacity_recommendation_helper.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/field_builder.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/form_section.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/reactive_text_field.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,10 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     hint: '100.000',
                     suffix: 'm²',
                     isRequired: true,
+                    validationMessages: {
+                      'required': (_) => 'Luas kolam harus diisi',
+                      'min': (_) => 'Luas kolam harus lebih besar dari 0',
+                    },
                   ),
                 ),
                 const SizedBox(height: SectionFieldPadding.fieldSpacing),
@@ -60,13 +65,18 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     hint: '150',
                     suffix: 'ind/m²',
                     isRequired: true,
+                    validationMessages: {
+                      'required': (_) => 'Kepadatan tebar harus diisi',
+                      'min': (_) => 'Kepadatan tebar harus lebih besar dari 0',
+                    },
                   ),
                 ),
                 const SizedBox(height: SectionFieldPadding.fieldSpacing),
                 // 3. Kapasitas (kg/m²) with info icon and recommendation system
+                // Also handles automatic calculation of pond capacity
                 ReactiveFormConsumer(
                   builder: (context, form, child) {
-                    // Listen to commodity and cultivation system changes
+                    // Listen to commodity, cultivation system, pond area, and capacity changes
                     final commodity =
                         form
                                 .control(
@@ -142,6 +152,11 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                                   .copyWith(fontWeight: FontWeight.w700),
                             ),
                             isRequired: true,
+                            validationMessages: {
+                              'required': (_) => 'Kapasitas harus diisi',
+                              'min': (_) =>
+                                  'Kapasitas harus lebih besar dari 0',
+                            },
                           ),
                         ),
                         // Info text below field (doesn't interfere with error message)
@@ -247,6 +262,62 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     );
                   },
                 ),
+                // Listener for automatic pond capacity calculation
+                ReactiveFormConsumer(
+                  builder: (context, form, child) {
+                    return ReactiveValueListenableBuilder<String>(
+                      formControlName: HarvestCalculatorFormControls.pondArea,
+                      builder: (context, pondAreaControl, child) {
+                        return ReactiveValueListenableBuilder<String>(
+                          formControlName:
+                              HarvestCalculatorFormControls.capacityKgPerM2,
+                          builder: (context, capacityControl, child) {
+                            // This will trigger rebuild when either field changes
+                            final pondArea = pondAreaControl.value;
+                            final capacityKgPerM2 = capacityControl.value;
+
+                            if (pondArea != null &&
+                                pondArea.isNotEmpty &&
+                                capacityKgPerM2 != null &&
+                                capacityKgPerM2.isNotEmpty) {
+                              try {
+                                final area = double.parse(
+                                  NumberTextInputFormatter.cleanNumberString(
+                                    pondArea,
+                                  ),
+                                );
+                                final capacity = double.parse(
+                                  NumberTextInputFormatter.cleanNumberString(
+                                    capacityKgPerM2,
+                                  ),
+                                );
+                                final totalCapacity = area * capacity;
+                                final totalCapacityStr = totalCapacity
+                                    .toCleanString();
+                                final pondCapacityControl = form.control(
+                                  HarvestCalculatorFormControls
+                                      .pondCapacityKgPerPond,
+                                );
+                                if (pondCapacityControl.value !=
+                                    totalCapacityStr) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    pondCapacityControl.value =
+                                        totalCapacityStr;
+                                  });
+                                }
+                              } catch (e) {
+                                // Invalid number format - don't update
+                              }
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
                 const SizedBox(height: SectionFieldPadding.fieldSpacing),
                 // 4. Kapasitas Kolam (kg/kolam)
                 SectionFieldPadding.wrap(
@@ -254,7 +325,7 @@ class _PondCapacitySectionState extends State<PondCapacitySection> {
                     formControlName:
                         HarvestCalculatorFormControls.pondCapacityKgPerPond,
                     label: HarvestCalculatorConstants.labelPondCapacity,
-                    hint: '15',
+                    hint: '5.000',
                     suffix: 'kg/kolam',
                     isRequired: true,
                     readOnly: true,

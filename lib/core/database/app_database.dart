@@ -1,19 +1,31 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/reference_data/domain/reference_data_type.dart'
+    show ReferenceDataType;
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+part 'tables/reference_data_tables.dart';
 part 'app_database.g.dart';
 
 /// Main database class using Drift.
 ///
 /// This database serves as the local storage for offline-first architecture.
 /// All data is stored here and synced with the server when online.
-@DriftDatabase(tables: [])
+@DriftDatabase(
+  tables: [
+    ReferenceDataMetadataEntries,
+    LabTestTypeEntries,
+    EmployeeEntries,
+    CustomerEntries,
+    FarmEntries,
+    PondEntries,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   /// Creates a new instance of [AppDatabase].
   AppDatabase() : super(_openConnection());

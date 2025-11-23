@@ -1,16 +1,21 @@
-import 'package:flutter/material.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/reference_data/providers/reference_data_providers.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
+import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_provider.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:app_mobile_afms/router/routes.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+
+/// Describes the current progress stage of the login flow.
+enum LoginProgressStage { idle, authenticating, seeding }
 
 /// Custom hook for handling login logic.
 ///
@@ -19,8 +24,13 @@ import 'package:reactive_forms/reactive_forms.dart';
 ///
 /// Returns a record with:
 /// - [isLoading]: ValueNotifier<bool> for loading state
+/// - [progressStage]: ValueNotifier<LoginProgressStage> for UI overlays
 /// - [handleLogin]: Function to trigger login
-({ValueNotifier<bool> isLoading, Future<void> Function() handleLogin})
+({
+  ValueNotifier<bool> isLoading,
+  ValueNotifier<LoginProgressStage> progressStage,
+  Future<void> Function() handleLogin,
+})
 useLogin({
   required BuildContext context,
   required WidgetRef ref,
@@ -28,6 +38,7 @@ useLogin({
   required bool isPhoneMode,
 }) {
   final isLoading = useState(false);
+  final progressStage = useState(LoginProgressStage.idle);
 
   Future<void> handleLogin() async {
     form.markAllAsTouched();
@@ -38,6 +49,7 @@ useLogin({
     }
 
     isLoading.value = true;
+    progressStage.value = LoginProgressStage.authenticating;
 
     try {
       final loginResponse = await _performLogin(
@@ -46,7 +58,12 @@ useLogin({
         isPhoneMode: isPhoneMode,
       );
 
-      await _saveTokensAndRefreshAuth(ref: ref, loginResponse: loginResponse);
+      await _saveTokensAndRefreshAuth(
+        context: context,
+        ref: ref,
+        loginResponse: loginResponse,
+        progressStage: progressStage,
+      );
 
       if (context.mounted) {
         context.goNamed(Routes.homeName);
@@ -62,10 +79,15 @@ useLogin({
       }
     } finally {
       isLoading.value = false;
+      progressStage.value = LoginProgressStage.idle;
     }
   }
 
-  return (isLoading: isLoading, handleLogin: handleLogin);
+  return (
+    isLoading: isLoading,
+    progressStage: progressStage,
+    handleLogin: handleLogin,
+  );
 }
 
 /// Performs login based on mode (phone or email).
@@ -101,8 +123,10 @@ Future<LoginResponse> _performLogin({
 ///
 /// This ensures AuthGuard sees the updated auth state before navigation.
 Future<void> _saveTokensAndRefreshAuth({
+  required BuildContext context,
   required WidgetRef ref,
   required LoginResponse loginResponse,
+  required ValueNotifier<LoginProgressStage> progressStage,
 }) async {
   AppLogger.debug('[Login] Saving tokens and refreshing auth state');
   final authService = ref.read(authServiceProvider);
@@ -113,4 +137,59 @@ Future<void> _saveTokensAndRefreshAuth({
   ref.invalidate(authStateProvider);
   await ref.read(authStateProvider.future);
   AppLogger.debug('[Login] Auth state refreshed');
+
+  progressStage.value = LoginProgressStage.seeding;
+  await _seedReferenceData(
+    context: context,
+    ref: ref,
+    loginResponse: loginResponse,
+  );
+  progressStage.value = LoginProgressStage.idle;
+}
+
+Future<void> _seedReferenceData({
+  required BuildContext context,
+  required WidgetRef ref,
+  required LoginResponse loginResponse,
+}) async {
+  final userKey = _resolveUserKey(loginResponse);
+  if (userKey == null) {
+    AppLogger.warning(
+      '[Login] Unable to resolve employeeId, skipping reference data seeding',
+    );
+    return;
+  }
+
+  final seeder = ref.read(referenceDataSeederProvider);
+  final updater = ref.read(referenceDataUpdaterProvider);
+
+  AppLogger.debug('[Login] Seeding reference data for userKey=$userKey');
+  final summary = await seeder.seedAll(userId: userKey, force: true);
+
+  if (!summary.success) {
+    AppLogger.warning(
+      '[Login] Reference data seeding completed with issues: ${summary.results}',
+    );
+  }
+
+  AppLogger.debug(
+    '[Login] Starting reference data updater for userKey=$userKey',
+  );
+  updater.start(userId: userKey);
+
+  if (context.mounted) {
+    final messenger = ScaffoldMessenger.of(context);
+    final message = summary.success
+        ? AuthConstants.messageSeedingSuccess
+        : AuthConstants.messageSeedingPartial;
+    messenger.showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+String? _resolveUserKey(LoginResponse loginResponse) {
+  final employeeId = loginResponse.employeeId?.trim();
+  if (employeeId != null && employeeId.isNotEmpty) {
+    return employeeId;
+  }
+  return null;
 }
