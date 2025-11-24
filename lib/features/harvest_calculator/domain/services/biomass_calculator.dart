@@ -1,3 +1,5 @@
+import 'package:app_mobile_afms/features/harvest_calculator/domain/services/calculation_constants.dart';
+
 /// Service for calculating biomass growth and related metrics in harvest simulation.
 ///
 /// This service handles the core mathematical calculations for:
@@ -30,24 +32,25 @@ class BiomassCalculator {
     double previousPopulation,
     double dailyLossPercentage,
   ) {
-    final lossMultiplier = 1.0 - (dailyLossPercentage / 100.0);
+    final lossMultiplier =
+        1.0 - CalculationConstants.percentageToDecimal(dailyLossPercentage);
     return previousPopulation * lossMultiplier;
   }
 
   /// Calculates biomass from weight and population.
   ///
-  /// Formula: biomass(kg) = (weight(gr) × population) / 1000
+  /// Formula: biomass(kg) = (weight(gr) × population) / gramsToKilograms
   ///
   /// [weight]: Weight in grams
   /// [population]: Number of individuals
   /// Returns biomass in kilograms
   static double calculateBiomass(double weight, double population) {
-    return (weight * population) / 1000.0;
+    return (weight * population) / CalculationConstants.gramsToKilograms;
   }
 
   /// Calculates Survival Rate at current DOC.
   ///
-  /// Formula: SR(%) = (current_population / initial_population) × 100
+  /// Formula: SR(%) = (current_population / initial_population) × percentageFactor
   ///
   /// [currentPopulation]: Population at current DOC
   /// [initialPopulation]: Initial population at DOC 1
@@ -56,8 +59,11 @@ class BiomassCalculator {
     double currentPopulation,
     double initialPopulation,
   ) {
-    if (initialPopulation <= 0) return 0.0;
-    return (currentPopulation / initialPopulation) * 100.0;
+    final ratio = CalculationConstants.safeDivide(
+      currentPopulation,
+      initialPopulation,
+    );
+    return ratio * CalculationConstants.percentageFactor;
   }
 
   /// Calculates Average Daily Gain from weight change.
@@ -82,14 +88,14 @@ class BiomassCalculator {
 
   /// Calculates capacity utilization percentage.
   ///
-  /// Formula: utilization(%) = (biomass / capacity) × 100
+  /// Formula: utilization(%) = (biomass / capacity) × percentageFactor
   ///
   /// [biomass]: Current biomass in kg
   /// [capacity]: Maximum capacity in kg
   /// Returns utilization percentage (0-100+)
   static double calculateCapacityUtilization(double biomass, double capacity) {
-    if (capacity <= 0) return 0.0;
-    return (biomass / capacity) * 100.0;
+    final utilizationRatio = CalculationConstants.safeDivide(biomass, capacity);
+    return utilizationRatio * CalculationConstants.percentageFactor;
   }
 
   /// Calculates Feed Conversion Ratio for current period.
@@ -100,7 +106,7 @@ class BiomassCalculator {
   /// [biomassGain]: Biomass gain in kg
   /// Returns FCR value
   static double calculateFCR(double totalFeedConsumed, double biomassGain) {
-    if (biomassGain <= 0) return double.infinity;
+    if (biomassGain <= 0) return CalculationConstants.undefinedResult;
     return totalFeedConsumed / biomassGain;
   }
 }

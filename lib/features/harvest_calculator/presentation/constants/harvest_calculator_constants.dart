@@ -104,6 +104,26 @@ class HarvestCalculatorConstants {
   /// Sort button text
   static const String buttonSort = 'Urutkan';
 
+  // Sort Options
+  static const String sortDateNewest = 'Tanggal Dibuat: Terbaru';
+  static const String sortDateOldest = 'Tanggal Dibuat: Terlama';
+  static const String sortNameAZ = 'Nama Simulasi: A-Z';
+  static const String sortNameZA = 'Nama Simulasi: Z-A';
+
+  // Filter Strings
+  static const String filterTitle = 'Filter';
+  static const String filterDateRange = 'Range Tanggal';
+  static const String filterStartDate = 'Tgl Mulai';
+  static const String filterEndDate = 'Tgl Akhir';
+  static const String filterSimulation = 'Simulasi';
+  static const String filterHarvestPlan = 'Rencana Panen & Biaya Pakan';
+  static const String filterCreditProjection = 'Proyeksi Kredit Pakan';
+  static const String filterCycleType = 'Tipe Siklus';
+  static const String filterCommodity = 'Komoditas';
+  static const String filterShrimpGalah = 'Udang Galah';
+  static const String filterShrimpVaname = 'Udang Vaname';
+  static const String buttonResetFilters = 'Reset Filters';
+
   // Form Labels - Basic Info
   /// Use registered pond question
   static const String questionUseRegisteredPond = 'Gunakan Kolam Terdaftar?';
@@ -319,7 +339,7 @@ class HarvestCalculatorConstants {
   static const String metricPotentialRevenue = 'Total Potensi Pendapatan';
 
   /// Metric tile title - potential expenditure
-  static const String metricPotentialExpenditure = 'Estimasi Pengeluaran Pakan';
+  static const String metricPotentialExpenditure = 'Estimasi Biaya Pakan';
 
   /// Profit banner label
   static const String metricPotentialProfit = 'Potensi Profit';
@@ -538,68 +558,87 @@ class HarvestCalculatorConstants {
 
   // Validation Messages - Simulation Parameters
   /// Error when pond area is too small
-  static const String errorPondAreaTooSmall = 'Luas kolam harus lebih besar dari 0';
+  static const String errorPondAreaTooSmall =
+      'Luas kolam harus lebih besar dari 0';
 
   /// Error when stocking density is too small
-  static const String errorStockingDensityTooSmall = 'Kepadatan tebar harus lebih besar dari 0';
+  static const String errorStockingDensityTooSmall =
+      'Kepadatan tebar harus lebih besar dari 0';
 
   /// Error when initial weight is too small
-  static const String errorInitialWeightTooSmall = 'Berat awal harus lebih besar dari 0';
+  static const String errorInitialWeightTooSmall =
+      'Berat awal harus lebih besar dari 0';
 
   /// Error when target SR is out of range
   static const String errorTargetSrOutOfRange = 'Target SR harus antara 0-100%';
 
   /// Error when target harvest weight is too small
-  static const String errorTargetHarvestWeightTooSmall = 'Target berat panen harus lebih besar dari 0';
+  static const String errorTargetHarvestWeightTooSmall =
+      'Target berat panen harus lebih besar dari 0';
 
   /// Error when estimated FCR is too small
-  static const String errorEstimatedFcrTooSmall = 'Estimasi FCR harus lebih besar dari 0';
+  static const String errorEstimatedFcrTooSmall =
+      'Estimasi FCR harus lebih besar dari 0';
 
   /// Error when target DOC is too small
-  static const String errorTargetDocTooSmall = 'Target DOC harus lebih besar dari 0';
+  static const String errorTargetDocTooSmall =
+      'Target DOC harus lebih besar dari 0';
 
   /// Error when current biomass is missing for agent mode
-  static const String errorCurrentBiomassRequired = 'Estimasi biomassa saat ini harus diisi dan lebih besar dari 0';
+  static const String errorCurrentBiomassRequired =
+      'Estimasi biomassa saat ini harus diisi dan lebih besar dari 0';
 
   /// Error when stocking is missing for agent mode
-  static const String errorStockingRequired = 'Jumlah tebar harus diisi dan lebih besar dari 0';
+  static const String errorStockingRequired =
+      'Jumlah tebar harus diisi dan lebih besar dari 0';
 
   /// Error when current DOC is missing for agent mode
-  static const String errorCurrentDocRequiredForAgent = 'DOC Saat Ini harus diisi dan lebih besar dari 0 untuk mode agen';
+  static const String errorCurrentDocRequiredForAgent =
+      'DOC Saat Ini harus diisi dan lebih besar dari 0 untuk mode agen';
 
   /// Error when current DOC is smaller than target DOC
-  static const String errorCurrentDocSmallerThanTarget = 'DOC Saat Ini harus lebih kecil dari Target DOC';
+  static const String errorCurrentDocSmallerThanTarget =
+      'DOC Saat Ini harus lebih kecil dari Target DOC';
 
   /// Error when current DOC is too small
-  static const String errorCurrentDocTooSmall = 'DOC Saat Ini harus lebih besar dari 0';
+  static const String errorCurrentDocTooSmall =
+      'DOC Saat Ini harus lebih besar dari 0';
 
   /// Error when estimated ADG is too small
-  static const String errorEstimatedAdgTooSmall = 'Estimasi ADG harus lebih besar dari 0';
+  static const String errorEstimatedAdgTooSmall =
+      'Estimasi ADG harus lebih besar dari 0';
 
   /// Error when daily loss percentage is out of range
-  static const String errorDailyLossPercentageOutOfRange = 'Persentase loss harian harus antara 0-100%';
+  static const String errorDailyLossPercentageOutOfRange =
+      'Persentase loss harian harus antara 0-100%';
 
   /// Error when capacity per m² is too small
-  static const String errorCapacityPerM2TooSmall = 'Kapasitas per m² harus lebih besar dari 0';
+  static const String errorCapacityPerM2TooSmall =
+      'Kapasitas per m² harus lebih besar dari 0';
 
   /// Error when capacity per pond is too small
-  static const String errorCapacityPerPondTooSmall = 'Kapasitas per kolam harus lebih besar dari 0';
+  static const String errorCapacityPerPondTooSmall =
+      'Kapasitas per kolam harus lebih besar dari 0';
 
   /// Error when selling price per kg is too small
-  static const String errorSellingPricePerKgTooSmall = 'Harga jual per kg harus lebih besar dari 0';
+  static const String errorSellingPricePerKgTooSmall =
+      'Harga jual per kg harus lebih besar dari 0';
 
   /// Error when feed price per kg is too small
-  static const String errorFeedPricePerKgTooSmall = 'Harga pakan per kg harus lebih besar dari 0';
+  static const String errorFeedPricePerKgTooSmall =
+      'Harga pakan per kg harus lebih besar dari 0';
 
   /// Error when feeding rate percentage is out of range
-  static const String errorFeedingRatePercentageOutOfRange = 'Persentase feeding rate harus antara 0-100%';
+  static const String errorFeedingRatePercentageOutOfRange =
+      'Persentase feeding rate harus antara 0-100%';
 
   /// Error when manual harvest DOC is out of range
   static String errorManualHarvestDocOutOfRange(int maxAllowedDoc) =>
       'DOC panen manual harus antara 1-$maxAllowedDoc';
 
   /// Error when harvest percentage is out of range
-  static const String errorHarvestPercentageOutOfRange = 'Persentase panen harus antara 0-100%';
+  static const String errorHarvestPercentageOutOfRange =
+      'Persentase panen harus antara 0-100%';
 
   /// Error when total feed payment obligation is missing for agent mode
   static const String errorTotalFeedPaymentObligationRequired =
@@ -652,28 +691,28 @@ extension RoundHalfUpExtension on double {
     // Handle special case for very small decimals due to floating point precision
     if (decimalPlaces == 2) {
       // For 2 decimal places, multiply by 100, add 0.5, floor, then divide by 100
-      double scaled = this * 100.0;
+      var scaled = this * 100.0;
       // Add small epsilon to handle floating point precision issues
       scaled += 0.5 + 1e-10;
-      int rounded = scaled.floor();
+      final rounded = scaled.floor();
       return rounded / 100.0;
     }
 
     // General case for other decimal places
-    double multiplier = 1.0;
-    for (int i = 0; i < decimalPlaces; i++) {
+    var multiplier = 1;
+    for (var i = 0; i < decimalPlaces; i++) {
       multiplier *= 10;
     }
 
-    double scaled = this * multiplier;
+    var scaled = this * multiplier;
     scaled += 0.5;
-    int rounded = scaled.floor();
+    final rounded = scaled.floor();
     return rounded / multiplier;
   }
 
   /// Formats double to string with round half up to specified decimal places
   String toStringAsFixedRoundHalfUp(int decimalPlaces) {
-    double rounded = roundHalfUp(decimalPlaces);
+    final rounded = roundHalfUp(decimalPlaces);
     return rounded.toStringAsFixed(decimalPlaces);
   }
 }

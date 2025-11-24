@@ -10,6 +10,7 @@ class ActionChipButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.showChevronDown = false,
+    this.isActive = false,
     super.key,
   });
 
@@ -17,6 +18,7 @@ class ActionChipButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool showChevronDown;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +28,13 @@ class ActionChipButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
+          color: isActive
+              ? HarvestCalculatorDesignConstants.lightBlueBackground
+              : null,
           border: Border.all(
-            color: HarvestCalculatorDesignConstants.borderGray,
+            color: isActive
+                ? HarvestCalculatorDesignConstants.primary
+                : HarvestCalculatorDesignConstants.borderGray,
           ),
           borderRadius: BorderRadius.circular(24),
         ),
@@ -38,13 +45,17 @@ class ActionChipButton extends StatelessWidget {
               iconAsset,
               width: 18,
               height: 18,
-              color: HarvestCalculatorDesignConstants.placeholderColor,
+              color: isActive
+                  ? HarvestCalculatorDesignConstants.primary
+                  : HarvestCalculatorDesignConstants.placeholderColor,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: HarvestCalculatorDesignConstants.buttonTextStyle.copyWith(
-                color: HarvestCalculatorDesignConstants.textPrimary,
+                color: isActive
+                    ? HarvestCalculatorDesignConstants.primary
+                    : HarvestCalculatorDesignConstants.textPrimary,
               ),
             ),
             if (showChevronDown) ...[
@@ -53,7 +64,9 @@ class ActionChipButton extends StatelessWidget {
                 Assets.icons.outline.chevronDown,
                 width: 18,
                 height: 18,
-                color: HarvestCalculatorDesignConstants.placeholderColor,
+                color: isActive
+                    ? HarvestCalculatorDesignConstants.primary
+                    : HarvestCalculatorDesignConstants.placeholderColor,
               ),
             ],
           ],

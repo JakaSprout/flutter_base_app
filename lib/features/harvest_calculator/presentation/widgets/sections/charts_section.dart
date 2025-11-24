@@ -8,7 +8,12 @@ import 'package:flutter/material.dart';
 class ChartsSection extends StatelessWidget {
   /// Creates a new instance of [ChartsSection].
   const ChartsSection({
-    required this.simulation, required this.latestBiomassPoint, required this.isFeedChartSelected, required this.onFeedToggle, super.key,
+    required this.simulation,
+    required this.latestBiomassPoint,
+    required this.isFeedChartSelected,
+    required this.onFeedToggle,
+    this.onPartialHarvestAdjust,
+    super.key,
   });
 
   /// Simulation data.
@@ -23,6 +28,9 @@ class ChartsSection extends StatelessWidget {
   /// Callback when feed chart toggle changes.
   final ValueChanged<bool> onFeedToggle;
 
+  /// Callback when partial harvest button is tapped.
+  final VoidCallback? onPartialHarvestAdjust;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,6 +38,7 @@ class ChartsSection extends StatelessWidget {
         BiomassSection(
           simulation: simulation,
           latestPoint: latestBiomassPoint,
+          onPartialHarvestAdjust: onPartialHarvestAdjust,
         ),
         const SizedBox(
           height: HarvestCalculatorDesignConstants.sectionSpacing,

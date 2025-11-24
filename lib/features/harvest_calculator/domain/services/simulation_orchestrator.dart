@@ -5,9 +5,11 @@ import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simu
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_result.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_summary.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/services/biomass_calculator.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/services/calculation_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/services/feed_calculator.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/services/harvest_calculator.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/services/revenue_calculator.dart';
+import 'package:flutter/foundation.dart';
 
 /// Main orchestrator for running harvest simulations.
 ///
@@ -27,6 +29,13 @@ class SimulationOrchestrator {
   /// [parameters]: Simulation parameters including pond specs, harvest events, etc.
   /// Returns complete simulation result with daily data and summaries
   static SimulationResult runSimulation(SimulationParameters parameters) {
+    debugPrint('🚀 [SimulationOrchestrator] Starting simulation');
+    debugPrint('   - Target DOC: ${parameters.targetDOC}');
+    debugPrint('   - Harvest events: ${parameters.harvestEvents.length}');
+    for (final event in parameters.harvestEvents) {
+      debugPrint('      * DOC ${event.doc} - ${event.percentage}%');
+    }
+
     final dailyResults = <DailySimulationResult>[];
     final harvestSummaries = <HarvestSummary>[];
     int? automaticHarvestDoc;
@@ -102,37 +111,59 @@ class SimulationOrchestrator {
       double? harvestAmount;
       double? harvestPopulationReduction;
 
-      // AUTO HARVEST: Check if capacity is reached or exceeded (trigger harvest immediately)
-      // Panen otomatis terjadi DI HARI YANG SAMA ketika biomassa >= capacity
-      // Ini berlaku untuk SEMUA panen (Panen 1, Panen 2, dst)
-      if (capacityExceededDoc == 0 &&
-          currentBiomass >= parameters.capacityKgPerPond) {
-        // Mark and trigger harvest immediately on the same day
-        capacityExceededDoc = doc;
+      // HARVEST LOGIC: Prioritize manual harvest events, fallback to auto-harvest
+      var shouldHarvest = false;
+      var harvestPercentage = CalculationConstants.defaultHarvestPercentage;
+      var harvestDescription = '';
+      var isManualHarvest = false;
+
+      // MANUAL HARVEST: Check if current DOC matches any scheduled harvest event
+      if (harvestEventIndex < sortedHarvestEvents.length) {
+        final currentEvent = sortedHarvestEvents[harvestEventIndex];
+        if (doc == currentEvent.doc) {
+          // DOC matches manual harvest plan
+          shouldHarvest = true;
+          harvestPercentage = currentEvent.percentage;
+          harvestDescription =
+              'Panen ${harvestEventIndex + 1} (Manual - DOC $doc)';
+          isManualHarvest = true;
+          debugPrint('🌾 MANUAL HARVEST at DOC $doc with $harvestPercentage%');
+        }
       }
 
-      // Trigger harvest immediately when capacity is reached
-      if (capacityExceededDoc > 0 && doc >= capacityExceededDoc) {
+      // AUTO HARVEST: Fallback if no manual events or all manual events completed
+      if (!shouldHarvest && sortedHarvestEvents.isEmpty) {
+        // Only use auto-harvest if no manual harvest events are defined
+        if (capacityExceededDoc == 0 &&
+            currentBiomass >= parameters.capacityKgPerPond) {
+          // Mark and trigger harvest immediately on the same day
+          capacityExceededDoc = doc;
+        }
+
+        if (capacityExceededDoc > 0 && doc >= capacityExceededDoc) {
+          shouldHarvest = true;
+          harvestDescription = harvestEventIndex == 0
+              ? 'Panen 1 Otomatis (Kapasitas Tercapai)'
+              : harvestEventIndex == 1
+              ? 'Panen 2 Otomatis (Kapasitas Tercapai)'
+              : 'Panen ${harvestEventIndex + 1} Otomatis';
+
+          if (harvestEventIndex == 0) {
+            automaticHarvestDoc = doc; // Simpan DOC panen pertama
+          }
+
+          debugPrint(
+            '🌾 AUTO HARVEST at DOC $doc with $harvestPercentage% (capacity exceeded)',
+          );
+        }
+      }
+
+      // Execute harvest if conditions are met
+      if (shouldHarvest) {
         // Calculate daily loss percentage from Target SR and Target DOC
         final dailyLossPercentage =
-            (100.0 - parameters.targetSR) / parameters.targetDOC;
-
-        // Get harvest percentage from current event (default 50% if no events left)
-        final currentEvent = harvestEventIndex < sortedHarvestEvents.length
-            ? sortedHarvestEvents[harvestEventIndex]
-            : null;
-        final harvestPercentage = currentEvent?.percentage ?? 50.0;
-
-        // Determine harvest description
-        final harvestDescription = harvestEventIndex == 0
-            ? 'Panen 1 Otomatis (Kapasitas Tercapai)'
-            : harvestEventIndex == 1
-            ? 'Panen 2 Otomatis (Kapasitas Tercapai)'
-            : 'Panen ${harvestEventIndex + 1} Otomatis';
-
-        if (harvestEventIndex == 0) {
-          automaticHarvestDoc = doc; // Simpan DOC panen pertama
-        }
+            (CalculationConstants.percentageFactor - parameters.targetSR) /
+            parameters.targetDOC;
 
         hasHarvest = true;
         harvestAmount = HarvestCalculator.calculateHarvestAmount(
@@ -148,8 +179,17 @@ class SimulationOrchestrator {
             );
 
         final lossAdjustedReduction =
-            basePopulationReduction * (1.0 - dailyLossPercentage / 100.0);
+            basePopulationReduction *
+            (1.0 - dailyLossPercentage / CalculationConstants.percentageFactor);
         harvestPopulationReduction = lossAdjustedReduction;
+
+        // Calculate harvest data before applying harvest
+        final biomassBeforeHarvest = currentBiomass;
+        final populationBeforeHarvest = currentPopulation;
+        final harvestKg = harvestAmount;
+        final harvestSize =
+            populationBeforeHarvest / biomassBeforeHarvest; // individuals/kg
+        final harvestValueRp = harvestKg * parameters.sellingPricePerKg;
 
         // Apply harvest
         currentBiomass = HarvestCalculator.calculateRemainingBiomass(
@@ -175,11 +215,18 @@ class SimulationOrchestrator {
             revenue: harvestRevenue,
             percentage: harvestPercentage,
             description: harvestDescription,
+            harvestKg: harvestKg,
+            harvestSize: harvestSize,
+            harvestValueRp: harvestValueRp,
           ),
         );
 
         harvestEventIndex++; // Move to next harvest event
-        capacityExceededDoc = 0; // Reset untuk cek panen berikutnya
+
+        // Reset capacity exceeded flag only for auto-harvest
+        if (!isManualHarvest) {
+          capacityExceededDoc = 0; // Reset untuk cek panen berikutnya
+        }
       }
 
       // Calculate feed consumption
@@ -223,6 +270,11 @@ class SimulationOrchestrator {
         cumulativeFeedCost,
       );
 
+      // Store values before harvest for display purposes
+      final displayWeight = currentWeight;
+      final displayPopulation = currentPopulation;
+      final displayBiomass = currentBiomass;
+
       // PANEN RAYA: Final harvest always occurs at target DOC (end of cycle)
       // This is the mandatory final harvest that collects any remaining biomass
       if (doc == parameters.targetDOC && currentPopulation > 0) {
@@ -231,15 +283,25 @@ class SimulationOrchestrator {
 
         // Calculate daily loss percentage
         final dailyLossPercentage =
-            (100.0 - parameters.targetSR) / parameters.targetDOC;
+            (CalculationConstants.percentageFactor - parameters.targetSR) /
+            parameters.targetDOC;
 
         // Calculate population reduction (100% with loss adjustment)
         final basePopulationReduction = currentPopulation;
         final lossAdjustedReduction =
-            basePopulationReduction * (1.0 - dailyLossPercentage / 100.0);
+            basePopulationReduction *
+            (1.0 - dailyLossPercentage / CalculationConstants.percentageFactor);
         harvestPopulationReduction = lossAdjustedReduction;
 
-        // Apply harvest
+        // Calculate harvest data before applying harvest
+        final biomassBeforeHarvest = displayBiomass;
+        final populationBeforeHarvest = displayPopulation;
+        final harvestKg = harvestAmount;
+        final harvestSize =
+            populationBeforeHarvest / biomassBeforeHarvest; // individuals/kg
+        final harvestValueRp = harvestKg * parameters.sellingPricePerKg;
+
+        // Apply harvest (only for internal calculations, display values remain unchanged)
         currentBiomass = 0;
         currentPopulation = 0;
 
@@ -256,16 +318,19 @@ class SimulationOrchestrator {
             revenue: harvestRevenue,
             percentage: 100,
             description: 'Panen Raya (Akhir Siklus)',
+            harvestKg: harvestKg,
+            harvestSize: harvestSize,
+            harvestValueRp: harvestValueRp,
           ),
         );
       }
 
-      // Create daily result
+      // Create daily result using values BEFORE harvest (for final harvest display)
       final dailyResult = DailySimulationResult(
         doc: doc,
-        weight: currentWeight,
-        population: currentPopulation,
-        biomass: currentBiomass,
+        weight: displayWeight,
+        population: displayPopulation,
+        biomass: displayBiomass,
         dailyFeedConsumption: dailyFeedConsumption,
         cumulativeFeedConsumption: cumulativeFeedConsumption,
         potentialRevenue: potentialRevenue,
@@ -286,11 +351,18 @@ class SimulationOrchestrator {
       dailyResults.add(dailyResult);
     }
 
+    // Calculate feed consumption between harvests for cycle mode
+    final updatedHarvestSummaries = _calculateFeedConsumptionBetweenHarvests(
+      harvestSummaries,
+      dailyResults,
+      parameters,
+    );
+
     // Calculate final results
     final summary = _calculateSimulationSummary(
       dailyResults,
       parameters,
-      harvestSummaries,
+      updatedHarvestSummaries,
     );
     final metrics = _calculateSimulationMetrics(
       dailyResults,
@@ -302,7 +374,7 @@ class SimulationOrchestrator {
     return SimulationResult(
       dailyResults: dailyResults,
       summary: summary,
-      harvestSummaries: harvestSummaries,
+      harvestSummaries: updatedHarvestSummaries,
       metrics: metrics,
       automaticHarvestDoc: automaticHarvestDoc,
     );
@@ -323,7 +395,7 @@ class SimulationOrchestrator {
         parameters.initialWeight *
         parameters.pondArea *
         parameters.stockingDensity /
-        1000.0;
+        CalculationConstants.gramsToKilograms;
 
     final biomassGain = currentBiomass - initialBiomass;
     return BiomassCalculator.calculateFCR(cumulativeFeed, biomassGain);
@@ -412,8 +484,9 @@ class SimulationOrchestrator {
     final biomassGrowthRate = peakBiomass / simulationDays;
 
     final targetBiomass = parameters.capacityKgPerPond;
-    final halfBiomass = targetBiomass * 0.5;
-    final fourFifthBiomass = targetBiomass * 0.8;
+    final halfBiomass = targetBiomass * CalculationConstants.halfBiomass;
+    final fourFifthBiomass =
+        targetBiomass * CalculationConstants.fourFifthBiomass;
 
     final daysToHalfBiomass = _findDaysToReachBiomass(
       dailyResults,
@@ -433,6 +506,57 @@ class SimulationOrchestrator {
       daysToHalfBiomass: daysToHalfBiomass,
       daysToFourFifthBiomass: daysToFourFifthBiomass,
     );
+  }
+
+  /// Calculates feed consumption between harvests for cycle mode
+  static List<HarvestSummary> _calculateFeedConsumptionBetweenHarvests(
+    List<HarvestSummary> harvestSummaries,
+    List<DailySimulationResult> dailyResults,
+    SimulationParameters parameters,
+  ) {
+    // Only calculate for cycle mode
+    if (parameters.simulationType == 'agent') {
+      return harvestSummaries;
+    }
+
+    final updatedSummaries = <HarvestSummary>[];
+
+    for (var i = 0; i < harvestSummaries.length; i++) {
+      final currentHarvest = harvestSummaries[i];
+      final nextHarvestDoc = i < harvestSummaries.length - 1
+          ? harvestSummaries[i + 1].doc
+          : parameters.targetDOC + 1; // After last harvest, no more feed
+
+      // Calculate feed consumption from current harvest DOC to next harvest DOC (exclusive)
+      var feedConsumptionKg = 0.0;
+      for (var doc = currentHarvest.doc; doc < nextHarvestDoc; doc++) {
+        final dailyResult = dailyResults.firstWhere(
+          (result) => result.doc == doc,
+          orElse: () => throw StateError('Daily result for DOC $doc not found'),
+        );
+        feedConsumptionKg += dailyResult.dailyFeedConsumption;
+      }
+
+      final feedConsumptionRp = feedConsumptionKg * parameters.feedPricePerKg;
+
+      // Create updated harvest summary with feed consumption data
+      final updatedSummary = HarvestSummary(
+        doc: currentHarvest.doc,
+        weight: currentHarvest.weight,
+        revenue: currentHarvest.revenue,
+        percentage: currentHarvest.percentage,
+        description: currentHarvest.description,
+        harvestKg: currentHarvest.harvestKg,
+        harvestSize: currentHarvest.harvestSize,
+        harvestValueRp: currentHarvest.harvestValueRp,
+        feedConsumptionKg: feedConsumptionKg,
+        feedConsumptionRp: feedConsumptionRp,
+      );
+
+      updatedSummaries.add(updatedSummary);
+    }
+
+    return updatedSummaries;
   }
 
   /// Finds days required to reach specific biomass level

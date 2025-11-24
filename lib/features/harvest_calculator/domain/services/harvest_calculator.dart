@@ -1,3 +1,5 @@
+import 'package:app_mobile_afms/features/harvest_calculator/domain/services/calculation_constants.dart';
+
 /// Service for calculating harvest events and partial harvesting logic in simulation.
 ///
 /// This service handles:
@@ -10,13 +12,19 @@ class HarvestCalculator {
 
   /// Calculates harvest amount based on current biomass and harvest percentage.
   ///
-  /// Formula: harvest_amount = current_biomass × harvest_percentage / 100
+  /// Formula: harvest_amount = current_biomass × harvest_percentage / percentageFactor
   ///
   /// [currentBiomass]: Current biomass in kg
   /// [harvestPercentage]: Harvest percentage (0-100)
   /// Returns harvest amount in kg
-  static double calculateHarvestAmount(double currentBiomass, double harvestPercentage) {
-    return currentBiomass * (harvestPercentage / 100.0);
+  static double calculateHarvestAmount(
+    double currentBiomass,
+    double harvestPercentage,
+  ) {
+    return CalculationConstants.applyPercentage(
+      currentBiomass,
+      harvestPercentage,
+    );
   }
 
   /// Calculates remaining biomass after harvest.
@@ -26,19 +34,28 @@ class HarvestCalculator {
   /// [currentBiomass]: Current biomass before harvest
   /// [harvestAmount]: Amount being harvested
   /// Returns remaining biomass in kg
-  static double calculateRemainingBiomass(double currentBiomass, double harvestAmount) {
+  static double calculateRemainingBiomass(
+    double currentBiomass,
+    double harvestAmount,
+  ) {
     return currentBiomass - harvestAmount;
   }
 
   /// Calculates population reduction after harvest.
   ///
-  /// Formula: population_reduction = current_population × harvest_percentage / 100
+  /// Formula: population_reduction = current_population × harvest_percentage / percentageFactor
   ///
   /// [currentPopulation]: Current population before harvest
   /// [harvestPercentage]: Harvest percentage (0-100)
   /// Returns population reduction
-  static double calculatePopulationReduction(double currentPopulation, double harvestPercentage) {
-    return currentPopulation * (harvestPercentage / 100.0);
+  static double calculatePopulationReduction(
+    double currentPopulation,
+    double harvestPercentage,
+  ) {
+    return CalculationConstants.applyPercentage(
+      currentPopulation,
+      harvestPercentage,
+    );
   }
 
   /// Calculates remaining population after harvest.
@@ -48,7 +65,10 @@ class HarvestCalculator {
   /// [currentPopulation]: Current population before harvest
   /// [populationReduction]: Population being harvested
   /// Returns remaining population
-  static double calculateRemainingPopulation(double currentPopulation, double populationReduction) {
+  static double calculateRemainingPopulation(
+    double currentPopulation,
+    double populationReduction,
+  ) {
     return currentPopulation - populationReduction;
   }
 
@@ -65,15 +85,16 @@ class HarvestCalculator {
   /// Validates if harvest percentage is within acceptable range.
   ///
   /// [harvestPercentage]: Harvest percentage to validate
-  /// [minPercentage]: Minimum allowed percentage (default: 0)
-  /// [maxPercentage]: Maximum allowed percentage (default: 100)
+  /// [minPercentage]: Minimum allowed percentage (default: minPercentage)
+  /// [maxPercentage]: Maximum allowed percentage (default: maxPercentage)
   /// Returns true if valid, false otherwise
   static bool isValidHarvestPercentage(
     double harvestPercentage, {
-    double minPercentage = 0.0,
-    double maxPercentage = 100.0,
+    double minPercentage = CalculationConstants.minPercentage,
+    double maxPercentage = CalculationConstants.maxPercentage,
   }) {
-    return harvestPercentage >= minPercentage && harvestPercentage <= maxPercentage;
+    return harvestPercentage >= minPercentage &&
+        harvestPercentage <= maxPercentage;
   }
 
   /// Calculates total harvested biomass from all harvest events.
@@ -83,19 +104,25 @@ class HarvestCalculator {
   /// [harvestAmounts]: List of harvest amounts from each event
   /// Returns total harvested biomass in kg
   static double calculateTotalHarvested(List<double> harvestAmounts) {
-    return harvestAmounts.fold(0.0, (sum, amount) => sum + amount);
+    return CalculationConstants.sumList(harvestAmounts);
   }
 
   /// Calculates harvest efficiency (percentage of target biomass achieved).
   ///
-  /// Formula: efficiency(%) = (total_harvested / target_biomass) × 100
+  /// Formula: efficiency(%) = (total_harvested / target_biomass) × percentageFactor
   ///
   /// [totalHarvested]: Total biomass harvested
   /// [targetBiomass]: Target biomass to achieve
   /// Returns harvest efficiency percentage
-  static double calculateHarvestEfficiency(double totalHarvested, double targetBiomass) {
-    if (targetBiomass <= 0) return 0.0;
-    return (totalHarvested / targetBiomass) * 100.0;
+  static double calculateHarvestEfficiency(
+    double totalHarvested,
+    double targetBiomass,
+  ) {
+    final efficiencyRatio = CalculationConstants.safeDivide(
+      totalHarvested,
+      targetBiomass,
+    );
+    return efficiencyRatio * CalculationConstants.percentageFactor;
   }
 
   /// Calculates days between harvests.
@@ -103,7 +130,10 @@ class HarvestCalculator {
   /// [currentDoc]: Current day of culture
   /// [previousHarvestDoc]: Previous harvest day of culture
   /// Returns days between harvests
-  static int calculateDaysBetweenHarvests(int currentDoc, int previousHarvestDoc) {
+  static int calculateDaysBetweenHarvests(
+    int currentDoc,
+    int previousHarvestDoc,
+  ) {
     return currentDoc - previousHarvestDoc;
   }
 
@@ -113,7 +143,11 @@ class HarvestCalculator {
   /// [lastHarvestDoc]: Last harvest day of culture
   /// [minDaysBetweenHarvests]: Minimum days required between harvests
   /// Returns true if timing is valid
-  static bool isValidHarvestTiming(int currentDoc, int lastHarvestDoc, int minDaysBetweenHarvests) {
+  static bool isValidHarvestTiming(
+    int currentDoc,
+    int lastHarvestDoc,
+    int minDaysBetweenHarvests,
+  ) {
     final daysSinceLastHarvest = currentDoc - lastHarvestDoc;
     return daysSinceLastHarvest >= minDaysBetweenHarvests;
   }
@@ -125,9 +159,15 @@ class HarvestCalculator {
   /// [biomassAfterRecovery]: Biomass after recovery period
   /// [biomassAfterHarvest]: Biomass immediately after harvest
   /// Returns recovery rate multiplier
-  static double calculateBiomassRecoveryRate(double biomassAfterRecovery, double biomassAfterHarvest) {
-    if (biomassAfterHarvest <= 0) return 1.0;
-    return biomassAfterRecovery / biomassAfterHarvest;
+  static double calculateBiomassRecoveryRate(
+    double biomassAfterRecovery,
+    double biomassAfterHarvest,
+  ) {
+    return CalculationConstants.safeDivide(
+      biomassAfterRecovery,
+      biomassAfterHarvest,
+      CalculationConstants.defaultRecoveryRate,
+    );
   }
 
   /// Estimates harvest schedule based on target intervals.
@@ -138,11 +178,10 @@ class HarvestCalculator {
   static List<int> estimateHarvestSchedule(int targetDoc, int harvestInterval) {
     final harvestDocs = <int>[];
 
-    for (int doc = harvestInterval; doc < targetDoc; doc += harvestInterval) {
+    for (var doc = harvestInterval; doc < targetDoc; doc += harvestInterval) {
       harvestDocs.add(doc);
     }
 
     return harvestDocs;
   }
 }
-

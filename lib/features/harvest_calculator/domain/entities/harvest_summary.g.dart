@@ -13,6 +13,11 @@ _$HarvestSummaryImpl _$$HarvestSummaryImplFromJson(Map<String, dynamic> json) =>
       revenue: (json['revenue'] as num).toDouble(),
       percentage: (json['percentage'] as num).toDouble(),
       description: json['description'] as String,
+      harvestKg: (json['harvestKg'] as num?)?.toDouble(),
+      harvestSize: (json['harvestSize'] as num?)?.toDouble(),
+      harvestValueRp: (json['harvestValueRp'] as num?)?.toDouble(),
+      feedConsumptionKg: (json['feedConsumptionKg'] as num?)?.toDouble(),
+      feedConsumptionRp: (json['feedConsumptionRp'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$HarvestSummaryImplToJson(
@@ -23,4 +28,9 @@ Map<String, dynamic> _$$HarvestSummaryImplToJson(
   'revenue': instance.revenue,
   'percentage': instance.percentage,
   'description': instance.description,
+  'harvestKg': instance.harvestKg,
+  'harvestSize': instance.harvestSize,
+  'harvestValueRp': instance.harvestValueRp,
+  'feedConsumptionKg': instance.feedConsumptionKg,
+  'feedConsumptionRp': instance.feedConsumptionRp,
 };

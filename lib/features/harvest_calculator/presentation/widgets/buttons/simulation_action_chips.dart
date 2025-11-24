@@ -11,6 +11,9 @@ class SimulationActionChips extends StatelessWidget {
     super.key,
     this.onFilterTap,
     this.onSortTap,
+    this.onResetFilterTap,
+    this.filterCount = 0,
+    this.sortLabel,
   });
 
   /// Callback when filter chip is tapped.
@@ -18,6 +21,15 @@ class SimulationActionChips extends StatelessWidget {
 
   /// Callback when sort chip is tapped.
   final VoidCallback? onSortTap;
+
+  /// Callback when reset filter button is tapped.
+  final VoidCallback? onResetFilterTap;
+
+  /// Number of active filters.
+  final int filterCount;
+
+  /// Label for active sort (optional).
+  final String? sortLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +40,46 @@ class SimulationActionChips extends StatelessWidget {
       child: Wrap(
         spacing: 12,
         runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
+          if (filterCount > 0)
+            InkWell(
+              onTap: onResetFilterTap,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: HarvestCalculatorDesignConstants.gray20,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.close,
+                  size: 20,
+                  color: HarvestCalculatorDesignConstants.gray60,
+                ),
+              ),
+            ),
           ActionChipButton(
             iconAsset: Assets.icons.outline.filter,
-            label: HarvestCalculatorConstants.buttonFilter,
+            label: filterCount > 0
+                ? '${HarvestCalculatorConstants.buttonFilter}: $filterCount'
+                : HarvestCalculatorConstants.buttonFilter,
             onTap: onFilterTap ?? () {},
             showChevronDown: true,
+            isActive: filterCount > 0,
           ),
           ActionChipButton(
             iconAsset: Assets.icons.outline.sort,
-            label: HarvestCalculatorConstants.buttonSort,
+            label: sortLabel ?? HarvestCalculatorConstants.buttonSort,
             onTap: onSortTap ?? () {},
             showChevronDown: true,
+            // Sort is usually always active in some form, but we only highlight if it's not default
+            // However, based on design, it seems it just shows "Urutkan" unless changed?
+            // The prompt image 3 shows "Urutkan" (not highlighted) and "Filter: 1" (highlighted).
+            // So we keep sort as is.
           ),
         ],
       ),

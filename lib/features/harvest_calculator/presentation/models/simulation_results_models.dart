@@ -3,7 +3,6 @@ library;
 
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_parameters.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_result.dart';
-import 'package:flutter/foundation.dart';
 
 /// Arguments holder for simulation results screen.
 class SimulationResultsScreenArgs {
@@ -47,6 +46,7 @@ class SimulationResultsScreenArgs {
     String? cultivationSystem,
     String? simulationType,
     DateTime? createdAt,
+    bool? isPreview,
   }) {
     // Calculate total pond capacity: pondArea × capacityKgPerM2
     final totalPondCapacity = parameters.pondArea * parameters.capacityKgPerM2;
@@ -72,13 +72,15 @@ class SimulationResultsScreenArgs {
     }).toList();
 
     // Convert to feed vs revenue points (all days for detailed view)
-    // Calculate cumulative revenue: biomass × sellingPricePerKg
+    // Calculate cumulative revenue: biomass × sellingPricePerKg (rounded to match table display)
     final feedVsRevenuePoints = filteredDailyResults.map((daily) {
-      final cumulativeRevenue = daily.biomass * parameters.sellingPricePerKg;
+      final cumulativeRevenue = (daily.biomass * parameters.sellingPricePerKg)
+          .roundToDouble();
       return FeedChartPoint(
         doc: daily.doc,
-        feed: daily.cumulativeFeedCost,
-        revenue: cumulativeRevenue, // Calculate cumulative revenue from biomass
+        feed: daily.cumulativeFeedCost.roundToDouble(),
+        revenue:
+            cumulativeRevenue, // Round to integer to match table currency formatting
       );
     }).toList();
 
@@ -101,13 +103,6 @@ class SimulationResultsScreenArgs {
         profit:
             cumulativeRevenue - daily.cumulativeFeedCost, // Recalculate profit
       );
-
-      // Debug first few DOC values to compare with CSV
-      if (daily.doc <= 5) {
-        debugPrint(
-          'TABLE DOC=${daily.doc}: weight=${daily.weight}, populasi=${daily.population.round()}, biomassa=${daily.biomass.toStringAsFixed(2)}, capacity=$totalPondCapacity, daily_feed=${daily.dailyFeedConsumption.toStringAsFixed(3)}, cumulative_feed=${daily.cumulativeFeedConsumption.toStringAsFixed(3)}',
-        );
-      }
 
       return rowData;
     }).toList();
@@ -211,7 +206,9 @@ class SimulationResultsScreenArgs {
       commodity: commodity ?? 'Udang',
       cultivationSystem: cultivationSystem ?? 'Intensif',
       simulationType: simulationType ?? 'cycle',
-      isPreview: false, // This is actual simulation result
+      isPreview:
+          isPreview ??
+          false, // Default to actual result, can be overridden for preview
       automaticHarvestDoc: simulationResult.automaticHarvestDoc,
       simulationResult: simulationResult,
       parameters: parameters,

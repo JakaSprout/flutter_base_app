@@ -21,9 +21,23 @@ class HarvestSummary with _$HarvestSummary {
 
     /// Description of harvest type (e.g., "Panen 1", "Panen Parsial", "Panen Raya")
     required String description,
+
+    /// Cycle mode: Harvest biomass (kg) = biomass before harvest - biomass after harvest
+    double? harvestKg,
+
+    /// Cycle mode: Harvest size (individuals/kg) = population at harvest / biomass at harvest
+    double? harvestSize,
+
+    /// Cycle mode: Harvest value (Rp) = harvestKg * commodity price per kg
+    double? harvestValueRp,
+
+    /// Cycle mode: Feed consumption (kg) from this harvest to next harvest
+    double? feedConsumptionKg,
+
+    /// Cycle mode: Feed cost (Rp) = feedConsumptionKg * feed price per kg
+    double? feedConsumptionRp,
   }) = _HarvestSummary;
 
   factory HarvestSummary.fromJson(Map<String, dynamic> json) =>
       _$HarvestSummaryFromJson(json);
 }
-

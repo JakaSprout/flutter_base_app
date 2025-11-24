@@ -1,3 +1,5 @@
+import 'calculation_constants.dart';
+
 /// Service for calculating revenue and profit metrics in harvest simulation.
 ///
 /// This service handles income calculations:
@@ -43,26 +45,26 @@ class RevenueCalculator {
 
   /// Calculates profit margin percentage.
   ///
-  /// Formula: margin(%) = (profit / revenue) × 100
+  /// Formula: margin(%) = (profit / revenue) × percentageFactor
   ///
   /// [profit]: Net profit
   /// [revenue]: Total revenue
   /// Returns profit margin percentage
   static double calculateProfitMargin(double profit, double revenue) {
-    if (revenue <= 0) return 0.0;
-    return (profit / revenue) * 100.0;
+    final marginRatio = CalculationConstants.safeDivide(profit, revenue, CalculationConstants.minPercentage);
+    return marginRatio * CalculationConstants.percentageFactor;
   }
 
   /// Calculates return on investment (ROI).
   ///
-  /// Formula: ROI(%) = (profit / total_cost) × 100
+  /// Formula: ROI(%) = (profit / total_cost) × percentageFactor
   ///
   /// [profit]: Net profit
   /// [totalCost]: Total costs incurred
   /// Returns ROI percentage
   static double calculateROI(double profit, double totalCost) {
-    if (totalCost <= 0) return 0.0;
-    return (profit / totalCost) * 100.0;
+    final roiRatio = CalculationConstants.safeDivide(profit, totalCost, CalculationConstants.minPercentage);
+    return roiRatio * CalculationConstants.percentageFactor;
   }
 
   /// Calculates break-even biomass amount.
@@ -73,7 +75,7 @@ class RevenueCalculator {
   /// [pricePerKg]: Selling price per kg
   /// Returns biomass needed to break even in kg
   static double calculateBreakEvenBiomass(double totalFeedCost, double pricePerKg) {
-    if (pricePerKg <= 0) return double.infinity;
+    if (pricePerKg <= 0) return CalculationConstants.undefinedResult;
     return totalFeedCost / pricePerKg;
   }
 
@@ -95,7 +97,7 @@ class RevenueCalculator {
   /// [harvestRevenues]: List of revenue amounts from each harvest
   /// Returns total revenue
   static double calculateTotalRevenue(List<double> harvestRevenues) {
-    return harvestRevenues.fold(0.0, (sum, revenue) => sum + revenue);
+    return CalculationConstants.sumList(harvestRevenues);
   }
 
   /// Calculates average revenue per day.
@@ -106,20 +108,19 @@ class RevenueCalculator {
   /// [simulationDays]: Number of days in simulation
   /// Returns average daily revenue
   static double calculateAverageDailyRevenue(double totalRevenue, int simulationDays) {
-    if (simulationDays <= 0) return 0.0;
-    return totalRevenue / simulationDays;
+    return CalculationConstants.safeDivide(totalRevenue, simulationDays.toDouble(), CalculationConstants.minPercentage);
   }
 
   /// Calculates revenue growth rate between periods.
   ///
-  /// Formula: growth_rate(%) = ((current_revenue - previous_revenue) / previous_revenue) × 100
+  /// Formula: growth_rate(%) = ((current_revenue - previous_revenue) / previous_revenue) × percentageFactor
   ///
   /// [currentRevenue]: Revenue in current period
   /// [previousRevenue]: Revenue in previous period
   /// Returns growth rate percentage
   static double calculateRevenueGrowthRate(double currentRevenue, double previousRevenue) {
-    if (previousRevenue <= 0) return 0.0;
-    return ((currentRevenue - previousRevenue) / previousRevenue) * 100.0;
+    final growthRatio = CalculationConstants.safeDivide(currentRevenue - previousRevenue, previousRevenue, CalculationConstants.minPercentage);
+    return growthRatio * CalculationConstants.percentageFactor;
   }
 }
 

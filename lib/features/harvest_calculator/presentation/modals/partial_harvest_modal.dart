@@ -1,4 +1,5 @@
 import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/harvest_summary.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/domain/entities/simulation_parameters.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/gen/assets.gen.dart';
@@ -37,6 +38,7 @@ class PartialHarvestModal extends StatefulWidget {
     this.automaticHarvestDoc,
     this.harvestSummaries,
     this.targetDOC,
+    this.initialCustomHarvestEvents,
   });
 
   /// DOC when automatic harvest occurred (from simulation result)
@@ -47,6 +49,9 @@ class PartialHarvestModal extends StatefulWidget {
 
   /// Target DOC for final harvest
   final int? targetDOC;
+
+  /// Previously configured custom harvest events (for persistence)
+  final List<HarvestEvent>? initialCustomHarvestEvents;
 
   @override
   State<PartialHarvestModal> createState() => _PartialHarvestModalState();
@@ -74,20 +79,37 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
     _mainHarvestDocController = TextEditingController(text: targetDocText);
     _mainHarvestPercentageController = TextEditingController(text: '100');
 
-    // Initialize harvest plans with calculated DOC values
+    // Initialize harvest plans
     _initializeHarvestPlans();
   }
 
-  /// Initialize harvest plans with DOC values from simulation results
+  /// Initialize harvest plans with DOC values from custom events (persisted) or from simulation results
   void _initializeHarvestPlans() {
-    if (widget.harvestSummaries != null && widget.harvestSummaries!.isNotEmpty) {
+    // PRIORITY 1: Use custom events if provided
+    if (widget.initialCustomHarvestEvents != null &&
+        widget.initialCustomHarvestEvents!.isNotEmpty) {
+      for (final event in widget.initialCustomHarvestEvents!) {
+        _addHarvestPlan(
+          doc: event.doc.toString(),
+          percentage: event.percentage.toString(),
+        );
+      }
+      return;
+    }
+
+    // PRIORITY 2: Use simulation results as fallback (first open, auto mode)
+    if (widget.harvestSummaries != null &&
+        widget.harvestSummaries!.isNotEmpty) {
       // Filter out Panen Raya from harvest summaries
       final partialHarvests = widget.harvestSummaries!
-          .where((summary) => !(summary.description.toLowerCase().contains('raya')))
+          .where(
+            (summary) => !summary.description.toLowerCase().contains('raya'),
+          )
           .toList();
 
       // Add existing partial harvests
-      for (final harvest in partialHarvests.take(2)) { // Max 2 partial harvests
+      for (final harvest in partialHarvests.take(2)) {
+        // Max 2 partial harvests
         _addHarvestPlan(
           doc: harvest.doc.toString(),
           percentage: harvest.percentage.toString(),
@@ -141,6 +163,78 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
   /// Gets the display title for a harvest plan at the given index.
   String _getHarvestTitle(int index) {
     return 'Panen ${index + 1}';
+  }
+
+  /// Converts current harvest plans to List<HarvestEvent>
+  List<HarvestEvent> _convertToHarvestEvents() {
+    final events = <HarvestEvent>[];
+
+    // Add partial harvest plans
+    for (final plan in _harvestPlans) {
+      final doc = int.tryParse(plan.docController.text);
+      final percentage = double.tryParse(plan.percentageController.text);
+
+      if (doc != null && percentage != null && doc > 0 && percentage > 0) {
+        events.add(HarvestEvent(doc: doc, percentage: percentage));
+      }
+    }
+
+    // Sort by DOC ascending
+    events.sort((a, b) => a.doc.compareTo(b.doc));
+
+    return events;
+  }
+
+  /// Validates and submits harvest plans
+  void _submitHarvestPlans() {
+    final events = _convertToHarvestEvents();
+
+    debugPrint(
+      '🔄 [PartialHarvestModal] Submitting ${events.length} harvest events',
+    );
+    for (final event in events) {
+      debugPrint('   - DOC: ${event.doc}, Percentage: ${event.percentage}%');
+    }
+
+    // Validate that all harvest DOCs are before main harvest DOC
+    final mainHarvestDoc = int.tryParse(_mainHarvestDocController.text);
+    if (mainHarvestDoc == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('DOC Panen Raya harus diisi'),
+          backgroundColor: HarvestCalculatorDesignConstants.errorColor,
+        ),
+      );
+      return;
+    }
+
+    debugPrint('🔄 [PartialHarvestModal] Main Harvest DOC: $mainHarvestDoc');
+
+    // Check if any partial harvest DOC is >= main harvest DOC
+    final invalidHarvests = events
+        .where((e) => e.doc >= mainHarvestDoc)
+        .toList();
+    if (invalidHarvests.isNotEmpty) {
+      debugPrint(
+        '❌ [PartialHarvestModal] Invalid harvests found: ${invalidHarvests.length}',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'DOC panen parsial harus lebih kecil dari DOC Panen Raya ($mainHarvestDoc)',
+          ),
+          backgroundColor: HarvestCalculatorDesignConstants.errorColor,
+        ),
+      );
+      return;
+    }
+
+    debugPrint('✅ [PartialHarvestModal] Returning events to results screen');
+    // Return harvest events to previous screen
+    Navigator.pop(context, {
+      'harvestEvents': events,
+      'targetDOC': mainHarvestDoc,
+    });
   }
 
   @override
@@ -234,7 +328,9 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                     HarvestSectionCard(
                       title: HarvestCalculatorConstants.labelMainHarvest,
                       docController: _mainHarvestDocController,
-                      percentageController: _mainHarvestPercentageController,
+                      percentageController: _mainHarvestPercentageController
+                        ..text = '100',
+                      isPercentageDisabled: true,
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -242,9 +338,8 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
               ),
             ),
             // Add harvest plan button
-            // Bottom padding consistent with STPBottomActionButton
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
               child: OutlinedButton.icon(
                 onPressed: _addHarvestPlan,
                 icon: const Icon(
@@ -273,6 +368,26 @@ class _PartialHarvestModalState extends State<PartialHarvestModal> {
                 ),
               ),
             ),
+            // Submit button
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              child: ElevatedButton(
+                onPressed: _submitHarvestPlans,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: HarvestCalculatorDesignConstants.primaryBlue,
+                  foregroundColor: HarvestCalculatorDesignConstants.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Terapkan Perubahan',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -289,6 +404,7 @@ class HarvestSectionCard extends StatelessWidget {
     required this.percentageController,
     this.showDelete = false,
     this.onDelete,
+    this.isPercentageDisabled = false,
     super.key,
   });
 
@@ -306,6 +422,8 @@ class HarvestSectionCard extends StatelessWidget {
 
   /// Callback when delete is pressed.
   final VoidCallback? onDelete;
+
+  final bool isPercentageDisabled;
 
   @override
   Widget build(BuildContext context) {
@@ -372,6 +490,7 @@ class HarvestSectionCard extends StatelessWidget {
                   controller: percentageController,
                   unit: '%',
                   isRequired: true,
+                  enabled: !isPercentageDisabled,
                 ),
               ),
             ],
@@ -390,6 +509,7 @@ class HarvestField extends StatelessWidget {
     required this.controller,
     required this.unit,
     this.isRequired = false,
+    this.enabled = true,
     super.key,
   });
 
@@ -404,6 +524,8 @@ class HarvestField extends StatelessWidget {
 
   /// Whether the field is required.
   final bool isRequired;
+
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -449,6 +571,7 @@ class HarvestField extends StatelessWidget {
                   controller: controller,
                   keyboardType: TextInputType.number,
                   style: HarvestCalculatorDesignConstants.bodyTextStyle,
+                  enabled: enabled,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     isDense: true,

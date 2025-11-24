@@ -51,8 +51,7 @@ class _UseRegisteredPondSectionState extends State<UseRegisteredPondSection> {
       // as they depend on commodity/cultivation system recommendations
     } catch (e) {
       // Silently handle errors to prevent crashes
-      // In development, you might want to log this
-      debugPrint('Error in _preFillPondCapacityData: $e');
+      // In production, you might want to log this to monitoring service
     }
   }
 

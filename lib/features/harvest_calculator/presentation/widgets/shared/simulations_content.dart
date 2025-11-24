@@ -9,11 +9,14 @@ import 'package:flutter/material.dart';
 class SimulationsContent extends StatelessWidget {
   /// Creates a new instance of [SimulationsContent].
   const SimulationsContent({
-    required this.simulations, super.key,
+    required this.simulations,
+    super.key,
     this.onSearchChanged,
     this.searchController,
     this.onFilterTap,
+    this.onResetFilterTap,
     this.onSortTap,
+    this.filterCount = 0,
   });
 
   /// List of simulations to display.
@@ -28,8 +31,14 @@ class SimulationsContent extends StatelessWidget {
   /// Callback when filter is tapped.
   final VoidCallback? onFilterTap;
 
+  /// Callback when reset filter is tapped.
+  final VoidCallback? onResetFilterTap;
+
   /// Callback when sort is tapped.
   final VoidCallback? onSortTap;
+
+  /// Number of active filters.
+  final int filterCount;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +52,8 @@ class SimulationsContent extends StatelessWidget {
         SimulationActionChips(
           onFilterTap: onFilterTap,
           onSortTap: onSortTap,
+          onResetFilterTap: onResetFilterTap,
+          filterCount: filterCount,
         ),
         SimulationCountHeader(count: simulations.length),
         SimulationListView(simulations: simulations),

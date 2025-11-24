@@ -75,29 +75,14 @@ class CreateSimulationBottomButton extends HookWidget {
         // Button is enabled when basic info is valid AND pond selection is valid (or agent mode)
         final isEnabled = isBasicInfoValid && isPondSelectionValid;
 
-        // DEBUG: Check cultivation system specifically when button disabled
+        // Check cultivation system specifically when button disabled
         if (!isEnabled) {
-          final cultivationValue = form
-              .control(HarvestCalculatorFormControls.cultivationSystem)
-              .value;
           final cultivationValid = form
               .control(HarvestCalculatorFormControls.cultivationSystem)
               .valid;
           final cultivationRequired = !isAgentMode;
 
-          debugPrint('🚫 BUTTON DISABLED - Detailed Analysis:');
-          debugPrint('  - isBasicInfoValid: $isBasicInfoValid');
-          debugPrint('  - isPondSelectionValid: $isPondSelectionValid');
-          debugPrint('  - isAgentMode: $isAgentMode');
-          debugPrint('  - cultivationValue: "$cultivationValue"');
-          debugPrint('  - cultivationValid: $cultivationValid');
-          debugPrint('  - cultivationRequired: $cultivationRequired');
-
-          if (!isBasicInfoValid && cultivationRequired && !cultivationValid) {
-            debugPrint(
-              '  - ❌ ROOT CAUSE: Cultivation system required in cycle mode but empty!',
-            );
-          }
+          if (!isBasicInfoValid && cultivationRequired && !cultivationValid) {}
         }
 
         return STPBottomActionButton(
@@ -270,28 +255,18 @@ class CreateSimulationBottomButton extends HookWidget {
     for (final fieldName in fieldOrder) {
       final control = form.control(fieldName);
       final isInvalid = control.invalid;
-      final value = control.value;
-      debugPrint('  - $fieldName: value="$value", invalid=$isInvalid');
-
       if (isInvalid) {
-        debugPrint('  ✅ SCROLLING TO: $fieldName');
         // Scroll to this field
         _scrollToField(fieldName);
         break;
       }
     }
 
-    // Debug: Check if there are any invalid fields outside the expected order
-    debugPrint(
-      '🔍 SCROLL DEBUG: Checking for invalid fields outside expected order...',
-    );
     for (final entry in form.controls.entries) {
       final controlName = entry.key;
       final control = entry.value;
       if (control.invalid && !fieldOrder.contains(controlName)) {
-        debugPrint(
-          '  ⚠️  Unexpected invalid field: $controlName (value="${control.value}")',
-        );
+        // Handle unexpected invalid fields if needed
       }
     }
   }
@@ -562,19 +537,6 @@ class CreateSimulationBottomButton extends HookWidget {
       ),
     );
 
-    // Calculate estimated harvest yield with 100% SR for cycle mode
-    final estimatedHarvestYieldWithFullSR = isAgentMode
-        ? null
-        : stocking *
-              targetHarvestWeight *
-              1.0 /
-              1000.0; // Convert to kg, SR = 100%
-
-    // Calculate estimated harvest yield for cycle mode: SR100% yield * Target SR%
-    final cycleModeEstimatedHarvestYield = isAgentMode
-        ? null
-        : estimatedHarvestYieldWithFullSR! * (targetSR / 100.0);
-
     // Parse harvest events from form fields
     final harvestEvents = <HarvestEvent>[];
 
@@ -638,41 +600,6 @@ class CreateSimulationBottomButton extends HookWidget {
           description: 'Panen Raya',
         ),
       );
-    }
-
-    // Debug parameters sent to domain
-    if (isAgentMode) {
-      debugPrint('  - currentBiomass: $currentBiomass');
-      debugPrint('  - stocking: $stocking');
-      debugPrint('  - estimatedHarvestYield: $estimatedHarvestYield');
-      debugPrint('  - totalFeedPaymentObligation: $totalFeedPaymentObligation');
-      debugPrint('  - harvestPurchasePrice: $harvestPurchasePrice');
-    } else {
-      debugPrint('🔍 Cycle Mode Parameters:');
-      debugPrint('  - Pond area (m2): $pondArea');
-      debugPrint('  - Stocking density (ind/m2): $stockingDensity');
-      debugPrint('  - weight: $initialWeight');
-      debugPrint('  - Target SR (%): $targetSR');
-      debugPrint('  - Target harvest weight: $targetHarvestWeight');
-      debugPrint('  - Estimated FCR: $estimatedFCR');
-      debugPrint('  - Target DOC: $targetDOC');
-      debugPrint('  - Estimated ADG (g): $estimatedADG');
-      debugPrint(
-        '  - Estimasi Panen Total SR100% (kg): $estimatedHarvestYieldWithFullSR',
-      );
-      debugPrint(
-        '  - Estimasi Panen Total (kg): ${cycleModeEstimatedHarvestYield ?? estimatedHarvestYield}',
-      );
-      debugPrint('  - Tebar: $stocking');
-      debugPrint('  - loss harian (%): $dailyLossPercentage');
-      debugPrint('  - capacity kg/m2: $capacityKgPerM2');
-      debugPrint('  - capacity kg/pond: $capacityKgPerPond');
-      debugPrint('  - Harga Komoditas per kg: $sellingPricePerKg');
-      debugPrint('  - Harga Pakan per kg: $feedPricePerKg');
-      debugPrint(
-        '  - Estimasi Feeding Rate (%biomass/day): $feedingRatePercentage',
-      );
-      debugPrint('  - currentDOC: $currentDOC');
     }
 
     return SimulationParameters(

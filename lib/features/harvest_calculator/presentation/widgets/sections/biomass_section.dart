@@ -1,6 +1,5 @@
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
-import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/partial_harvest_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/simulation_results_models.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/chart_builder.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/cards/chart_stat_card.dart';
@@ -17,6 +16,7 @@ class BiomassSection extends StatefulWidget {
   const BiomassSection({
     required this.simulation,
     required this.latestPoint,
+    this.onPartialHarvestAdjust,
     super.key,
   });
 
@@ -25,6 +25,9 @@ class BiomassSection extends StatefulWidget {
 
   /// Latest biomass chart point.
   final BiomassChartPoint? latestPoint;
+
+  /// Callback when partial harvest button is tapped.
+  final VoidCallback? onPartialHarvestAdjust;
 
   @override
   State<BiomassSection> createState() => _BiomassSectionState();
@@ -51,22 +54,7 @@ class _BiomassSectionState extends State<BiomassSection> {
                   child: SizedBox(
                     height: 32,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        showModalBottomSheet<void>(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          builder: (context) => PartialHarvestModal(
-                            automaticHarvestDoc:
-                                widget.simulation.automaticHarvestDoc,
-                            harvestSummaries: widget
-                                .simulation
-                                .simulationResult
-                                ?.harvestSummaries,
-                            targetDOC: widget.simulation.doc,
-                          ),
-                        );
-                      },
+                      onPressed: widget.onPartialHarvestAdjust,
                       icon: SvgPicture.asset(
                         Assets.icons.general.settings,
                         width: 20,

@@ -110,14 +110,14 @@ class STPBottomActionButton extends StatelessWidget {
                         ),
                       )
                     : child ??
-                        Text(
-                          text!,
-                          style: TextStyle(
-                            fontSize: fontSize ?? 16,
-                            fontWeight: fontWeight ?? FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                    Text(
+                      text!,
+                      style: TextStyle(
+                        fontSize: fontSize ?? 16,
+                        fontWeight: fontWeight ?? FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
               ),
             ),
           ),

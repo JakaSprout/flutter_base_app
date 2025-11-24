@@ -41,14 +41,6 @@ class FeedTable extends StatelessWidget {
       decimalDigits: 0,
     );
 
-    // Debug table values for first few rows to compare with CSV
-    for (var i = 0; i < rows.length && i < 5; i++) {
-      final row = rows[i];
-      debugPrint(
-        'FEED_TABLE DOC=${row.doc}: weight_gr=${row.weight.toStringAsFixed(3)}, populasi=${row.population.round()}, biomassa_kg=${row.biomass.toStringAsFixed(3)}, capacity_pond=${row.capacityPerPond.toStringAsFixed(3)}, daily_feed_kg=${row.dailyFeedConsumption.toStringAsFixed(3)}, cumulative_feed_kg=${row.cumulativeFeedConsumption.toStringAsFixed(3)}, revenue=${currencyFormat.format(row.revenue)}, feed_cost=${currencyFormat.format(row.feedCost)}',
-      );
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(

@@ -44,21 +44,13 @@ class MetricTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Center(
-                child: SvgPicture.asset(iconAsset, width: 16, height: 16),
-              ),
+          SvgPicture.asset(iconAsset, width: 20, height: 20),
               const SizedBox(
-                width: HarvestCalculatorDesignConstants.spacingXSmall,
+            height: HarvestCalculatorDesignConstants.spacingXSmall,
               ),
-              Expanded(
-                child: Text(
+          Text(
                   title,
                   style: HarvestCalculatorDesignConstants.smallTextSecondaryStyle,
-                ),
-              ),
-            ],
           ),
           const SizedBox(
             height: HarvestCalculatorDesignConstants.spacingXSmall,
@@ -81,5 +73,3 @@ class MetricTile extends StatelessWidget {
     );
   }
 }
-
-

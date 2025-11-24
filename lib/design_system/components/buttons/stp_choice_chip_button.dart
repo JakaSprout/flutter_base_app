@@ -66,20 +66,33 @@ class STPChoiceChipButton extends StatelessWidget {
                 ]
               : null,
         ),
-        child: Center(
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Open Sans',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isSelected
-                  ? HarvestCalculatorDesignConstants.primaryBlue
-                  : HarvestCalculatorDesignConstants.textPrimary,
-            ),
-          ),
-        ),
+        child: width != null
+            ? Center(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Open Sans',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected
+                        ? HarvestCalculatorDesignConstants.primaryBlue
+                        : HarvestCalculatorDesignConstants.textPrimary,
+                  ),
+                ),
+              )
+            : Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Open Sans',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? HarvestCalculatorDesignConstants.primaryBlue
+                      : HarvestCalculatorDesignConstants.textPrimary,
+                ),
+              ),
       ),
     );
   }

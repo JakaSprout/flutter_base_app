@@ -57,7 +57,7 @@ class HarvestCalculatorDesignConstants {
   static const double sectionSpacing = 24;
 
   /// Card padding (16px)
-  static const double cardPadding = 16;
+  static const double cardPadding = 12;
 
   /// Button height (56px)
   static const double buttonHeight = 56;

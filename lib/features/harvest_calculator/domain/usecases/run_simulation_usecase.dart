@@ -301,17 +301,17 @@ class RunSimulationUseCase {
       );
     }
 
-    if (parameters.totalFeedPaymentObligation == null ||
-        parameters.totalFeedPaymentObligation! <= 0) {
-      return const ValidationFailure(
-        message:
+      if (parameters.totalFeedPaymentObligation == null ||
+          parameters.totalFeedPaymentObligation! <= 0) {
+        return const ValidationFailure(
+          message:
             HarvestCalculatorConstants.errorTotalFeedPaymentObligationRequired,
-      );
-    }
+        );
+      }
 
-    if (parameters.estimatedHarvestYield == null ||
-        parameters.estimatedHarvestYield! <= 0) {
-      return const ValidationFailure(
+      if (parameters.estimatedHarvestYield == null ||
+          parameters.estimatedHarvestYield! <= 0) {
+        return const ValidationFailure(
         message: HarvestCalculatorConstants.errorEstimatedHarvestYieldRequired,
       );
     }

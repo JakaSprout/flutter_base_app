@@ -1,3 +1,5 @@
+import 'calculation_constants.dart';
+
 /// Service for calculating feed consumption and related costs in harvest simulation.
 ///
 /// This service handles feed-related calculations:
@@ -10,13 +12,13 @@ class FeedCalculator {
 
   /// Calculates daily feed consumption.
   ///
-  /// Formula: daily_feed(kg) = biomass(kg) × feeding_rate(%) / 100
+  /// Formula: daily_feed(kg) = biomass(kg) × feeding_rate(%) / percentageFactor
   ///
   /// [biomass]: Current biomass in kg
   /// [feedingRatePercentage]: Feeding rate percentage (0-100)
   /// Returns daily feed consumption in kg
   static double calculateDailyFeedConsumption(double biomass, double feedingRatePercentage) {
-    return biomass * (feedingRatePercentage / 100.0);
+    return CalculationConstants.applyPercentage(biomass, feedingRatePercentage);
   }
 
   /// Calculates cumulative feed consumption up to current DOC.
@@ -60,7 +62,7 @@ class FeedCalculator {
   /// [totalFeedConsumed]: Total feed consumed in kg
   /// Returns feed efficiency (currency units per kg feed)
   static double calculateFeedEfficiency(double totalRevenue, double totalFeedConsumed) {
-    if (totalFeedConsumed <= 0) return 0.0;
+    if (totalFeedConsumed <= 0) return CalculationConstants.minPercentage;
     return totalRevenue / totalFeedConsumed;
   }
 
@@ -72,7 +74,7 @@ class FeedCalculator {
   /// [totalBiomassHarvested]: Total biomass harvested in kg
   /// Returns overall FCR
   static double calculateOverallFCR(double totalFeedConsumed, double totalBiomassHarvested) {
-    if (totalBiomassHarvested <= 0) return double.infinity;
+    if (totalBiomassHarvested <= 0) return CalculationConstants.undefinedResult;
     return totalFeedConsumed / totalBiomassHarvested;
   }
 
@@ -84,20 +86,20 @@ class FeedCalculator {
   /// [simulationDays]: Number of days in simulation
   /// Returns average daily feed consumption in kg/day
   static double calculateAverageDailyFeedConsumption(double totalFeedConsumed, int simulationDays) {
-    if (simulationDays <= 0) return 0.0;
+    if (simulationDays <= 0) return CalculationConstants.minPercentage;
     return totalFeedConsumed / simulationDays;
   }
 
   /// Calculates feed cost as percentage of revenue.
   ///
-  /// Formula: cost_percentage = (feed_cost / total_revenue) × 100
+  /// Formula: cost_percentage = (feed_cost / total_revenue) × percentageFactor
   ///
   /// [feedCost]: Total feed cost
   /// [totalRevenue]: Total revenue
   /// Returns feed cost as percentage of revenue
   static double calculateFeedCostPercentage(double feedCost, double totalRevenue) {
-    if (totalRevenue <= 0) return 0.0;
-    return (feedCost / totalRevenue) * 100.0;
+    if (totalRevenue <= 0) return CalculationConstants.minPercentage;
+    return (feedCost / totalRevenue) * CalculationConstants.percentageFactor;
   }
 }
 
