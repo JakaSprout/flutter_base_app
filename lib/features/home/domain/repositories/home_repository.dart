@@ -1,6 +1,6 @@
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
-import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
@@ -28,10 +28,10 @@ abstract class HomeRepository {
   /// Returns [Either] containing [Failure] on error or [PondListData] on success.
   Future<Either<Failure, PondListData>> getPondListData();
 
-  /// Get company list data.
+  /// Get farm list data.
   ///
-  /// Returns [Either] containing [Failure] on error or [CompanyListData] on success.
-  Future<Either<Failure, CompanyListData>> getCompanyListData();
+  /// Returns [Either] containing [Failure] on error or [FarmListData] on success.
+  Future<Either<Failure, FarmListData>> getFarmListData();
 
   /// Get header data (notification count, etc).
   ///
@@ -48,16 +48,11 @@ abstract class HomeRepository {
   /// Returns [Either] containing [Failure] on error or [InputDataListData] on success.
   Future<Either<Failure, InputDataListData>> getInputDataListData();
 
-  /// Update selected company.
+  /// Update selected farm.
   ///
-  /// Returns [Either] containing [Failure] on error or [CompanyListData] on success.
-  Future<Either<Failure, CompanyListData>> updateSelectedCompany(
-    String company,
+  /// Returns [Either] containing [Failure] on error or [FarmListData] on success.
+  Future<Either<Failure, FarmListData>> updateSelectedFarm(
+    String farm,
   );
 
-  /// Update selected company (legacy method for backward compatibility).
-  ///
-  /// Returns [Either] containing [Failure] on error or [HomeData] on success.
-  @Deprecated('Use updateSelectedCompany instead')
-  Future<Either<Failure, HomeData>> updateSelectedCompanyLegacy(String company);
 }

@@ -1,7 +1,10 @@
 import 'package:app_mobile_afms/core/config/constants.dart';
 import 'package:app_mobile_afms/core/config/navigation_constants.dart';
+import 'package:app_mobile_afms/core/di/providers/database_provider.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/logout_provider.dart';
 import 'package:app_mobile_afms/features/profile/presentation/constants/profile_design_constants.dart';
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -37,10 +40,72 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 32),
+            // Database Viewer button (development tool)
+            _DatabaseViewerButton(ref: ref),
+            const SizedBox(height: 16),
             // Logout button (temporary)
             _LogoutButton(ref: ref),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Database Viewer button widget.
+///
+/// This is a development tool that allows viewing the database content
+/// directly within the app without needing to export the database file.
+class _DatabaseViewerButton extends ConsumerWidget {
+  /// Creates a new instance of [_DatabaseViewerButton].
+  const _DatabaseViewerButton({required this.ref});
+
+  final WidgetRef ref;
+
+  Future<void> _navigateToDatabaseViewer(BuildContext context) async {
+    final database = ref.read(databaseProvider);
+
+    // Query ponds to verify farm_id values
+    final ponds = await database.select(database.fmsMtPonds).get();
+    AppLogger.debug('Total ponds in database: ${ponds.length}');
+    for (final pond in ponds.take(5)) {
+      AppLogger.debug('Pond ${pond.pondCode}: farmId = ${pond.farmId}');
+    }
+
+    // Query farms to verify data
+    final farms = await database.select(database.fmsMtFarms).get();
+    AppLogger.debug('Total farms in database: ${farms.length}');
+    for (final farm in farms.take(5)) {
+      AppLogger.debug(
+        'Farm ${farm.farmCode}: farmId = ${farm.farmId}, farmUuid = ${farm.farmUuid}',
+      );
+    }
+
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => DriftDbViewer(database)));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton.icon(
+      onPressed: () => _navigateToDatabaseViewer(context),
+      icon: const Icon(Icons.storage, size: 20),
+      label: Text(
+        'Database Viewer',
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: ProfileDesignConstants.white,
+          fontFamily: AppConstants.fontFamily,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: ProfileDesignConstants.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 0,
       ),
     );
   }

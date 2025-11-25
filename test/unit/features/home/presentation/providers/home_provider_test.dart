@@ -1,11 +1,11 @@
 import 'package:app_mobile_afms/core/error/failures.dart';
-import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/pond_entity.dart';
 import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
-import 'package:app_mobile_afms/features/home/domain/usecases/get_company_list_data.dart';
+import 'package:app_mobile_afms/features/home/domain/usecases/get_farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_home_data.dart';
-import 'package:app_mobile_afms/features/home/domain/usecases/update_selected_company.dart';
+import 'package:app_mobile_afms/features/home/domain/usecases/update_selected_farm.dart';
 import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,8 +51,8 @@ void main() {
           biayaPakan: 'Rp 1.000.000',
           estimasiSR: '80%',
           ponds: [PondEntity(id: 'pond1', name: 'Pond 1')],
-          companies: ['Company A'],
-          selectedCompany: 'Company A',
+          farms: ['Company A'],
+          selectedFarm: 'Company A',
         );
 
         when(
@@ -84,35 +84,35 @@ void main() {
       });
     });
 
-    group('getCompanyListDataProvider', () {
-      test('should return GetCompanyListData use case', () {
+    group('getFarmListDataProvider', () {
+      test('should return GetFarmListData use case', () {
         // Act
-        final useCase = container.read(getCompanyListDataProvider);
+        final useCase = container.read(getFarmListDataProvider);
 
         // Assert
-        expect(useCase, isA<GetCompanyListData>());
+        expect(useCase, isA<GetFarmListData>());
         expect(useCase.repository, equals(mockRepository));
       });
     });
 
-    group('companyListDataProvider', () {
-      test('should return CompanyListData when use case succeeds', () async {
+    group('farmListDataProvider', () {
+      test('should return FarmListData when use case succeeds', () async {
         // Arrange
-        const expectedCompanyListData = CompanyListData(
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company A',
+        const expectedFarmListData = FarmListData(
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company A',
         );
 
         when(
-          () => mockRepository.getCompanyListData(),
-        ).thenAnswer((_) async => const Right(expectedCompanyListData));
+          () => mockRepository.getFarmListData(),
+        ).thenAnswer((_) async => const Right(expectedFarmListData));
 
         // Act
-        final result = await container.read(companyListDataProvider.future);
+        final result = await container.read(farmListDataProvider.future);
 
         // Assert
-        expect(result, equals(expectedCompanyListData));
-        verify(() => mockRepository.getCompanyListData()).called(1);
+        expect(result, equals(expectedFarmListData));
+        verify(() => mockRepository.getFarmListData()).called(1);
       });
 
       test('should throw Failure when use case fails', () async {
@@ -120,15 +120,15 @@ void main() {
         const expectedFailure = NetworkFailure.serverError('Server Error');
 
         when(
-          () => mockRepository.getCompanyListData(),
+          () => mockRepository.getFarmListData(),
         ).thenAnswer((_) async => const Left(expectedFailure));
 
         // Act & Assert
         expect(
-          () => container.read(companyListDataProvider.future),
+          () => container.read(farmListDataProvider.future),
           throwsA(isA<NetworkFailure>()),
         );
-        verify(() => mockRepository.getCompanyListData()).called(1);
+        verify(() => mockRepository.getFarmListData()).called(1);
       });
     });
 
@@ -146,50 +146,50 @@ void main() {
     group('CompanyListNotifier', () {
       test('should build with company list data', () async {
         // Arrange
-        const expectedCompanyListData = CompanyListData(
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company A',
+        const expectedFarmListData = FarmListData(
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company A',
         );
 
         when(
-          () => mockRepository.getCompanyListData(),
-        ).thenAnswer((_) async => const Right(expectedCompanyListData));
+          () => mockRepository.getFarmListData(),
+        ).thenAnswer((_) async => const Right(expectedFarmListData));
 
         // Act
         await container.read(companyListNotifierProvider.future);
 
         // Assert
         final state = container.read(companyListNotifierProvider);
-        expect(state.value, equals(expectedCompanyListData));
-        verify(() => mockRepository.getCompanyListData()).called(1);
+        expect(state.value, equals(expectedFarmListData));
+        verify(() => mockRepository.getFarmListData()).called(1);
       });
 
       test('should update selected company successfully', () async {
         // Arrange
-        const initialCompanyListData = CompanyListData(
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company A',
+        const initialFarmListData = FarmListData(
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company A',
         );
-        const updatedCompanyListData = CompanyListData(
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company B',
+        const updatedFarmListData = FarmListData(
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company B',
         );
 
         when(
-          () => mockRepository.getCompanyListData(),
-        ).thenAnswer((_) async => const Right(initialCompanyListData));
+          () => mockRepository.getFarmListData(),
+        ).thenAnswer((_) async => const Right(initialFarmListData));
         when(
           () => mockRepository.updateSelectedCompany(any()),
-        ).thenAnswer((_) async => const Right(updatedCompanyListData));
+        ).thenAnswer((_) async => const Right(updatedFarmListData));
 
         // Act - Build initial state
         await container.read(companyListNotifierProvider.future);
         final notifier = container.read(companyListNotifierProvider.notifier);
-        await notifier.updateCompany('Company B');
+        await notifier.updateFarm('Company B');
 
         // Assert
         final state = container.read(companyListNotifierProvider);
-        expect(state.value, equals(updatedCompanyListData));
+        expect(state.value, equals(updatedFarmListData));
         expect(state.value?.selectedCompany, equals('Company B'));
         verify(
           () => mockRepository.updateSelectedCompany('Company B'),
@@ -198,15 +198,15 @@ void main() {
 
       test('should handle error when update company fails', () async {
         // Arrange
-        const initialCompanyListData = CompanyListData(
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company A',
+        const initialFarmListData = FarmListData(
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company A',
         );
         const expectedFailure = NetworkFailure.serverError('Server Error');
 
         when(
-          () => mockRepository.getCompanyListData(),
-        ).thenAnswer((_) async => const Right(initialCompanyListData));
+          () => mockRepository.getFarmListData(),
+        ).thenAnswer((_) async => const Right(initialFarmListData));
         when(
           () => mockRepository.updateSelectedCompany(any()),
         ).thenAnswer((_) async => const Left(expectedFailure));
@@ -214,7 +214,7 @@ void main() {
         // Act - Build initial state
         await container.read(companyListNotifierProvider.future);
         final notifier = container.read(companyListNotifierProvider.notifier);
-        await notifier.updateCompany('Company B');
+        await notifier.updateFarm('Company B');
 
         // Assert
         final state = container.read(companyListNotifierProvider);
@@ -233,8 +233,8 @@ void main() {
           biayaPakan: 'Rp 1.000.000',
           estimasiSR: '80%',
           ponds: [PondEntity(id: 'pond1', name: 'Pond 1')],
-          companies: ['Company A'],
-          selectedCompany: 'Company A',
+          farms: ['Company A'],
+          selectedFarm: 'Company A',
         );
 
         when(
@@ -259,8 +259,8 @@ void main() {
           biayaPakan: 'Rp 1.000.000',
           estimasiSR: '80%',
           ponds: [PondEntity(id: 'pond1', name: 'Pond 1')],
-          companies: ['Company A'],
-          selectedCompany: 'Company A',
+          farms: ['Company A'],
+          selectedFarm: 'Company A',
         );
         const refreshedHomeData = HomeData(
           activePonds: 6,
@@ -272,8 +272,8 @@ void main() {
             PondEntity(id: 'pond1', name: 'Pond 1'),
             PondEntity(id: 'pond2', name: 'Pond 2'),
           ],
-          companies: ['Company A', 'Company B'],
-          selectedCompany: 'Company A',
+          farms: ['Company A', 'Company B'],
+          selectedFarm: 'Company A',
         );
 
         when(
@@ -313,8 +313,8 @@ void main() {
           biayaPakan: 'Rp 1.000.000',
           estimasiSR: '80%',
           ponds: [PondEntity(id: 'pond1', name: 'Pond 1')],
-          companies: ['Company A'],
-          selectedCompany: 'Company A',
+          farms: ['Company A'],
+          selectedFarm: 'Company A',
         );
         const expectedFailure = NetworkFailure.serverError('Server Error');
 

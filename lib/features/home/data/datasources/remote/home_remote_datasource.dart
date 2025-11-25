@@ -18,7 +18,7 @@ abstract class HomeRemoteDataSource {
   Future<Either<Failure, List<PondModel>>> getPondListData();
 
   /// Get company list data from remote API.
-  Future<Either<Failure, Map<String, dynamic>>> getCompanyListData();
+  Future<Either<Failure, Map<String, dynamic>>> getFarmListData();
 
   /// Get header data from remote API.
   Future<Either<Failure, Map<String, dynamic>>> getHeaderData();
@@ -130,17 +130,17 @@ class HomeRemoteDataSourceMock implements HomeRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getCompanyListData() async {
+  Future<Either<Failure, Map<String, dynamic>>> getFarmListData() async {
     await _simulateDelay();
 
     try {
       const mockData = {
-        'companies': [
+        'farms': [
           'PT. Tambak Bersama',
           'PT. Company Lain',
           'PT. Company Lain Lagi',
         ],
-        'selectedCompany': 'PT. Tambak Bersama',
+        'selectedFarm': 'PT. Tambak Bersama',
       };
 
       return const Right(mockData);

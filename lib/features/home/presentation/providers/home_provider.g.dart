@@ -106,31 +106,29 @@ final getPondListDataProvider = Provider<GetPondListData>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetPondListDataRef = ProviderRef<GetPondListData>;
-String _$getCompanyListDataHash() =>
-    r'1e214b14fa4a267536a80f98e6e1e966d7a05634';
+String _$getFarmListDataHash() => r'3b57dc413115288c1bacaebbaa449ee27f433b0f';
 
-/// Provider for GetCompanyListData use case.
+/// Provider for GetFarmListData use case.
 ///
-/// This provider depends on [referenceDataRepositoryProvider] and [authServiceProvider]
-/// to fetch farms data from the reference data repository.
+/// This provider creates a mock implementation since reference data tables were removed.
+/// TODO: Implement with real API data when available.
 ///
-/// Copied from [getCompanyListData].
-@ProviderFor(getCompanyListData)
-final getCompanyListDataProvider =
-    AutoDisposeFutureProvider<GetCompanyListData>.internal(
-      getCompanyListData,
-      name: r'getCompanyListDataProvider',
+/// Copied from [getFarmListData].
+@ProviderFor(getFarmListData)
+final getFarmListDataProvider =
+    AutoDisposeFutureProvider<GetFarmListData>.internal(
+      getFarmListData,
+      name: r'getFarmListDataProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$getCompanyListDataHash,
+          : _$getFarmListDataHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GetCompanyListDataRef =
-    AutoDisposeFutureProviderRef<GetCompanyListData>;
+typedef GetFarmListDataRef = AutoDisposeFutureProviderRef<GetFarmListData>;
 String _$getHeaderDataHash() => r'b9ed4f92eef966a681fe64d8addd12f332937b55';
 
 /// Provider for GetHeaderData use case.
@@ -189,26 +187,52 @@ final getInputDataListDataProvider = Provider<GetInputDataListData>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetInputDataListDataRef = ProviderRef<GetInputDataListData>;
-String _$updateSelectedCompanyHash() =>
-    r'90c8b1c4f56d045dd9619265638ff2e67b855f67';
+String _$updateSelectedFarmHash() =>
+    r'b040f8fb3c23797bc514099dc0c362eac17b04bb';
 
-/// Provider for UpdateSelectedCompany use case.
+/// Provider for UpdateSelectedFarm use case.
 ///
-/// Copied from [updateSelectedCompany].
-@ProviderFor(updateSelectedCompany)
-final updateSelectedCompanyProvider = Provider<UpdateSelectedCompany>.internal(
-  updateSelectedCompany,
-  name: r'updateSelectedCompanyProvider',
+/// Copied from [updateSelectedFarm].
+@ProviderFor(updateSelectedFarm)
+final updateSelectedFarmProvider = Provider<UpdateSelectedFarm>.internal(
+  updateSelectedFarm,
+  name: r'updateSelectedFarmProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$updateSelectedCompanyHash,
+      : _$updateSelectedFarmHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UpdateSelectedCompanyRef = ProviderRef<UpdateSelectedCompany>;
+typedef UpdateSelectedFarmRef = ProviderRef<UpdateSelectedFarm>;
+String _$masterDataSyncHash() => r'704f323a9d740f46dcce3a283dfcdcd6cd94e4df';
+
+/// Provider for master data sync.
+///
+/// This provider runs master data synchronization when the home screen loads.
+/// It checks connectivity and syncs reference data (capacity_references, units, ponds, employees).
+/// Returns [AsyncValue<MasterDataSyncResult>] with sync results.
+///
+/// Uses caching to prevent repeated sync calls within a short time window.
+///
+/// Copied from [masterDataSync].
+@ProviderFor(masterDataSync)
+final masterDataSyncProvider =
+    AutoDisposeFutureProvider<MasterDataSyncResult>.internal(
+      masterDataSync,
+      name: r'masterDataSyncProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$masterDataSyncHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef MasterDataSyncRef = AutoDisposeFutureProviderRef<MasterDataSyncResult>;
 String _$homeDataHash() => r'eb078537656ea6638c923c4ed408a0b9858840bb';
 
 /// Provider for home data.
@@ -272,28 +296,29 @@ final pondListDataProvider = AutoDisposeFutureProvider<PondListData>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PondListDataRef = AutoDisposeFutureProviderRef<PondListData>;
-String _$companyListDataHash() => r'4c8beac177894b8e10ac1f5f692428ad68b4b846';
+String _$farmListDataHash() => r'7459954e758621fdbb79d61c630284e63465295e';
 
-/// Provider for company list data.
+/// Provider for farm list data.
 ///
-/// Fetches farms from reference data repository and maps them to company names.
+/// Uses API first (when online), falls back to local SQLite (when offline or API fails).
+/// Strategy: API → Local DB → Empty Data
+/// This provider doesn't watch sync state to avoid infinite loops.
 ///
-/// Copied from [companyListData].
-@ProviderFor(companyListData)
-final companyListDataProvider =
-    AutoDisposeFutureProvider<CompanyListData>.internal(
-      companyListData,
-      name: r'companyListDataProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$companyListDataHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// Copied from [farmListData].
+@ProviderFor(farmListData)
+final farmListDataProvider = AutoDisposeFutureProvider<FarmListData>.internal(
+  farmListData,
+  name: r'farmListDataProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$farmListDataHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CompanyListDataRef = AutoDisposeFutureProviderRef<CompanyListData>;
+typedef FarmListDataRef = AutoDisposeFutureProviderRef<FarmListData>;
 String _$headerDataHash() => r'e72b9e186035c3366fced6759441e5721d27fd19';
 
 /// Provider for header data.
@@ -353,31 +378,27 @@ final inputDataListDataProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef InputDataListDataRef = AutoDisposeFutureProviderRef<InputDataListData>;
-String _$companyListNotifierHash() =>
-    r'3d1bf5687802dc73a3fe09814c03fe559d6eb3a5';
+String _$farmListNotifierHash() => r'f7d54ca8a964dbf556430cf0f1a16b60df21e80a';
 
-/// Notifier for company list operations (update selected company).
+/// Notifier for farm list operations (update selected farm).
 ///
-/// Copied from [CompanyListNotifier].
-@ProviderFor(CompanyListNotifier)
-final companyListNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      CompanyListNotifier,
-      CompanyListData
-    >.internal(
-      CompanyListNotifier.new,
-      name: r'companyListNotifierProvider',
+/// Copied from [FarmListNotifier].
+@ProviderFor(FarmListNotifier)
+final farmListNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<FarmListNotifier, FarmListData>.internal(
+      FarmListNotifier.new,
+      name: r'farmListNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$companyListNotifierHash,
+          : _$farmListNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$CompanyListNotifier = AutoDisposeAsyncNotifier<CompanyListData>;
-String _$homeDataNotifierHash() => r'fe3a0231b31c4c1223c60cf5f91d451c7b67a5fc';
+typedef _$FarmListNotifier = AutoDisposeAsyncNotifier<FarmListData>;
+String _$homeDataNotifierHash() => r'b2dd4a5cb76beed13185be35fd14515e6231f75d';
 
-/// Notifier for home data operations (refresh, update company).
+/// Notifier for home data operations (refresh, update farm).
 ///
 /// Copied from [HomeDataNotifier].
 @ProviderFor(HomeDataNotifier)

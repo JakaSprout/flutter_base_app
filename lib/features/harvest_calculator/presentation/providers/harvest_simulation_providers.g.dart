@@ -6,8 +6,52 @@ part of 'harvest_simulation_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$harvestSimulationLocalDatasourceHash() =>
+    r'19c1631abe44544551fe163485e4e5f75f5b6fe8';
+
+/// Local datasource provider for harvest simulation operations.
+///
+/// Copied from [harvestSimulationLocalDatasource].
+@ProviderFor(harvestSimulationLocalDatasource)
+final harvestSimulationLocalDatasourceProvider =
+    AutoDisposeProvider<HarvestSimulationLocalDatasource>.internal(
+      harvestSimulationLocalDatasource,
+      name: r'harvestSimulationLocalDatasourceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$harvestSimulationLocalDatasourceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef HarvestSimulationLocalDatasourceRef =
+    AutoDisposeProviderRef<HarvestSimulationLocalDatasource>;
+String _$harvestSimulationRemoteDatasourceHash() =>
+    r'6096bf6a9cb8ecf1aa9b5da2c104e578502a4274';
+
+/// Remote datasource provider for harvest simulation operations.
+///
+/// Copied from [harvestSimulationRemoteDatasource].
+@ProviderFor(harvestSimulationRemoteDatasource)
+final harvestSimulationRemoteDatasourceProvider =
+    AutoDisposeProvider<HarvestSimulationRemoteDatasource>.internal(
+      harvestSimulationRemoteDatasource,
+      name: r'harvestSimulationRemoteDatasourceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$harvestSimulationRemoteDatasourceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef HarvestSimulationRemoteDatasourceRef =
+    AutoDisposeProviderRef<HarvestSimulationRemoteDatasource>;
 String _$harvestSimulationRepositoryHash() =>
-    r'0524aae67fbecd84d6cb7d32d1ab6dac58692d9a';
+    r'377296c60c644b964ffc787f517f0519ffd53947';
 
 /// Repository provider for harvest simulation operations.
 ///

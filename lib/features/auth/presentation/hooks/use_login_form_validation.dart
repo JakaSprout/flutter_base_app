@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
 import 'package:app_mobile_afms/features/auth/presentation/validators/phone_format_validator.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -11,10 +10,6 @@ void configureValidatorsForMode({
   required FormGroup form,
   required bool isPhoneMode,
 }) {
-  AppLogger.debug(
-    '[LoginForm] Configuring validators for mode: ${isPhoneMode ? "PHONE" : "EMAIL"}',
-  );
-
   final phoneControl =
       form.control(LoginFormControls.phone) as FormControl<String>;
   final emailControl =
@@ -24,9 +19,6 @@ void configureValidatorsForMode({
 
   if (isPhoneMode) {
     // Phone mode: phone is required and must have valid format
-    AppLogger.debug(
-      '[LoginForm] Setting validators: Phone=required+format, Email=none, Password=none',
-    );
     phoneControl
       ..reset()
       ..setValidators([
@@ -44,9 +36,6 @@ void configureValidatorsForMode({
       ..markAsUntouched();
   } else {
     // Email mode: email and password are required
-    AppLogger.debug(
-      '[LoginForm] Setting validators: Phone=none, Email=required+email, Password=required',
-    );
     phoneControl
       ..reset()
       ..setValidators([]) // Remove validators for unused fields
@@ -68,18 +57,6 @@ void configureValidatorsForMode({
 
   // Also update form-level validity
   form.updateValueAndValidity();
-
-  AppLogger.debug('[LoginForm] After validator configuration:');
-  AppLogger.debug(
-    '  Phone valid: ${phoneControl.valid}, value: "${phoneControl.value}"',
-  );
-  AppLogger.debug(
-    '  Email valid: ${emailControl.valid}, value: "${emailControl.value}"',
-  );
-  AppLogger.debug(
-    '  Password valid: ${passwordControl.valid}, value: "${passwordControl.value != null && (passwordControl.value!).isNotEmpty ? "***" : ""}"',
-  );
-  AppLogger.debug('  Form valid: ${form.valid}, status: ${form.status}');
 }
 
 /// Custom hook for managing login form validation.
@@ -91,56 +68,20 @@ void useLoginFormValidation({
 }) {
   // Configure validators when mode changes
   useEffect(() {
-    AppLogger.debug(
-      '[LoginForm] Mode changed to: ${isPhoneMode ? "PHONE" : "EMAIL"}',
-    );
     configureValidatorsForMode(form: form, isPhoneMode: isPhoneMode);
     return null;
   }, [isPhoneMode, form]);
 
   // Listen to form changes for validation state
   useEffect(() {
-    void logValidationState() {
-      final phoneControl =
-          form.control(LoginFormControls.phone) as FormControl<String>;
-      final emailControl =
-          form.control(LoginFormControls.email) as FormControl<String>;
-      final passwordControl =
-          form.control(LoginFormControls.password) as FormControl<String>;
-
-      final phoneValue = phoneControl.value ?? '';
-      final emailValue = emailControl.value ?? '';
-      final passwordValue = passwordControl.value ?? '';
-
-      final phoneValid = phoneControl.valid;
-      final emailValid = emailControl.valid;
-      final passwordValid = passwordControl.valid;
-
-      final formValid = form.valid;
-
-      AppLogger.debug('[LoginForm] Form Validation State:');
-      AppLogger.debug('  Mode: ${isPhoneMode ? "PHONE" : "EMAIL"}');
-      AppLogger.debug('  Phone: "$phoneValue" (valid: $phoneValid)');
-      AppLogger.debug('  Email: "$emailValue" (valid: $emailValid)');
-      AppLogger.debug(
-        '  Password: "${passwordValue.isNotEmpty ? "***" : ""}" (valid: $passwordValid)',
-      );
-      AppLogger.debug('  Form Valid: $formValid');
-      AppLogger.debug('  Form Status: ${form.status}');
-    }
-
     final subscriptions = <StreamSubscription<dynamic>>[
       form.valueChanges.listen((_) {
-        AppLogger.debug('[LoginForm] Form value changed');
-        logValidationState();
+        // Form value changed - handled by reactive forms automatically
       }),
       form.statusChanged.listen((_) {
-        AppLogger.debug('[LoginForm] Form status changed: ${form.status}');
-        logValidationState();
+        // Form status changed - handled by reactive forms automatically
       }),
     ];
-
-    logValidationState();
 
     return () {
       for (final sub in subscriptions) {

@@ -26,6 +26,9 @@ class ConnectivityService {
   /// Get current connectivity status.
   AppConnectivityResult? get currentStatus => _currentStatus;
 
+  /// Flag to track if service has been disposed.
+  bool _isDisposed = false;
+
   /// Initialize connectivity monitoring.
   void _init() {
     // Listen to connectivity changes
@@ -44,12 +47,24 @@ class ConnectivityService {
   Future<void> _handleConnectivityChange(
     List<connectivity_plus.ConnectivityResult> results,
   ) async {
+    if (_isDisposed) {
+      return; // Don't process changes if disposed
+    }
+
     final result = await _mapConnectivityResult(results);
     _updateStatus(result);
   }
 
   /// Check current connectivity status.
   Future<AppConnectivityResult> checkConnectivity() async {
+    if (_isDisposed) {
+      AppLogger.debug('ConnectivityService already disposed, returning unknown status');
+      return const AppConnectivityResult(
+        status: ConnectivityStatus.unknown,
+        message: 'Service disposed',
+      );
+    }
+
     try {
       final results = await _connectivity.checkConnectivity();
       final result = await _mapConnectivityResult(results);
@@ -104,12 +119,27 @@ class ConnectivityService {
     if (_currentStatus?.status != result.status) {
       _currentStatus = result;
       AppLogger.info('Connectivity status changed: ${result.status}');
-      _statusController.add(result);
+
+      // Check if controller is still open before adding events
+      if (!_statusController.isClosed) {
+        try {
+          _statusController.add(result);
+        } catch (e) {
+          // Controller might be closed, ignore the error
+          AppLogger.debug('Failed to add connectivity status to closed stream: $e');
+        }
+      }
     }
   }
 
   /// Dispose resources.
   void dispose() {
+    if (_isDisposed) {
+      return; // Already disposed
+    }
+
+    _isDisposed = true;
+    AppLogger.debug('Disposing ConnectivityService');
     _statusController.close();
   }
 }

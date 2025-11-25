@@ -1,17 +1,17 @@
 import 'package:app_mobile_afms/features/home/presentation/constants/home_constants.dart';
-import 'package:app_mobile_afms/features/home/presentation/widgets/company_selection_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/farm_selection_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
 void main() {
-  group('CompanySelectionSection', () {
+  group('FarmSelectionSection', () {
     testWidgets('should display label and dropdown', (tester) async {
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          child: const CompanySelectionSection(),
+          child: const FarmSelectionSection(),
         ),
       );
 
@@ -20,7 +20,7 @@ void main() {
 
       // Assert
       expect(
-        find.text(HomeConstants.companySelectionLabel),
+        find.text(HomeConstants.farmSelectionLabel),
         findsOneWidget,
       );
 
@@ -35,7 +35,7 @@ void main() {
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          child: const CompanySelectionSection(),
+          child: const FarmSelectionSection(),
         ),
       );
 
@@ -60,7 +60,7 @@ void main() {
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          child: const CompanySelectionSection(
+          child: const FarmSelectionSection(
             selectedCompany: 'Company B',
             companies: companies,
           ),
@@ -88,7 +88,7 @@ void main() {
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          child: CompanySelectionSection(
+          child: FarmSelectionSection(
             companies: companies,
             onCompanyChanged: (company) => selectedCompany = company,
           ),
@@ -99,7 +99,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Tap on dropdown to open it
-      final dropdown = find.byType(CompanySelectionSection);
+      final dropdown = find.byType(FarmSelectionSection);
       await tester.tap(dropdown);
       await tester.pumpAndSettle();
 
@@ -122,7 +122,7 @@ void main() {
       // Act
       await tester.pumpWidget(
         TestHelpers.createTestApp(
-          child: const CompanySelectionSection(
+          child: const FarmSelectionSection(
             companies: companies,
           ),
         ),

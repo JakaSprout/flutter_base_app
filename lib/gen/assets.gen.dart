@@ -77,6 +77,9 @@ class $AssetsIconsGeneralGen {
   /// File path: assets/icons/general/arrow-download.svg
   String get arrowDownload => 'assets/icons/general/arrow-download.svg';
 
+  /// File path: assets/icons/general/arrow-right.svg
+  String get arrowRight => 'assets/icons/general/arrow-right.svg';
+
   /// File path: assets/icons/general/arrow-up-down.svg
   String get arrowUpDown => 'assets/icons/general/arrow-up-down.svg';
 
@@ -147,6 +150,7 @@ class $AssetsIconsGeneralGen {
   List<String> get values => [
     arrowBack,
     arrowDownload,
+    arrowRight,
     arrowUpDown,
     chemistry,
     circleChecklist,

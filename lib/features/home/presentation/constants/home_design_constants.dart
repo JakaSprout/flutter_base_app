@@ -117,15 +117,15 @@ class HomeDesignConstants {
   /// Banner spacing between cards and indicators
   static const double bannerCardsIndicatorsSpacing = 12;
 
-  // ==================== Company Selection Section ====================
-  /// Company selection label spacing
-  static const double companySelectionLabelSpacing = 8;
+  // ==================== Farm Selection Section ====================
+  /// Farm selection label spacing
+  static const double farmSelectionLabelSpacing = 8;
 
-  /// Company selection label font size
-  static const double companySelectionLabelFontSize = 12;
+  /// Farm selection label font size
+  static const double farmSelectionLabelFontSize = 12;
 
-  /// Company selection line height
-  static const double companySelectionLineHeight = 1.5;
+  /// Farm selection line height
+  static const double farmSelectionLineHeight = 1.5;
 
   // ==================== Dashboard Summary Section ====================
   /// Dashboard grid spacing

@@ -10,7 +10,7 @@ import 'package:app_mobile_afms/features/home/domain/entities/pond_list_data.dar
 import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:app_mobile_afms/features/home/presentation/screens/home_screen.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/banner_section.dart';
-import 'package:app_mobile_afms/features/home/presentation/widgets/company_selection_section.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/farm_selection_section.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/dashboard_summary_grid.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/home_header.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/input_data_section.dart';
@@ -62,7 +62,7 @@ void main() {
             pondListDataProvider.overrideWith(
               (_) => Future.value(testPondListData),
             ),
-            companyListDataProvider.overrideWith(
+            farmListDataProvider.overrideWith(
               (_) => Future.value(testCompanyListData),
             ),
             inputDataListDataProvider.overrideWith(
@@ -80,7 +80,7 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(HomeHeader), findsOneWidget);
       expect(find.byType(BannerSection), findsOneWidget);
-      expect(find.byType(CompanySelectionSection), findsOneWidget);
+      expect(find.byType(FarmSelectionSection), findsOneWidget);
       expect(find.byType(DashboardSummaryGrid), findsOneWidget);
       expect(find.byType(InputDataSection), findsOneWidget);
       expect(find.byType(PondListSection), findsOneWidget);
@@ -109,7 +109,7 @@ void main() {
             pondListDataProvider.overrideWith(
               (_) => Future.value(testPondListData),
             ),
-            companyListDataProvider.overrideWith(
+            farmListDataProvider.overrideWith(
               (_) => Future.value(testCompanyListData),
             ),
             inputDataListDataProvider.overrideWith(
@@ -155,7 +155,7 @@ void main() {
               (_) => dashboardCompleter.future,
             ),
             pondListDataProvider.overrideWith((_) => pondCompleter.future),
-            companyListDataProvider.overrideWith(
+            farmListDataProvider.overrideWith(
               (_) => companyCompleter.future,
             ),
             inputDataListDataProvider.overrideWith(

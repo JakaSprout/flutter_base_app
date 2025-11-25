@@ -1,27 +1,30 @@
 import 'package:app_mobile_afms/core/config/app_config.dart' show AppConfig;
+import 'package:app_mobile_afms/core/di/providers/connectivity_provider.dart';
 import 'package:app_mobile_afms/core/di/providers/dio_provider.dart';
+import 'package:app_mobile_afms/core/di/providers/master_data_sync_provider.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
-import 'package:app_mobile_afms/core/reference_data/providers/reference_data_providers.dart';
+import 'package:app_mobile_afms/core/logging/logger.dart';
+import 'package:app_mobile_afms/core/reference_data/domain/services/master_data_sync_service.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/registered_ponds_provider.dart';
 import 'package:app_mobile_afms/features/home/data/datasources/remote/home_remote_datasource.dart';
 import 'package:app_mobile_afms/features/home/data/repositories/home_repository_impl.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
-import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/input_data_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/pond_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/repositories/home_repository.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_banner_list_data.dart';
-import 'package:app_mobile_afms/features/home/domain/usecases/get_company_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/usecases/get_farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_header_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_home_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_input_data_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/usecases/get_pond_list_data.dart';
-import 'package:app_mobile_afms/features/home/domain/usecases/update_selected_company.dart';
+import 'package:app_mobile_afms/features/home/domain/usecases/update_selected_farm.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_provider.g.dart';
@@ -75,25 +78,16 @@ GetPondListData getPondListData(GetPondListDataRef ref) {
   return GetPondListData(repository);
 }
 
-/// Provider for GetCompanyListData use case.
+/// Provider for GetFarmListData use case.
 ///
-/// This provider depends on [referenceDataRepositoryProvider] and [authServiceProvider]
-/// to fetch farms data from the reference data repository.
+/// This provider creates a mock implementation since reference data tables were removed.
+/// TODO: Implement with real API data when available.
 @riverpod
-Future<GetCompanyListData> getCompanyListData(GetCompanyListDataRef ref) async {
-  final repository = ref.watch(referenceDataRepositoryProvider);
-  final authService = ref.watch(authServiceProvider);
-  final employeeId = await authService.getStoredEmployeeId();
-
-  if (employeeId == null || employeeId.isEmpty) {
-    throw StateError(
-      'Employee ID tidak tersedia. Login ulang untuk menyegarkan sesi.',
-    );
-  }
-
-  return GetCompanyListData(
-    referenceDataRepository: repository,
-    employeeId: employeeId,
+Future<GetFarmListData> getFarmListData(GetFarmListDataRef ref) async {
+  // Mock implementation - reference data tables were removed during development cleanup
+  // TODO: Replace with real API implementation
+  throw UnimplementedError(
+    'Reference data tables were removed. Implement with API data.',
   );
 }
 
@@ -118,11 +112,31 @@ GetInputDataListData getInputDataListData(GetInputDataListDataRef ref) {
   return GetInputDataListData(repository);
 }
 
-/// Provider for UpdateSelectedCompany use case.
+/// Provider for UpdateSelectedFarm use case.
 @Riverpod(keepAlive: true)
-UpdateSelectedCompany updateSelectedCompany(UpdateSelectedCompanyRef ref) {
+UpdateSelectedFarm updateSelectedFarm(UpdateSelectedFarmRef ref) {
   final repository = ref.watch(homeRepositoryProvider);
-  return UpdateSelectedCompany(repository);
+  return UpdateSelectedFarm(repository);
+}
+
+/// Provider for master data sync.
+///
+/// This provider runs master data synchronization when the home screen loads.
+/// It checks connectivity and syncs reference data (capacity_references, units, ponds, employees).
+/// Returns [AsyncValue<MasterDataSyncResult>] with sync results.
+///
+/// Uses caching to prevent repeated sync calls within a short time window.
+@riverpod
+Future<MasterDataSyncResult> masterDataSync(MasterDataSyncRef ref) async {
+  final authService = ref.watch(authServiceProvider);
+  final masterDataSyncService = ref.watch(masterDataSyncServiceProvider);
+
+  final employeeId = await authService.getStoredEmployeeId();
+  if (employeeId == null || employeeId.isEmpty) {
+    throw StateError('Employee ID not available for master data sync');
+  }
+
+  return masterDataSyncService.syncMasterData(employeeId: employeeId);
 }
 
 /// Provider for home data.
@@ -131,6 +145,9 @@ UpdateSelectedCompany updateSelectedCompany(UpdateSelectedCompanyRef ref) {
 /// Returns [AsyncValue<HomeData>] which handles loading, success, and error states automatically.
 @riverpod
 Future<HomeData> homeData(HomeDataRef ref) async {
+  // Note: Master data sync is handled separately and doesn't need to be watched here
+  // to avoid triggering sync on every home data load
+
   final getHomeData = ref.read(getHomeDataProvider);
   final result = await getHomeData();
 
@@ -166,18 +183,204 @@ Future<PondListData> pondListData(PondListDataRef ref) async {
   );
 }
 
-/// Provider for company list data.
+/// Provider for farm list data.
 ///
-/// Fetches farms from reference data repository and maps them to company names.
+/// Uses API first (when online), falls back to local SQLite (when offline or API fails).
+/// Strategy: API → Local DB → Empty Data
+/// This provider doesn't watch sync state to avoid infinite loops.
 @riverpod
-Future<CompanyListData> companyListData(CompanyListDataRef ref) async {
-  final getCompanyListDataUseCase = await ref.watch(getCompanyListDataProvider.future);
-  final result = await getCompanyListDataUseCase();
+Future<FarmListData> farmListData(FarmListDataRef ref) async {
+  AppLogger.debug('[FarmListData] Starting FarmListData provider');
 
-  return result.fold<CompanyListData>(
-    (Failure failure) => throw failure,
-    (CompanyListData data) => data,
+  final authService = ref.watch(authServiceProvider);
+  final employeeId = await authService.getStoredEmployeeId();
+
+  AppLogger.debug('[FarmListData] Retrieved employeeId: "$employeeId"');
+
+  if (employeeId == null || employeeId.isEmpty) {
+    AppLogger.error(
+      '[FarmListData] Employee ID is null or empty, throwing StateError',
+    );
+    throw StateError(
+      'Employee ID tidak tersedia. Login ulang untuk menyegarkan sesi.',
+    );
+  }
+
+  AppLogger.debug('[FarmListData] Employee ID valid, trying API first');
+
+  // Try API first, fallback to local DB if offline or API fails
+  final apiResult = await _tryFetchFromApi(ref, employeeId);
+
+  // If API fails (returns empty data), try local DB as fallback
+  if (apiResult.farms.isEmpty && (apiResult.selectedFarm?.isEmpty ?? true)) {
+    AppLogger.debug(
+      '[FarmListData] API returned empty data, trying local DB as fallback',
+    );
+    return _tryFetchFromLocalDb(ref, employeeId);
+  }
+
+  // API succeeded, return API data (and save to DB in background)
+  AppLogger.debug(
+    '[FarmListData] API succeeded, returning data: ${apiResult.farms}',
   );
+  return apiResult;
+}
+
+/// Try to fetch farm data from local DB as fallback when API fails or offline
+Future<FarmListData> _tryFetchFromLocalDb(
+  FarmListDataRef ref,
+  String employeeId,
+) async {
+  AppLogger.debug('[FarmListData] Starting _tryFetchFromLocalDb fallback');
+
+  try {
+    final localDatasource = ref.read(referenceDataLocalDatasourceProvider);
+    final farmsResult = await localDatasource.getFarms();
+
+    return farmsResult.fold(
+      (failure) {
+        AppLogger.error(
+          '[FarmListData] Local DB fallback also failed: $failure',
+        );
+        return const FarmListData(
+          farms: [],
+          selectedFarm: '',
+          selectedFarmId: 0,
+        );
+      },
+      (farms) {
+        AppLogger.debug(
+          '[FarmListData] Local DB fallback returned ${farms.length} farms',
+        );
+
+        if (farms.isNotEmpty) {
+          final farmNames = farms
+              .map((farm) => farm.name ?? farm.code)
+              .toList();
+          final selectedFarm = farms.first.name ?? farms.first.code;
+          final selectedFarmId = int.tryParse(farms.first.id) ?? 0;
+
+          AppLogger.debug(
+            '[FarmListData] Returning fallback data from local DB: $farmNames',
+          );
+          return FarmListData(
+            farms: farmNames,
+            selectedFarm: selectedFarm,
+            selectedFarmId: selectedFarmId,
+          );
+        } else {
+          AppLogger.warning('[FarmListData] Local DB fallback also empty');
+          return const FarmListData(
+            farms: [],
+            selectedFarm: '',
+            selectedFarmId: 0,
+          );
+        }
+      },
+    );
+  } catch (e) {
+    AppLogger.error('[FarmListData] Error accessing local DB fallback: $e');
+    return const FarmListData(farms: [], selectedFarm: '', selectedFarmId: 0);
+  }
+}
+
+/// Try to fetch farm data from API if online, return empty data if offline
+Future<FarmListData> _tryFetchFromApi(
+  FarmListDataRef ref,
+  String employeeId,
+) async {
+  AppLogger.debug(
+    '[FarmListData] Starting _tryFetchFromApi for employee: $employeeId',
+  );
+
+  try {
+    // Try to check connectivity using sync provider
+    var isOnline = false;
+    try {
+      AppLogger.debug('[FarmListData] Checking connectivity status');
+      final connectivitySync = ref.read(connectivityStatusSyncProvider);
+      if (connectivitySync != null) {
+        isOnline = connectivitySync.isConnected;
+        AppLogger.debug(
+          '[FarmListData] Sync connectivity status: ${connectivitySync.status}, isOnline=$isOnline',
+        );
+      } else {
+        AppLogger.debug(
+          '[FarmListData] Sync connectivity status is null, trying direct check',
+        );
+        // Fallback to direct connectivity check
+        final connectivityService = ref.read(connectivityServiceProvider);
+        final directResult = await connectivityService.checkConnectivity();
+        isOnline = directResult.isConnected;
+        AppLogger.debug(
+          '[FarmListData] Direct connectivity check: ${directResult.status}, isOnline=$isOnline',
+        );
+      }
+    } catch (e) {
+      // Connectivity check failed, assume offline
+      AppLogger.debug(
+        '[FarmListData] Connectivity check failed, assuming offline: $e',
+      );
+      isOnline = false;
+    }
+
+    if (!isOnline) {
+      // Offline: return empty data (since local DB was already checked)
+      AppLogger.warning(
+        '[FarmListData] Device appears offline, cannot fetch from API',
+      );
+      return const FarmListData(farms: [], selectedFarm: '', selectedFarmId: 0);
+    }
+
+    // Online: try to fetch from API
+    AppLogger.debug('[FarmListData] Device appears online, fetching from API');
+    final remoteDatasource = ref.read(referenceDataRemoteDatasourceProvider);
+    final apiResult = await remoteDatasource.getFarms();
+
+    return apiResult.fold(
+      (failure) {
+        // API failed: return empty data
+        AppLogger.warning('[FarmListData] API failed: $failure');
+        return const FarmListData(
+          farms: [],
+          selectedFarm: '',
+          selectedFarmId: 0,
+        );
+      },
+      (farms) {
+        if (farms.isNotEmpty) {
+          // Use API data and save to local DB for future use
+          final farmNames = farms.map((farm) => farm.name).toList();
+          final selectedFarm = farms.first.name;
+          final selectedFarmId = int.tryParse(farms.first.id) ?? 0;
+
+          // Save to local DB (fire and forget)
+          final localDatasource = ref.read(
+            referenceDataLocalDatasourceProvider,
+          );
+          localDatasource.saveFarms(farms); // Don't await
+
+          return FarmListData(
+            farms: farmNames,
+            selectedFarm: selectedFarm,
+            selectedFarmId: selectedFarmId,
+          );
+        } else {
+          // API returned empty data
+          AppLogger.debug('[FarmListData] API returned empty data');
+          return const FarmListData(
+            farms: [],
+            selectedFarm: '',
+            selectedFarmId: 0,
+          );
+        }
+      },
+    );
+  } catch (e) {
+    // Any error: return empty data
+    AppLogger.error('[FarmListData] Unexpected error in _tryFetchFromApi', e);
+    return const FarmListData(farms: [], selectedFarm: '', selectedFarmId: 0);
+  }
 }
 
 /// Provider for header data.
@@ -216,52 +419,74 @@ Future<InputDataListData> inputDataListData(InputDataListDataRef ref) async {
   );
 }
 
-/// Notifier for company list operations (update selected company).
+/// Notifier for farm list operations (update selected farm).
 @riverpod
-class CompanyListNotifier extends _$CompanyListNotifier {
+class FarmListNotifier extends _$FarmListNotifier {
   @override
-  Future<CompanyListData> build() async {
-    return ref.watch(companyListDataProvider.future);
+  Future<FarmListData> build() async {
+    return ref.watch(farmListDataProvider.future);
   }
 
-  /// Update selected company.
-  Future<void> updateCompany(String company) async {
-    // Get current company list data
-    final currentData = await ref.read(companyListDataProvider.future);
-    
-    // Find the farm ID for the selected company name
-    final authService = ref.read(authServiceProvider);
-    final employeeId = await authService.getStoredEmployeeId();
-    
-    int? selectedFarmId;
-    if (employeeId != null) {
-      final repository = ref.read(referenceDataRepositoryProvider);
-      final farms = await repository.getFarms(employeeId);
-      final matchingFarm = farms.firstWhere(
-        (farm) => farm.name == company && farm.isActive,
-        orElse: () => farms.firstWhere(
-          (farm) => farm.isActive,
-          orElse: () => farms.first,
+  /// Update selected farm.
+  Future<void> updateFarm(String farm) async {
+    // Get current farm list data
+    final currentData = await ref.read(farmListDataProvider.future);
+
+    // Try to get farm ID from local data
+    try {
+      final localDatasource = ref.read(referenceDataLocalDatasourceProvider);
+      final farmsResult = await localDatasource.getFarms();
+
+      final selectedFarmId = farmsResult.fold(
+        (failure) {
+          // Fallback to index-based ID if local data fails
+          final farmIndex = currentData.farms.indexOf(farm);
+          return farmIndex >= 0 ? farmIndex + 1 : currentData.selectedFarmId;
+        },
+        (farms) {
+          // Find farm with matching name
+          final selectedFarmEntity = farms.firstWhere(
+            (farmEntity) => (farmEntity.name ?? farmEntity.code) == farm,
+            orElse: () => farms.isNotEmpty
+                ? farms.first
+                : throw StateError('Farm tidak ditemukan'),
+          );
+          return selectedFarmEntity.id.isNotEmpty
+              ? int.tryParse(selectedFarmEntity.id) ??
+                    (currentData.farms.indexOf(farm) + 1)
+              : (currentData.farms.indexOf(farm) + 1);
+        },
+      );
+
+      // Update state with new selected farm and real farm ID
+      state = AsyncValue.data(
+        FarmListData(
+          farms: currentData.farms,
+          selectedFarm: farm,
+          selectedFarmId: selectedFarmId,
         ),
       );
-      selectedFarmId = matchingFarm.id;
+
+      // Invalidate pond options provider to refresh with new farm filter
+      ref.invalidate(registeredPondOptionsProvider);
+    } catch (e) {
+      // On error, just update the selected farm name
+      AppLogger.warning(
+        '[FarmListNotifier] Failed to get farm ID, updating name only: $e',
+      );
+      state = AsyncValue.data(
+        FarmListData(
+          farms: currentData.farms,
+          selectedFarm: farm,
+          selectedFarmId: currentData.selectedFarmId,
+        ),
+      );
+      ref.invalidate(registeredPondOptionsProvider);
     }
-    
-    // Update state with new selected company and farm ID
-    state = AsyncValue.data(
-      CompanyListData(
-        companies: currentData.companies,
-        selectedCompany: company,
-        selectedFarmId: selectedFarmId,
-      ),
-    );
-    
-    // Invalidate pond options provider to refresh with new farm filter
-    ref.invalidate(registeredPondOptionsProvider);
   }
 }
 
-/// Notifier for home data operations (refresh, update company).
+/// Notifier for home data operations (refresh, update farm).
 @riverpod
 class HomeDataNotifier extends _$HomeDataNotifier {
   @override
@@ -273,12 +498,5 @@ class HomeDataNotifier extends _$HomeDataNotifier {
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => ref.refresh(homeDataProvider.future));
-  }
-
-  /// Update selected company (legacy - deprecated).
-  @Deprecated('Use CompanyListNotifier.updateCompany instead')
-  Future<void> updateCompany(String company) async {
-    // Legacy method - no longer used
-    // This is kept for backward compatibility only
   }
 }

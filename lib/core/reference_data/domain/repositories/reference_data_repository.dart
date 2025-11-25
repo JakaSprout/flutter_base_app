@@ -1,30 +1,52 @@
+import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/core/reference_data/domain/entities/reference_data_entities.dart';
-import 'package:app_mobile_afms/core/reference_data/domain/reference_data_type.dart';
-import 'package:app_mobile_afms/core/reference_data/domain/value_objects/reference_data_seed_result.dart';
+import 'package:dartz/dartz.dart';
 
-/// Contract for reference data repository.
+/// Repository interface for reference data operations.
+///
+/// Provides access to master data such as farms, ponds, employees, etc.
+/// All methods return Either<Failure, Data> for error handling.
 abstract class ReferenceDataRepository {
-  /// Seed all reference data types.
-  Future<ReferenceDataSeedSummary> seedAll({
-    required String userId,
-    bool force = false,
-  });
+  /// Gets all farms for the given employee.
+  ///
+  /// [employeeId] The employee ID to filter farms for.
+  /// Returns [Either] containing [Failure] on error or [List<FarmSummary>] on success.
+  Future<Either<Failure, List<FarmSummary>>> getFarms(String employeeId);
 
-  /// Refresh a specific data type (optionally bypass TTL).
-  Future<ReferenceDataSeedResult> refreshType(
-    ReferenceDataType type, {
-    required String userId,
-    bool force = false,
-  });
+  /// Gets all ponds for the given employee.
+  ///
+  /// [employeeId] The employee ID to filter ponds for.
+  /// Returns [Either] containing [Failure] on error or [List<PondSummary>] on success.
+  Future<Either<Failure, List<PondSummary>>> getPonds(String employeeId);
 
-  /// Returns cached Lab Test Types for the user.
-  Future<List<LabTestTypeEntity>> getLabTestTypes(String userId);
+  /// Gets all employees.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<EmployeeSummary>] on success.
+  Future<Either<Failure, List<EmployeeSummary>>> getEmployees(String employeeId);
 
-  Future<List<EmployeeSummary>> getEmployees(String userId);
-  Future<List<CustomerSummary>> getCustomers(String userId);
-  Future<List<FarmSummary>> getFarms(String userId);
-  Future<List<PondSummary>> getPonds(String userId);
+  /// Gets all customers.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<CustomerSummary>] on success.
+  Future<Either<Failure, List<CustomerSummary>>> getCustomers(String employeeId);
 
-  /// Removes cached + persisted data for the specified user.
-  Future<void> purgeUserData(String userId);
+  /// Gets all lab test types.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<LabTestTypeEntity>] on success.
+  Future<Either<Failure, List<LabTestTypeEntity>>> getLabTestTypes(String employeeId);
+
+  /// Gets all capacity references.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<CapacityReference>] on success.
+  Future<Either<Failure, List<CapacityReference>>> getCapacityReferences(String employeeId);
+
+  /// Gets all units.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<UnitEntity>] on success.
+  Future<Either<Failure, List<UnitEntity>>> getUnits(String employeeId);
 }
+

@@ -112,10 +112,7 @@ class CreateSimulationScreen extends HookWidget {
         targetCommodityWeightControl.setValidators([Validators.required]);
         sellingPriceControl.setValidators([Validators.required]);
         // pondArea, pondDepth, capacityKgPerM2 validators will be set based on useRegisteredPond
-        // For cycle mode: '0' default for stocking (will be auto-calculated)
-        if (stockingControl.value == '') {
-          stockingControl.value = '0';
-        }
+        // For cycle mode: allow user to input stocking value (not auto-calculated)
       }
       return null;
     }, [isAgentMode]);

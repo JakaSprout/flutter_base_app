@@ -2,16 +2,16 @@ import 'package:app_mobile_afms/features/home/presentation/constants/home_design
 import 'package:flutter/material.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
-/// Shimmer loader for CompanySelectionSection.
+/// Shimmer loader for FarmSelectionSection.
 ///
-/// Mimics the structure of CompanySelectionSection with:
+/// Mimics the structure of FarmSelectionSection with:
 /// - Label placeholder
 /// - Dropdown placeholder
-class CompanySelectionShimmer extends StatelessWidget {
-  /// Creates a new instance of [CompanySelectionShimmer].
-  const CompanySelectionShimmer({super.key});
+class FarmSelectionShimmer extends StatelessWidget {
+  /// Creates a new instance of [FarmSelectionShimmer].
+  const FarmSelectionShimmer({super.key});
 
-  // Design tokens - matching CompanySelectionSection
+  // Design tokens - matching FarmSelectionSection
   static const double _labelSpacing =
       8; // Figma: gap 8px between label and dropdown
   static const double _labelHeight =
@@ -29,7 +29,7 @@ class CompanySelectionShimmer extends StatelessWidget {
           color: HomeDesignConstants.primary20,
           colorOpacity: 0.35,
           child: Container(
-            width: 60, // Approximate label width
+            width: 80, // Approximate "Pilih Farm" label width
             height: _labelHeight,
             decoration: BoxDecoration(
               color: HomeDesignConstants.gray05,

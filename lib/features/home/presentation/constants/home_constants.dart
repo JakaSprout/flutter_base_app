@@ -16,15 +16,12 @@ class HomeConstants {
   /// Default job title
   static const String defaultJobTitle = 'Techician';
 
-  /// Default company name
-  static const String defaultCompanyName = 'PT. Tambak Bersama';
+  /// Default farm name
+  static const String defaultFarmName = 'Farm Alpha';
 
   // Labels
-  /// Company label text (old, for backward compatibility)
-  static const String companyLabel = 'Nama Perusahaan:';
-
-  /// Company selection label text (new design)
-  static const String companySelectionLabel = 'Nama PT';
+  /// Farm selection label text (new design)
+  static const String farmSelectionLabel = 'Pilih Farm';
 
   // Block Filter Section
   /// Block filter label text

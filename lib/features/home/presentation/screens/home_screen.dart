@@ -3,14 +3,14 @@ import 'package:app_mobile_afms/features/home/presentation/constants/home_consta
 import 'package:app_mobile_afms/features/home/presentation/constants/home_design_constants.dart';
 import 'package:app_mobile_afms/features/home/presentation/providers/home_provider.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/banner_section.dart';
-import 'package:app_mobile_afms/features/home/presentation/widgets/company_selection_section.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/dashboard_summary_grid.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/farm_selection_section.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/home_header.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/input_data_section.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/pond_list_section.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/banner_section_shimmer.dart';
-import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/company_selection_shimmer.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/dashboard_summary_shimmer.dart';
+import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/farm_selection_shimmer.dart';
 import 'package:app_mobile_afms/features/home/presentation/widgets/shimmer_loaders/pond_list_shimmer.dart';
 import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class HomeScreen extends HookConsumerWidget {
     final bannerListAsync = ref.watch(bannerListDataProvider);
     final dashboardSummaryAsync = ref.watch(dashboardSummaryDataProvider);
     final pondListAsync = ref.watch(pondListDataProvider);
-    final companyListAsync = ref.watch(companyListDataProvider);
+    final farmListAsync = ref.watch(farmListDataProvider);
 
     // Set status bar for light background immediately on mount
     // Set immediately and also after frame to ensure it's set correctly
@@ -82,7 +82,7 @@ class HomeScreen extends HookConsumerWidget {
                           ..invalidate(bannerListDataProvider)
                           ..invalidate(dashboardSummaryDataProvider)
                           ..invalidate(pondListDataProvider)
-                          ..invalidate(companyListDataProvider)
+                          ..invalidate(farmListDataProvider)
                           ..invalidate(inputDataListDataProvider);
                       },
                       onNotificationTap: _handleNotificationTap,
@@ -91,7 +91,29 @@ class HomeScreen extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: HomeDesignConstants.sectionSpacing),
-                  // 2. Banner Section (NEW) - Data from API
+                  // 2. Company Selection Section (NEW - moved from header)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: HomeDesignConstants.screenHorizontalPadding,
+                    ),
+                    child: farmListAsync.when(
+                      data: (data) => FarmSelectionSection(
+                        selectedFarm: data.selectedFarm,
+                        farms: data.farms,
+                        onFarmChanged: (farm) {
+                          ref
+                              .read(farmListNotifierProvider.notifier)
+                              .updateFarm(farm);
+                        },
+                      ),
+                      loading: () => const FarmSelectionShimmer(),
+                      error: (error, stackTrace) => const SizedBox.shrink(),
+                      skipLoadingOnRefresh:
+                          false, // Show loading state on refresh
+                    ),
+                  ),
+                  const SizedBox(height: HomeDesignConstants.sectionSpacing),
+                  // 3. Banner Section (NEW) - Data from API
                   bannerListAsync.when(
                     data: (data) => BannerSection(
                       onCardTap: (cardId) => _handleBannerTap(context, cardId),
@@ -101,29 +123,18 @@ class HomeScreen extends HookConsumerWidget {
                     skipLoadingOnRefresh: false,
                   ),
                   const SizedBox(height: HomeDesignConstants.sectionSpacing),
-                  // 3. Company Selection Section (NEW - moved from header)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
+                  // 4. Input Data Section - Data from API (with custom order)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
                       horizontal: HomeDesignConstants.screenHorizontalPadding,
                     ),
-                    child: companyListAsync.when(
-                      data: (data) => CompanySelectionSection(
-                        selectedCompany: data.selectedCompany,
-                        companies: data.companies,
-                        onCompanyChanged: (company) {
-                          ref
-                              .read(companyListNotifierProvider.notifier)
-                              .updateCompany(company);
-                        },
-                      ),
-                      loading: () => const CompanySelectionShimmer(),
-                      error: (error, stackTrace) => const SizedBox.shrink(),
-                      skipLoadingOnRefresh:
-                          false, // Show loading state on refresh
+                    child: InputDataSection(
+                      onSeeAllTap: _handleInputDataSeeAllTap,
+                      onItemTap: _handleInputDataItemTap,
                     ),
                   ),
                   const SizedBox(height: HomeDesignConstants.sectionSpacing),
-                  // 4. Dashboard Summary Cards
+                  // 5. Dashboard Summary Cards
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: HomeDesignConstants.screenHorizontalPadding,
@@ -141,17 +152,6 @@ class HomeScreen extends HookConsumerWidget {
                       error: (error, stackTrace) => const SizedBox.shrink(),
                       skipLoadingOnRefresh:
                           false, // Show loading state on refresh
-                    ),
-                  ),
-                  const SizedBox(height: HomeDesignConstants.sectionSpacing),
-                  // 5. Input Data Section - Data from API (with custom order)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: HomeDesignConstants.screenHorizontalPadding,
-                    ),
-                    child: InputDataSection(
-                      onSeeAllTap: _handleInputDataSeeAllTap,
-                      onItemTap: _handleInputDataItemTap,
                     ),
                   ),
                   const SizedBox(height: HomeDesignConstants.sectionSpacing),

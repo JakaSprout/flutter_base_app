@@ -98,7 +98,7 @@ class GrowthTargetSection extends StatelessWidget {
                         isActive: isActive,
                         children: isActive
                             ? [
-                                // Jumlah Tebar (calculated automatically)
+                                // Jumlah Tebar (can be manually input or auto-calculated from pond dimensions)
                                 ReactiveFormConsumer(
                                   builder: (context, form, child) {
                                     return ReactiveValueListenableBuilder<
@@ -170,8 +170,10 @@ class GrowthTargetSection extends StatelessWidget {
                                                 label: 'Jumlah Tebar',
                                                 hint: '750',
                                                 isRequired: true,
-                                                readOnly:
-                                                    true, // Make it read-only since it's calculated
+                                                validationMessages: {
+                                                  'required': (_) =>
+                                                      'Jumlah tebar harus diisi',
+                                                },
                                               ),
                                             );
                                           },

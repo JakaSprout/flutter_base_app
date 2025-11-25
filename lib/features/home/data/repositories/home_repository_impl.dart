@@ -6,8 +6,8 @@ import 'package:app_mobile_afms/features/home/data/models/mappers/home_mapper.da
 import 'package:app_mobile_afms/features/home/data/models/mappers/pond_mapper.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_entity.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/banner_list_data.dart';
-import 'package:app_mobile_afms/features/home/domain/entities/company_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/dashboard_summary_data.dart';
+import 'package:app_mobile_afms/features/home/domain/entities/farm_list_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/header_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/home_data.dart';
 import 'package:app_mobile_afms/features/home/domain/entities/input_data_item_entity.dart';
@@ -65,14 +65,14 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, CompanyListData>> getCompanyListData() async {
-    final result = await _remoteDataSource.getCompanyListData();
+  Future<Either<Failure, FarmListData>> getFarmListData() async {
+    final result = await _remoteDataSource.getFarmListData();
     return result.fold(
       Left.new,
       (data) => Right(
-        CompanyListData(
-          companies: (data['companies'] as List).cast<String>(),
-          selectedCompany: data['selectedCompany'] as String?,
+        FarmListData(
+          farms: (data['farms'] as List).cast<String>(),
+          selectedFarm: data['selectedFarm'] as String?,
         ),
       ),
     );
@@ -122,42 +122,20 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, CompanyListData>> updateSelectedCompany(
-    String company,
+  Future<Either<Failure, FarmListData>> updateSelectedFarm(
+    String farm,
   ) async {
-    // Get current company list
-    final currentDataResult = await getCompanyListData();
+    // Get current farm list
+    final currentDataResult = await getFarmListData();
     return currentDataResult.fold(
       Left.new,
       (currentData) => Right(
-        CompanyListData(
-          companies: currentData.companies,
-          selectedCompany: company,
+        FarmListData(
+          farms: currentData.farms,
+          selectedFarm: farm,
         ),
       ),
     );
   }
 
-  @override
-  @Deprecated('Use updateSelectedCompany instead')
-  Future<Either<Failure, HomeData>> updateSelectedCompanyLegacy(
-    String company,
-  ) async {
-    // Get current data
-    final currentDataResult = await getHomeData();
-    return currentDataResult.fold(Left.new, (currentData) async {
-      // Update selected company
-      final updatedData = HomeData(
-        activePonds: currentData.activePonds,
-        estimasiBiomassa: currentData.estimasiBiomassa,
-        totalPakan: currentData.totalPakan,
-        biayaPakan: currentData.biayaPakan,
-        estimasiSR: currentData.estimasiSR,
-        ponds: currentData.ponds,
-        companies: currentData.companies,
-        selectedCompany: company,
-      );
-      return Right(updatedData);
-    });
-  }
 }

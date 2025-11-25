@@ -48,7 +48,7 @@ class AppConfig {
   static const AppConfig dev = AppConfig(
     flavor: AppFlavor.dev,
     appName: 'Flutter Base App Dev',
-    apiBaseUrl: 'https://1b4ad6b26298.ngrok-free.app/',
+    apiBaseUrl: 'https://62a9d40b73b9.ngrok-free.app/',
     enableLogging: true,
     enableCrashReporting: false,
   );

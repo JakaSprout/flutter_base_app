@@ -96,11 +96,11 @@ FormGroup useCreateSimulationForm() {
       ),
       // Current DOC (when Mid Cycle is selected)
       HarvestCalculatorFormControls.currentDOC: FormControl<String>(value: ''),
-      // Stocking density (Tebar) - auto-calculated from pondArea × pondDepth (cycle mode)
-      // Manual input for agent mode
+      // Stocking density (Tebar) - auto-calculated from pondArea × pondDepth
+      // (cycle mode), Manual input for agent mode
       HarvestCalculatorFormControls.stocking: FormControl<String>(
         value:
-            '0', // Default '0' for cycle mode, will be cleared for agent mode
+            '', // Default empty for both modes
         validators: [
           Validators.required,
         ], // Required for both modes, but validated differently

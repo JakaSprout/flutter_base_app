@@ -1,6 +1,5 @@
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
-import 'package:app_mobile_afms/core/reference_data/providers/reference_data_providers.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/auth_constants.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_provider.dart';
 import 'package:app_mobile_afms/features/auth/presentation/providers/auth_state_provider.dart';
@@ -25,9 +24,6 @@ Future<void> logout(LogoutRef ref) async {
   try {
     final authService = ref.read(authServiceProvider);
     final logoutUseCase = ref.read(logoutUseCaseProvider);
-    final referenceDataCache = ref.read(referenceDataCacheProvider);
-    final referenceDataUpdater = ref.read(referenceDataUpdaterProvider);
-    final referenceDataRepository = ref.read(referenceDataRepositoryProvider);
     final activeUserId = await authService.getStoredEmployeeId();
 
     // Step 1: Call logout API to invalidate session on server
@@ -51,17 +47,7 @@ Future<void> logout(LogoutRef ref) async {
     // Step 2: Clear tokens and verify they are cleared
     await authService.clearTokensAndVerify();
 
-    // Step 2b: stop any background reference data work & clear scoped caches
-    if (activeUserId != null) {
-      AppLogger.info(
-        'Stopping reference data services for userId=$activeUserId',
-      );
-      referenceDataUpdater.stop();
-      referenceDataCache.clearForUser(activeUserId);
-      await referenceDataRepository.purgeUserData(activeUserId);
-      ref.invalidate(referenceDataUpdaterProvider);
-      ref.invalidate(referenceDataRepositoryProvider);
-    }
+    // Step 2b: reference data cleanup (removed - tables deleted during development)
 
     // Step 3: Invalidate AuthService and auth state providers
     // CRITICAL: Must invalidate authService first because it's keepAlive

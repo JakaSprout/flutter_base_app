@@ -7,10 +7,9 @@ part of 'registered_ponds_provider.dart';
 // **************************************************************************
 
 String _$registeredPondOptionsHash() =>
-    r'c6e127c6fa9508dd7abd346d40df10c99f5b12db';
+    r'570d0cd4d51e0e930ee7301793e900a722d1bcb6';
 
-/// Loads pond options from the reference data repository for the active user.
-/// Optionally filters by selected farm ID from home screen.
+/// Loads pond options using offline-first strategy: API first → Local DB fallback.
 ///
 /// Copied from [registeredPondOptions].
 @ProviderFor(registeredPondOptions)
