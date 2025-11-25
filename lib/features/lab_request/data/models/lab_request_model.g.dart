@@ -19,7 +19,7 @@ _$LabRequestModelImpl _$$LabRequestModelImplFromJson(
   anamnesa: json['anamnesa'] as String,
   keteranganSampel: json['keterangan_sampel'] as String,
   jenisTesting: json['jenis_testing'] as String,
-  status: json['status'] as String?,
+  status: _statusFromJson(json['status'] as String?),
   tanggalRequest: json['tanggal_request'] == null
       ? null
       : DateTime.parse(json['tanggal_request'] as String),
@@ -39,7 +39,7 @@ Map<String, dynamic> _$$LabRequestModelImplToJson(
   'anamnesa': instance.anamnesa,
   'keterangan_sampel': instance.keteranganSampel,
   'jenis_testing': instance.jenisTesting,
-  'status': instance.status,
+  'status': _statusToJson(instance.status),
   'tanggal_request': instance.tanggalRequest?.toIso8601String(),
   'jumlah_sampel': instance.jumlahSampel,
 };

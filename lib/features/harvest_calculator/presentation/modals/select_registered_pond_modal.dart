@@ -75,75 +75,14 @@ class _SelectRegisteredPondModalState
         .toList();
   }
 
-  Widget _buildLoading() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: HarvestCalculatorDesignConstants.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      padding: const EdgeInsets.all(32),
-      child: const Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  Widget _buildError(Object error) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: HarvestCalculatorDesignConstants.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 16),
-          const Icon(Icons.error_outline, color: Colors.red, size: 32),
-          const SizedBox(height: 12),
-          const Text(
-            'Gagal memuat kolam terdaftar',
-            style: HarvestCalculatorDesignConstants.sectionTitleTextStyle,
-          ),
-          const SizedBox(height: 8),
-          Text(error.toString(), textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ref.invalidate(registeredPondOptionsProvider);
-            },
-            child: const Text('Coba Lagi'),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final pondsAsync = ref.watch(registeredPondOptionsProvider);
-    return pondsAsync.when(
-      data: (ponds) => _buildContent(context, ponds),
-      loading: _buildLoading,
-      error: (error, _) => _buildError(error),
-    );
+    return _buildContent(context, pondsAsync);
   }
 
-  Widget _buildContent(BuildContext context, List<PondOption> ponds) {
-    if (_selectedPond != null &&
-        ponds.every((element) => element.id != _selectedPond!.id)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _selectedPond = null;
-          });
-        }
-      });
-    }
-
-    const searchHint =
-        HarvestCalculatorConstants.searchRegisteredPondPlaceholder;
-    final filteredPonds = _filteredPonds(ponds);
-
+  Widget _buildContent(BuildContext context, AsyncValue<List<PondOption>> pondsAsync) {
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.9,
@@ -215,7 +154,7 @@ class _SelectRegisteredPondModalState
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: searchHint,
+                    hintText: HarvestCalculatorConstants.searchRegisteredPondPlaceholder,
                     hintStyle: HarvestCalculatorDesignConstants
                         .formFieldPlaceholderTextStyle,
                     prefixIcon: const Padding(
@@ -262,38 +201,92 @@ class _SelectRegisteredPondModalState
                 ),
               ),
             ),
-            // Pond count
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Text(
-                '${filteredPonds.length} kolam',
-                style: HarvestCalculatorDesignConstants.bodyTextStyle.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
             // Pond list
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: filteredPonds.isEmpty
-                    ? const _EmptyState()
-                    : ListView.separated(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final pond = filteredPonds[index];
-                          final isSelected = pond == _selectedPond;
+                child: pondsAsync.when(
+                  data: (ponds) {
+                    if (_selectedPond != null &&
+                        ponds.every((element) => element.id != _selectedPond!.id)) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _selectedPond = null;
+                          });
+                        }
+                      });
+                    }
 
-                          return _RegisteredPondTile(
-                            pond: pond,
-                            isSelected: isSelected,
-                            onTap: () => _onSelect(pond),
-                          );
-                        },
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemCount: filteredPonds.length,
+                    final filteredPonds = _filteredPonds(ponds);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Pond count
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            '${filteredPonds.length} kolam',
+                            style: HarvestCalculatorDesignConstants.bodyTextStyle.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        // Pond list
+                        Expanded(
+                          child: filteredPonds.isEmpty
+                              ? const _EmptyState()
+                              : ListView.separated(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    final pond = filteredPonds[index];
+                                    final isSelected = pond == _selectedPond;
+
+                                    return _RegisteredPondTile(
+                                      pond: pond,
+                                      isSelected: isSelected,
+                                      onTap: () => _onSelect(pond),
+                                    );
+                                  },
+                                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                                  itemCount: filteredPonds.length,
+                                ),
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    height: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (error, _) => SizedBox(
+                    height: 200,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red, size: 32),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Gagal memuat kolam terdaftar',
+                            style: HarvestCalculatorDesignConstants.sectionTitleTextStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(error.toString(), textAlign: TextAlign.center),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ref.invalidate(registeredPondOptionsProvider);
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                ),
               ),
             ),
             const Divider(

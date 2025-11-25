@@ -1,5 +1,6 @@
 import 'package:app_mobile_afms/features/lab_request/domain/entities/anamnesa_type.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request_status.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/entities/testing_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -27,7 +28,8 @@ class LabRequestModel with _$LabRequestModel {
     required String keteranganSampel,
     @JsonKey(name: 'jenis_testing')
     required String jenisTesting,
-    String? status,
+    @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+    LabRequestStatus? status,
     @JsonKey(name: 'tanggal_request')
     DateTime? tanggalRequest,
     @JsonKey(name: 'jumlah_sampel')
@@ -89,6 +91,10 @@ extension LabRequestModelExtension on LabRequestModel {
     }
   }
 }
+
+/// Status enum converter functions for JSON serialization
+LabRequestStatus? _statusFromJson(String? value) => LabRequestStatus.fromString(value);
+String? _statusToJson(LabRequestStatus? status) => status?.toJson();
 
 /// Extension to convert [LabRequest] to [LabRequestModel].
 extension LabRequestEntityExtension on LabRequest {

@@ -1,7 +1,6 @@
 import 'package:app_mobile_afms/core/error/failures.dart';
+import 'package:app_mobile_afms/core/initial_data/di/initial_data_provider.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
-import 'package:app_mobile_afms/core/reference_data/domain/services/reference_data_seeder.dart';
-import 'package:app_mobile_afms/core/reference_data/domain/services/reference_data_seeder_factory.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_request.dart';
 import 'package:app_mobile_afms/features/auth/domain/entities/login_response.dart';
 import 'package:app_mobile_afms/features/auth/presentation/constants/login_form_controls.dart';
@@ -58,40 +57,55 @@ useLogin({
         isPhoneMode: isPhoneMode,
       );
 
-      final seedResult = await _saveTokensAndRefreshAuth(
+      final seedSuccess = await _saveTokensAndRefreshAuth(
         ref: ref,
         loginResponse: loginResponse,
         progressStage: progressStage,
       );
 
-      if (!seedResult.success) {
-        // Show error message and fail login
-        const errorMessage =
-            'Login failed - Could not load reference data. Please try again.';
+      if (!seedSuccess) {
+        // Initial data seeding failed - perform logout and stay on login page
+        AppLogger.error(
+          '[Login] Initial data seeding failed, performing logout',
+        );
 
+        try {
+          final authService = ref.read(authServiceProvider);
+          await authService.clearTokens();
+
+          // Clear auth state
+          ref.invalidate(authStateProvider);
+          await ref.read(authStateProvider.future);
+        } catch (logoutError) {
+          AppLogger.error(
+            '[Login] Error during logout after seeding failure: $logoutError',
+          );
+        }
+
+        // Show error message
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(errorMessage),
+              content: Text(
+                'Login failed - Could not load initial data. Please try again.',
+              ),
               backgroundColor: Colors.red,
               duration: Duration(seconds: 8),
             ),
           );
         }
 
-        // Throw exception to fail login process
-        throw Exception('Reference data seeding failed');
+        // Don't proceed with navigation - stay on login page
+        return;
       }
 
       // Show success message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Login successful - ${seedResult.totalProcessed} reference records loaded',
-            ),
+          const SnackBar(
+            content: Text('Login successful - Initial data loaded'),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 5),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -153,7 +167,7 @@ Future<LoginResponse> _performLogin({
 /// Saves tokens and refreshes auth state.
 ///
 /// This ensures AuthGuard sees the updated auth state before navigation.
-Future<ReferenceDataSeedResult> _saveTokensAndRefreshAuth({
+Future<bool> _saveTokensAndRefreshAuth({
   required WidgetRef ref,
   required LoginResponse loginResponse,
   required ValueNotifier<LoginProgressStage> progressStage,
@@ -169,67 +183,34 @@ Future<ReferenceDataSeedResult> _saveTokensAndRefreshAuth({
   AppLogger.debug('[Login] Auth state refreshed');
 
   progressStage.value = LoginProgressStage.seeding;
-  final seedResult = await _seedReferenceData(
-    ref: ref,
-    loginResponse: loginResponse,
-  );
+  final seedSuccess = await _seedInitialData(ref: ref);
 
   progressStage.value = LoginProgressStage.idle;
 
-  return seedResult;
+  return seedSuccess;
 }
 
-Future<ReferenceDataSeedResult> _seedReferenceData({
-  required WidgetRef ref,
-  required LoginResponse loginResponse,
-}) async {
-  final userKey = _resolveUserKey(loginResponse);
-  if (userKey == null) {
-    AppLogger.warning(
-      '[Login] Unable to resolve employeeId, skipping reference data seeding',
-    );
-    return const ReferenceDataSeedResult(
-      success: false,
-      results: {},
-      totalProcessed: 0,
-      totalErrors: 1,
-      duration: Duration.zero,
-    );
-  }
-
+Future<bool> _seedInitialData({required WidgetRef ref}) async {
   try {
-    AppLogger.info(
-      '[Login] Starting reference data seeding for user: $userKey',
-    );
+    AppLogger.info('[Login] Starting initial farm data seeding from API');
 
-    final seeder = ref.read(referenceDataSeederProvider);
-    final config = seedingConfiguration.createDefaultConfig();
+    // Get the initial data service from provider
+    final initialDataService = ref.read(initialDataServiceProvider);
 
-    final result = await seeder.seedAll(userId: userKey, config: config);
+    final seedSuccess = await initialDataService.seedInitialData();
 
-    if (result.success) {
+    if (seedSuccess) {
       AppLogger.info(
-        '[Login] Reference data seeding completed successfully: '
-        '${result.totalProcessed} records processed',
+        '[Login] Initial data seeding successful: employees and farms seeded',
       );
+      return true;
     } else {
-      AppLogger.error(
-        '[Login] Reference data seeding failed: '
-        '${result.totalErrors} errors, ${result.totalProcessed} processed',
-      );
+      AppLogger.warning('[Login] Initial data seeding failed');
+      return false;
     }
-
-    return result;
-  } catch (e, st) {
-    AppLogger.error('[Login] Reference data seeding failed', e, st);
-
-    return const ReferenceDataSeedResult(
-      success: false,
-      results: {},
-      totalProcessed: 0,
-      totalErrors: 1,
-      duration: Duration.zero,
-    );
+  } catch (e) {
+    AppLogger.error('[Login] Initial farm data seeding failed: $e');
+    return false;
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:app_mobile_afms/features/lab_request/domain/entities/anamnesa_type.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request_status.dart';
 import 'package:app_mobile_afms/features/lab_request/domain/entities/testing_type.dart';
 
 /// Lab request entity (domain layer).
@@ -53,7 +54,7 @@ class LabRequest {
   final TestingType jenisTesting;
 
   /// Request status (optional, for submitted requests)
-  final String? status;
+  final LabRequestStatus? status;
 
   /// Request date (optional, for submitted requests)
   final DateTime? tanggalRequest;

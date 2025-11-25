@@ -25,6 +25,15 @@ abstract class ReferenceDataRemoteDatasource {
 
   /// Fetch all units.
   Future<Either<Failure, List<UnitEntity>>> getUnits();
+
+  /// Fetch all lab parameters.
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters();
+
+  /// Fetch all lab types.
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes();
+
+  /// Fetch all sample lab types.
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes();
 }
 
 /// Implementation of ReferenceDataRemoteDatasource using Dio.
@@ -37,7 +46,7 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<FarmSummary>>> getFarms() async {
     try {
-      final response = await dio.get('/api/v1/farms');
+      final response = await dio.get('/api/v1/farms?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -69,7 +78,7 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<PondSummary>>> getPonds() async {
     try {
-      final response = await dio.get('/api/v1/ponds');
+      final response = await dio.get('/api/v1/ponds?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -101,7 +110,7 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<EmployeeSummary>>> getEmployees() async {
     try {
-      final response = await dio.get('/api/v1/employees');
+      final response = await dio.get('/api/v1/employees?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -137,7 +146,7 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<CustomerSummary>>> getCustomers() async {
     try {
-      final response = await dio.get('/api/v1/customers');
+      final response = await dio.get('/api/v1/customers?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -173,7 +182,9 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<LabTestTypeEntity>>> getLabTestTypes() async {
     try {
-      final response = await dio.get('/api/v1/request-lab/lab-test-types');
+      final response = await dio.get(
+        '/api/v1/request-lab/lab-test-types?limit=100',
+      );
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -271,7 +282,7 @@ class ReferenceDataRemoteDatasourceImpl
   Future<Either<Failure, List<CapacityReference>>>
   getCapacityReferences() async {
     try {
-      final response = await dio.get('/api/v1/capacity-references');
+      final response = await dio.get('/api/v1/capacity-references?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -310,7 +321,7 @@ class ReferenceDataRemoteDatasourceImpl
   @override
   Future<Either<Failure, List<UnitEntity>>> getUnits() async {
     try {
-      final response = await dio.get('/api/v1/units');
+      final response = await dio.get('/api/v1/units?limit=100');
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
@@ -335,6 +346,117 @@ class ReferenceDataRemoteDatasourceImpl
     } catch (e) {
       return Left(
         NetworkFailure(message: 'Unexpected error while fetching units: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters() async {
+    try {
+      final response = await dio.get('/api/v1/lab-parameters?limit=100');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data as Map<String, dynamic>;
+        final data = responseData['data'] as List<dynamic>;
+        final labParameters = data
+            .map(
+              (json) =>
+                  LabParameterEntity.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        return Right(labParameters);
+      } else {
+        return Left(
+          NetworkFailure(
+            message:
+                'Failed to fetch lab parameters: ${response.statusMessage}',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Left(
+        NetworkFailure(
+          message: 'Network error while fetching lab parameters: ${e.message}',
+        ),
+      );
+    } catch (e) {
+      return Left(
+        NetworkFailure(
+          message: 'Unexpected error while fetching lab parameters: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes() async {
+    try {
+      final response = await dio.get('/api/v1/lab-types?limit=100');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data as Map<String, dynamic>;
+        final data = responseData['data'] as List<dynamic>;
+        final labTypes = data
+            .map((json) => LabTypeEntity.fromJson(json as Map<String, dynamic>))
+            .toList();
+        return Right(labTypes);
+      } else {
+        return Left(
+          NetworkFailure(
+            message: 'Failed to fetch lab types: ${response.statusMessage}',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Left(
+        NetworkFailure(
+          message: 'Network error while fetching lab types: ${e.message}',
+        ),
+      );
+    } catch (e) {
+      return Left(
+        NetworkFailure(
+          message: 'Unexpected error while fetching lab types: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes() async {
+    try {
+      final response = await dio.get('/api/v1/sample-lab-types?limit=100');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data as Map<String, dynamic>;
+        final data = responseData['data'] as List<dynamic>;
+        final sampleLabTypes = data
+            .map(
+              (json) =>
+                  SampleLabTypeEntity.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        return Right(sampleLabTypes);
+      } else {
+        return Left(
+          NetworkFailure(
+            message:
+                'Failed to fetch sample lab types: ${response.statusMessage}',
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      return Left(
+        NetworkFailure(
+          message:
+              'Network error while fetching sample lab types: ${e.message}',
+        ),
+      );
+    } catch (e) {
+      return Left(
+        NetworkFailure(
+          message: 'Unexpected error while fetching sample lab types: $e',
+        ),
       );
     }
   }

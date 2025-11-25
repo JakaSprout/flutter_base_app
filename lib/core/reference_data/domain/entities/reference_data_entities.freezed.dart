@@ -15,26 +15,23 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-FarmSummary _$FarmSummaryFromJson(Map<String, dynamic> json) {
-  return _FarmSummary.fromJson(json);
-}
-
 /// @nodoc
 mixin _$FarmSummary {
-  @JsonKey(name: 'id')
+  @JsonKey(name: 'id', fromJson: _idFromJson)
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'farm_name')
   String get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'farm_code')
   String get code => throw _privateConstructorUsedError;
+  @JsonKey(name: 'farm_uuid')
+  String? get farmUuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'farm_location')
   String? get location => throw _privateConstructorUsedError;
-  @JsonKey(name: 'latitude')
   double? get latitude => throw _privateConstructorUsedError;
-  @JsonKey(name: 'longitude')
   double? get longitude => throw _privateConstructorUsedError;
   @JsonKey(name: 'farm_area_sqm')
   double? get area => throw _privateConstructorUsedError;
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String? get areaUnit => throw _privateConstructorUsedError;
   @JsonKey(name: 'owner_name')
   String? get ownerName => throw _privateConstructorUsedError;
@@ -43,9 +40,14 @@ mixin _$FarmSummary {
   DateTime? get establishedDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
-
-  /// Serializes this FarmSummary to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdDate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_by', fromJson: _intFromJson)
+  int? get createdBy => throw _privateConstructorUsedError;
+  @JsonKey(name: 'last_updated_date')
+  DateTime? get lastUpdatedDate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+  int? get lastUpdatedBy => throw _privateConstructorUsedError;
 
   /// Create a copy of FarmSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -62,18 +64,24 @@ abstract class $FarmSummaryCopyWith<$Res> {
   ) = _$FarmSummaryCopyWithImpl<$Res, FarmSummary>;
   @useResult
   $Res call({
-    @JsonKey(name: 'id') String id,
+    @JsonKey(name: 'id', fromJson: _idFromJson) String id,
     @JsonKey(name: 'farm_name') String name,
     @JsonKey(name: 'farm_code') String code,
+    @JsonKey(name: 'farm_uuid') String? farmUuid,
     @JsonKey(name: 'farm_location') String? location,
-    @JsonKey(name: 'latitude') double? latitude,
-    @JsonKey(name: 'longitude') double? longitude,
+    double? latitude,
+    double? longitude,
     @JsonKey(name: 'farm_area_sqm') double? area,
-    String? areaUnit,
+    @JsonKey(includeFromJson: false, includeToJson: false) String? areaUnit,
     @JsonKey(name: 'owner_name') String? ownerName,
     @JsonKey(name: 'contact_info') String? contactInfo,
     DateTime? establishedDate,
     @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime? createdDate,
+    @JsonKey(name: 'created_by', fromJson: _intFromJson) int? createdBy,
+    @JsonKey(name: 'last_updated_date') DateTime? lastUpdatedDate,
+    @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+    int? lastUpdatedBy,
   });
 }
 
@@ -95,6 +103,7 @@ class _$FarmSummaryCopyWithImpl<$Res, $Val extends FarmSummary>
     Object? id = null,
     Object? name = null,
     Object? code = null,
+    Object? farmUuid = freezed,
     Object? location = freezed,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -104,6 +113,10 @@ class _$FarmSummaryCopyWithImpl<$Res, $Val extends FarmSummary>
     Object? contactInfo = freezed,
     Object? establishedDate = freezed,
     Object? isActive = null,
+    Object? createdDate = freezed,
+    Object? createdBy = freezed,
+    Object? lastUpdatedDate = freezed,
+    Object? lastUpdatedBy = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -119,6 +132,10 @@ class _$FarmSummaryCopyWithImpl<$Res, $Val extends FarmSummary>
                 ? _value.code
                 : code // ignore: cast_nullable_to_non_nullable
                       as String,
+            farmUuid: freezed == farmUuid
+                ? _value.farmUuid
+                : farmUuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
             location: freezed == location
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
@@ -155,6 +172,22 @@ class _$FarmSummaryCopyWithImpl<$Res, $Val extends FarmSummary>
                 ? _value.isActive
                 : isActive // ignore: cast_nullable_to_non_nullable
                       as bool,
+            createdDate: freezed == createdDate
+                ? _value.createdDate
+                : createdDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            lastUpdatedDate: freezed == lastUpdatedDate
+                ? _value.lastUpdatedDate
+                : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            lastUpdatedBy: freezed == lastUpdatedBy
+                ? _value.lastUpdatedBy
+                : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -171,18 +204,24 @@ abstract class _$$FarmSummaryImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    @JsonKey(name: 'id') String id,
+    @JsonKey(name: 'id', fromJson: _idFromJson) String id,
     @JsonKey(name: 'farm_name') String name,
     @JsonKey(name: 'farm_code') String code,
+    @JsonKey(name: 'farm_uuid') String? farmUuid,
     @JsonKey(name: 'farm_location') String? location,
-    @JsonKey(name: 'latitude') double? latitude,
-    @JsonKey(name: 'longitude') double? longitude,
+    double? latitude,
+    double? longitude,
     @JsonKey(name: 'farm_area_sqm') double? area,
-    String? areaUnit,
+    @JsonKey(includeFromJson: false, includeToJson: false) String? areaUnit,
     @JsonKey(name: 'owner_name') String? ownerName,
     @JsonKey(name: 'contact_info') String? contactInfo,
     DateTime? establishedDate,
     @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime? createdDate,
+    @JsonKey(name: 'created_by', fromJson: _intFromJson) int? createdBy,
+    @JsonKey(name: 'last_updated_date') DateTime? lastUpdatedDate,
+    @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+    int? lastUpdatedBy,
   });
 }
 
@@ -203,6 +242,7 @@ class __$$FarmSummaryImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? code = null,
+    Object? farmUuid = freezed,
     Object? location = freezed,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -212,6 +252,10 @@ class __$$FarmSummaryImplCopyWithImpl<$Res>
     Object? contactInfo = freezed,
     Object? establishedDate = freezed,
     Object? isActive = null,
+    Object? createdDate = freezed,
+    Object? createdBy = freezed,
+    Object? lastUpdatedDate = freezed,
+    Object? lastUpdatedBy = freezed,
   }) {
     return _then(
       _$FarmSummaryImpl(
@@ -227,6 +271,10 @@ class __$$FarmSummaryImplCopyWithImpl<$Res>
             ? _value.code
             : code // ignore: cast_nullable_to_non_nullable
                   as String,
+        farmUuid: freezed == farmUuid
+            ? _value.farmUuid
+            : farmUuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
         location: freezed == location
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
@@ -263,34 +311,54 @@ class __$$FarmSummaryImplCopyWithImpl<$Res>
             ? _value.isActive
             : isActive // ignore: cast_nullable_to_non_nullable
                   as bool,
+        createdDate: freezed == createdDate
+            ? _value.createdDate
+            : createdDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        lastUpdatedDate: freezed == lastUpdatedDate
+            ? _value.lastUpdatedDate
+            : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        lastUpdatedBy: freezed == lastUpdatedBy
+            ? _value.lastUpdatedBy
+            : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$FarmSummaryImpl implements _FarmSummary {
   const _$FarmSummaryImpl({
-    @JsonKey(name: 'id') required this.id,
+    @JsonKey(name: 'id', fromJson: _idFromJson) required this.id,
     @JsonKey(name: 'farm_name') required this.name,
     @JsonKey(name: 'farm_code') required this.code,
+    @JsonKey(name: 'farm_uuid') this.farmUuid,
     @JsonKey(name: 'farm_location') this.location,
-    @JsonKey(name: 'latitude') this.latitude,
-    @JsonKey(name: 'longitude') this.longitude,
+    this.latitude,
+    this.longitude,
     @JsonKey(name: 'farm_area_sqm') this.area,
-    this.areaUnit,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    this.areaUnit = 'sqm',
     @JsonKey(name: 'owner_name') this.ownerName,
     @JsonKey(name: 'contact_info') this.contactInfo,
     this.establishedDate,
     @JsonKey(name: 'is_active') this.isActive = true,
+    @JsonKey(name: 'created_at') this.createdDate,
+    @JsonKey(name: 'created_by', fromJson: _intFromJson) this.createdBy,
+    @JsonKey(name: 'last_updated_date') this.lastUpdatedDate,
+    @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+    this.lastUpdatedBy,
   });
 
-  factory _$FarmSummaryImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FarmSummaryImplFromJson(json);
-
   @override
-  @JsonKey(name: 'id')
+  @JsonKey(name: 'id', fromJson: _idFromJson)
   final String id;
   @override
   @JsonKey(name: 'farm_name')
@@ -299,18 +367,20 @@ class _$FarmSummaryImpl implements _FarmSummary {
   @JsonKey(name: 'farm_code')
   final String code;
   @override
+  @JsonKey(name: 'farm_uuid')
+  final String? farmUuid;
+  @override
   @JsonKey(name: 'farm_location')
   final String? location;
   @override
-  @JsonKey(name: 'latitude')
   final double? latitude;
   @override
-  @JsonKey(name: 'longitude')
   final double? longitude;
   @override
   @JsonKey(name: 'farm_area_sqm')
   final double? area;
   @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final String? areaUnit;
   @override
   @JsonKey(name: 'owner_name')
@@ -323,10 +393,22 @@ class _$FarmSummaryImpl implements _FarmSummary {
   @override
   @JsonKey(name: 'is_active')
   final bool isActive;
+  @override
+  @JsonKey(name: 'created_at')
+  final DateTime? createdDate;
+  @override
+  @JsonKey(name: 'created_by', fromJson: _intFromJson)
+  final int? createdBy;
+  @override
+  @JsonKey(name: 'last_updated_date')
+  final DateTime? lastUpdatedDate;
+  @override
+  @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+  final int? lastUpdatedBy;
 
   @override
   String toString() {
-    return 'FarmSummary(id: $id, name: $name, code: $code, location: $location, latitude: $latitude, longitude: $longitude, area: $area, areaUnit: $areaUnit, ownerName: $ownerName, contactInfo: $contactInfo, establishedDate: $establishedDate, isActive: $isActive)';
+    return 'FarmSummary(id: $id, name: $name, code: $code, farmUuid: $farmUuid, location: $location, latitude: $latitude, longitude: $longitude, area: $area, areaUnit: $areaUnit, ownerName: $ownerName, contactInfo: $contactInfo, establishedDate: $establishedDate, isActive: $isActive, createdDate: $createdDate, createdBy: $createdBy, lastUpdatedDate: $lastUpdatedDate, lastUpdatedBy: $lastUpdatedBy)';
   }
 
   @override
@@ -337,6 +419,8 @@ class _$FarmSummaryImpl implements _FarmSummary {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.code, code) || other.code == code) &&
+            (identical(other.farmUuid, farmUuid) ||
+                other.farmUuid == farmUuid) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.latitude, latitude) ||
@@ -353,16 +437,24 @@ class _$FarmSummaryImpl implements _FarmSummary {
             (identical(other.establishedDate, establishedDate) ||
                 other.establishedDate == establishedDate) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            (identical(other.createdDate, createdDate) ||
+                other.createdDate == createdDate) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.lastUpdatedDate, lastUpdatedDate) ||
+                other.lastUpdatedDate == lastUpdatedDate) &&
+            (identical(other.lastUpdatedBy, lastUpdatedBy) ||
+                other.lastUpdatedBy == lastUpdatedBy));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
     id,
     name,
     code,
+    farmUuid,
     location,
     latitude,
     longitude,
@@ -372,6 +464,10 @@ class _$FarmSummaryImpl implements _FarmSummary {
     contactInfo,
     establishedDate,
     isActive,
+    createdDate,
+    createdBy,
+    lastUpdatedDate,
+    lastUpdatedBy,
   );
 
   /// Create a copy of FarmSummary
@@ -381,34 +477,33 @@ class _$FarmSummaryImpl implements _FarmSummary {
   @pragma('vm:prefer-inline')
   _$$FarmSummaryImplCopyWith<_$FarmSummaryImpl> get copyWith =>
       __$$FarmSummaryImplCopyWithImpl<_$FarmSummaryImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FarmSummaryImplToJson(this);
-  }
 }
 
 abstract class _FarmSummary implements FarmSummary {
   const factory _FarmSummary({
-    @JsonKey(name: 'id') required final String id,
+    @JsonKey(name: 'id', fromJson: _idFromJson) required final String id,
     @JsonKey(name: 'farm_name') required final String name,
     @JsonKey(name: 'farm_code') required final String code,
+    @JsonKey(name: 'farm_uuid') final String? farmUuid,
     @JsonKey(name: 'farm_location') final String? location,
-    @JsonKey(name: 'latitude') final double? latitude,
-    @JsonKey(name: 'longitude') final double? longitude,
+    final double? latitude,
+    final double? longitude,
     @JsonKey(name: 'farm_area_sqm') final double? area,
+    @JsonKey(includeFromJson: false, includeToJson: false)
     final String? areaUnit,
     @JsonKey(name: 'owner_name') final String? ownerName,
     @JsonKey(name: 'contact_info') final String? contactInfo,
     final DateTime? establishedDate,
     @JsonKey(name: 'is_active') final bool isActive,
+    @JsonKey(name: 'created_at') final DateTime? createdDate,
+    @JsonKey(name: 'created_by', fromJson: _intFromJson) final int? createdBy,
+    @JsonKey(name: 'last_updated_date') final DateTime? lastUpdatedDate,
+    @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+    final int? lastUpdatedBy,
   }) = _$FarmSummaryImpl;
 
-  factory _FarmSummary.fromJson(Map<String, dynamic> json) =
-      _$FarmSummaryImpl.fromJson;
-
   @override
-  @JsonKey(name: 'id')
+  @JsonKey(name: 'id', fromJson: _idFromJson)
   String get id;
   @override
   @JsonKey(name: 'farm_name')
@@ -417,18 +512,20 @@ abstract class _FarmSummary implements FarmSummary {
   @JsonKey(name: 'farm_code')
   String get code;
   @override
+  @JsonKey(name: 'farm_uuid')
+  String? get farmUuid;
+  @override
   @JsonKey(name: 'farm_location')
   String? get location;
   @override
-  @JsonKey(name: 'latitude')
   double? get latitude;
   @override
-  @JsonKey(name: 'longitude')
   double? get longitude;
   @override
   @JsonKey(name: 'farm_area_sqm')
   double? get area;
   @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String? get areaUnit;
   @override
   @JsonKey(name: 'owner_name')
@@ -441,6 +538,18 @@ abstract class _FarmSummary implements FarmSummary {
   @override
   @JsonKey(name: 'is_active')
   bool get isActive;
+  @override
+  @JsonKey(name: 'created_at')
+  DateTime? get createdDate;
+  @override
+  @JsonKey(name: 'created_by', fromJson: _intFromJson)
+  int? get createdBy;
+  @override
+  @JsonKey(name: 'last_updated_date')
+  DateTime? get lastUpdatedDate;
+  @override
+  @JsonKey(name: 'last_updated_by', fromJson: _intFromJson)
+  int? get lastUpdatedBy;
 
   /// Create a copy of FarmSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -454,9 +563,10 @@ abstract class _FarmSummary implements FarmSummary {
 mixin _$PondSummary {
   String get id => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
+  String? get pondUuid => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
-  String? get farmId => throw _privateConstructorUsedError;
-  String? get farmName => throw _privateConstructorUsedError;
+  String? get pondType => throw _privateConstructorUsedError;
+  String? get pondShape => throw _privateConstructorUsedError;
   double? get size => throw _privateConstructorUsedError;
   String? get sizeUnit => throw _privateConstructorUsedError;
   double? get pwa => throw _privateConstructorUsedError;
@@ -467,22 +577,26 @@ mixin _$PondSummary {
   String? get maxDepthUnit => throw _privateConstructorUsedError;
   double? get volume => throw _privateConstructorUsedError;
   String? get volumeUnit => throw _privateConstructorUsedError;
-  String? get pondType => throw _privateConstructorUsedError;
-  String? get pondShape => throw _privateConstructorUsedError;
   String? get bottomType => throw _privateConstructorUsedError;
-  bool? get hasAerator => throw _privateConstructorUsedError;
+  bool get hasAerator => throw _privateConstructorUsedError;
   int? get aeratorCount => throw _privateConstructorUsedError;
   double? get aeratorTotalHp => throw _privateConstructorUsedError;
-  bool? get hasCentralDrain => throw _privateConstructorUsedError;
+  bool get hasCentralDrain => throw _privateConstructorUsedError;
   String? get waterSource => throw _privateConstructorUsedError;
   String? get pondStatus => throw _privateConstructorUsedError;
   int? get currentCycleId => throw _privateConstructorUsedError;
-  double? get maxBiomass => throw _privateConstructorUsedError;
-  String? get maxBiomassUnit => throw _privateConstructorUsedError;
+  double? get maxBiomassKgPerSqm => throw _privateConstructorUsedError;
   double? get recommendedStockingDensity => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
-  DateTime? get createdAt => throw _privateConstructorUsedError;
-  DateTime? get deletedAt => throw _privateConstructorUsedError;
+  DateTime? get createdDate => throw _privateConstructorUsedError;
+  int? get createdBy => throw _privateConstructorUsedError;
+  DateTime? get lastUpdatedDate => throw _privateConstructorUsedError;
+  int? get lastUpdatedBy => throw _privateConstructorUsedError;
+  DateTime? get deletedDate => throw _privateConstructorUsedError;
+  double? get maxBiomass => throw _privateConstructorUsedError;
+  String? get maxBiomassUnit => throw _privateConstructorUsedError;
+  int? get farmId => throw _privateConstructorUsedError;
+  String? get farmUuid => throw _privateConstructorUsedError;
 
   /// Create a copy of PondSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -501,9 +615,10 @@ abstract class $PondSummaryCopyWith<$Res> {
   $Res call({
     String id,
     String code,
+    String? pondUuid,
     String? name,
-    String? farmId,
-    String? farmName,
+    String? pondType,
+    String? pondShape,
     double? size,
     String? sizeUnit,
     double? pwa,
@@ -514,22 +629,26 @@ abstract class $PondSummaryCopyWith<$Res> {
     String? maxDepthUnit,
     double? volume,
     String? volumeUnit,
-    String? pondType,
-    String? pondShape,
     String? bottomType,
-    bool? hasAerator,
+    bool hasAerator,
     int? aeratorCount,
     double? aeratorTotalHp,
-    bool? hasCentralDrain,
+    bool hasCentralDrain,
     String? waterSource,
     String? pondStatus,
     int? currentCycleId,
-    double? maxBiomass,
-    String? maxBiomassUnit,
+    double? maxBiomassKgPerSqm,
     double? recommendedStockingDensity,
     bool isActive,
-    DateTime? createdAt,
-    DateTime? deletedAt,
+    DateTime? createdDate,
+    int? createdBy,
+    DateTime? lastUpdatedDate,
+    int? lastUpdatedBy,
+    DateTime? deletedDate,
+    double? maxBiomass,
+    String? maxBiomassUnit,
+    int? farmId,
+    String? farmUuid,
   });
 }
 
@@ -550,9 +669,10 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
   $Res call({
     Object? id = null,
     Object? code = null,
+    Object? pondUuid = freezed,
     Object? name = freezed,
-    Object? farmId = freezed,
-    Object? farmName = freezed,
+    Object? pondType = freezed,
+    Object? pondShape = freezed,
     Object? size = freezed,
     Object? sizeUnit = freezed,
     Object? pwa = freezed,
@@ -563,22 +683,26 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
     Object? maxDepthUnit = freezed,
     Object? volume = freezed,
     Object? volumeUnit = freezed,
-    Object? pondType = freezed,
-    Object? pondShape = freezed,
     Object? bottomType = freezed,
-    Object? hasAerator = freezed,
+    Object? hasAerator = null,
     Object? aeratorCount = freezed,
     Object? aeratorTotalHp = freezed,
-    Object? hasCentralDrain = freezed,
+    Object? hasCentralDrain = null,
     Object? waterSource = freezed,
     Object? pondStatus = freezed,
     Object? currentCycleId = freezed,
-    Object? maxBiomass = freezed,
-    Object? maxBiomassUnit = freezed,
+    Object? maxBiomassKgPerSqm = freezed,
     Object? recommendedStockingDensity = freezed,
     Object? isActive = null,
-    Object? createdAt = freezed,
-    Object? deletedAt = freezed,
+    Object? createdDate = freezed,
+    Object? createdBy = freezed,
+    Object? lastUpdatedDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? deletedDate = freezed,
+    Object? maxBiomass = freezed,
+    Object? maxBiomassUnit = freezed,
+    Object? farmId = freezed,
+    Object? farmUuid = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -590,17 +714,21 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
                 ? _value.code
                 : code // ignore: cast_nullable_to_non_nullable
                       as String,
+            pondUuid: freezed == pondUuid
+                ? _value.pondUuid
+                : pondUuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
             name: freezed == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String?,
-            farmId: freezed == farmId
-                ? _value.farmId
-                : farmId // ignore: cast_nullable_to_non_nullable
+            pondType: freezed == pondType
+                ? _value.pondType
+                : pondType // ignore: cast_nullable_to_non_nullable
                       as String?,
-            farmName: freezed == farmName
-                ? _value.farmName
-                : farmName // ignore: cast_nullable_to_non_nullable
+            pondShape: freezed == pondShape
+                ? _value.pondShape
+                : pondShape // ignore: cast_nullable_to_non_nullable
                       as String?,
             size: freezed == size
                 ? _value.size
@@ -642,22 +770,14 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
                 ? _value.volumeUnit
                 : volumeUnit // ignore: cast_nullable_to_non_nullable
                       as String?,
-            pondType: freezed == pondType
-                ? _value.pondType
-                : pondType // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            pondShape: freezed == pondShape
-                ? _value.pondShape
-                : pondShape // ignore: cast_nullable_to_non_nullable
-                      as String?,
             bottomType: freezed == bottomType
                 ? _value.bottomType
                 : bottomType // ignore: cast_nullable_to_non_nullable
                       as String?,
-            hasAerator: freezed == hasAerator
+            hasAerator: null == hasAerator
                 ? _value.hasAerator
                 : hasAerator // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+                      as bool,
             aeratorCount: freezed == aeratorCount
                 ? _value.aeratorCount
                 : aeratorCount // ignore: cast_nullable_to_non_nullable
@@ -666,10 +786,10 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
                 ? _value.aeratorTotalHp
                 : aeratorTotalHp // ignore: cast_nullable_to_non_nullable
                       as double?,
-            hasCentralDrain: freezed == hasCentralDrain
+            hasCentralDrain: null == hasCentralDrain
                 ? _value.hasCentralDrain
                 : hasCentralDrain // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+                      as bool,
             waterSource: freezed == waterSource
                 ? _value.waterSource
                 : waterSource // ignore: cast_nullable_to_non_nullable
@@ -682,14 +802,10 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
                 ? _value.currentCycleId
                 : currentCycleId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            maxBiomass: freezed == maxBiomass
-                ? _value.maxBiomass
-                : maxBiomass // ignore: cast_nullable_to_non_nullable
+            maxBiomassKgPerSqm: freezed == maxBiomassKgPerSqm
+                ? _value.maxBiomassKgPerSqm
+                : maxBiomassKgPerSqm // ignore: cast_nullable_to_non_nullable
                       as double?,
-            maxBiomassUnit: freezed == maxBiomassUnit
-                ? _value.maxBiomassUnit
-                : maxBiomassUnit // ignore: cast_nullable_to_non_nullable
-                      as String?,
             recommendedStockingDensity: freezed == recommendedStockingDensity
                 ? _value.recommendedStockingDensity
                 : recommendedStockingDensity // ignore: cast_nullable_to_non_nullable
@@ -698,14 +814,42 @@ class _$PondSummaryCopyWithImpl<$Res, $Val extends PondSummary>
                 ? _value.isActive
                 : isActive // ignore: cast_nullable_to_non_nullable
                       as bool,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
+            createdDate: freezed == createdDate
+                ? _value.createdDate
+                : createdDate // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            deletedAt: freezed == deletedAt
-                ? _value.deletedAt
-                : deletedAt // ignore: cast_nullable_to_non_nullable
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            lastUpdatedDate: freezed == lastUpdatedDate
+                ? _value.lastUpdatedDate
+                : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
+            lastUpdatedBy: freezed == lastUpdatedBy
+                ? _value.lastUpdatedBy
+                : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            deletedDate: freezed == deletedDate
+                ? _value.deletedDate
+                : deletedDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            maxBiomass: freezed == maxBiomass
+                ? _value.maxBiomass
+                : maxBiomass // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            maxBiomassUnit: freezed == maxBiomassUnit
+                ? _value.maxBiomassUnit
+                : maxBiomassUnit // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            farmId: freezed == farmId
+                ? _value.farmId
+                : farmId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            farmUuid: freezed == farmUuid
+                ? _value.farmUuid
+                : farmUuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -724,9 +868,10 @@ abstract class _$$PondSummaryImplCopyWith<$Res>
   $Res call({
     String id,
     String code,
+    String? pondUuid,
     String? name,
-    String? farmId,
-    String? farmName,
+    String? pondType,
+    String? pondShape,
     double? size,
     String? sizeUnit,
     double? pwa,
@@ -737,22 +882,26 @@ abstract class _$$PondSummaryImplCopyWith<$Res>
     String? maxDepthUnit,
     double? volume,
     String? volumeUnit,
-    String? pondType,
-    String? pondShape,
     String? bottomType,
-    bool? hasAerator,
+    bool hasAerator,
     int? aeratorCount,
     double? aeratorTotalHp,
-    bool? hasCentralDrain,
+    bool hasCentralDrain,
     String? waterSource,
     String? pondStatus,
     int? currentCycleId,
-    double? maxBiomass,
-    String? maxBiomassUnit,
+    double? maxBiomassKgPerSqm,
     double? recommendedStockingDensity,
     bool isActive,
-    DateTime? createdAt,
-    DateTime? deletedAt,
+    DateTime? createdDate,
+    int? createdBy,
+    DateTime? lastUpdatedDate,
+    int? lastUpdatedBy,
+    DateTime? deletedDate,
+    double? maxBiomass,
+    String? maxBiomassUnit,
+    int? farmId,
+    String? farmUuid,
   });
 }
 
@@ -772,9 +921,10 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? code = null,
+    Object? pondUuid = freezed,
     Object? name = freezed,
-    Object? farmId = freezed,
-    Object? farmName = freezed,
+    Object? pondType = freezed,
+    Object? pondShape = freezed,
     Object? size = freezed,
     Object? sizeUnit = freezed,
     Object? pwa = freezed,
@@ -785,22 +935,26 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
     Object? maxDepthUnit = freezed,
     Object? volume = freezed,
     Object? volumeUnit = freezed,
-    Object? pondType = freezed,
-    Object? pondShape = freezed,
     Object? bottomType = freezed,
-    Object? hasAerator = freezed,
+    Object? hasAerator = null,
     Object? aeratorCount = freezed,
     Object? aeratorTotalHp = freezed,
-    Object? hasCentralDrain = freezed,
+    Object? hasCentralDrain = null,
     Object? waterSource = freezed,
     Object? pondStatus = freezed,
     Object? currentCycleId = freezed,
-    Object? maxBiomass = freezed,
-    Object? maxBiomassUnit = freezed,
+    Object? maxBiomassKgPerSqm = freezed,
     Object? recommendedStockingDensity = freezed,
     Object? isActive = null,
-    Object? createdAt = freezed,
-    Object? deletedAt = freezed,
+    Object? createdDate = freezed,
+    Object? createdBy = freezed,
+    Object? lastUpdatedDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? deletedDate = freezed,
+    Object? maxBiomass = freezed,
+    Object? maxBiomassUnit = freezed,
+    Object? farmId = freezed,
+    Object? farmUuid = freezed,
   }) {
     return _then(
       _$PondSummaryImpl(
@@ -812,17 +966,21 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
             ? _value.code
             : code // ignore: cast_nullable_to_non_nullable
                   as String,
+        pondUuid: freezed == pondUuid
+            ? _value.pondUuid
+            : pondUuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
         name: freezed == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String?,
-        farmId: freezed == farmId
-            ? _value.farmId
-            : farmId // ignore: cast_nullable_to_non_nullable
+        pondType: freezed == pondType
+            ? _value.pondType
+            : pondType // ignore: cast_nullable_to_non_nullable
                   as String?,
-        farmName: freezed == farmName
-            ? _value.farmName
-            : farmName // ignore: cast_nullable_to_non_nullable
+        pondShape: freezed == pondShape
+            ? _value.pondShape
+            : pondShape // ignore: cast_nullable_to_non_nullable
                   as String?,
         size: freezed == size
             ? _value.size
@@ -864,22 +1022,14 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
             ? _value.volumeUnit
             : volumeUnit // ignore: cast_nullable_to_non_nullable
                   as String?,
-        pondType: freezed == pondType
-            ? _value.pondType
-            : pondType // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        pondShape: freezed == pondShape
-            ? _value.pondShape
-            : pondShape // ignore: cast_nullable_to_non_nullable
-                  as String?,
         bottomType: freezed == bottomType
             ? _value.bottomType
             : bottomType // ignore: cast_nullable_to_non_nullable
                   as String?,
-        hasAerator: freezed == hasAerator
+        hasAerator: null == hasAerator
             ? _value.hasAerator
             : hasAerator // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+                  as bool,
         aeratorCount: freezed == aeratorCount
             ? _value.aeratorCount
             : aeratorCount // ignore: cast_nullable_to_non_nullable
@@ -888,10 +1038,10 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
             ? _value.aeratorTotalHp
             : aeratorTotalHp // ignore: cast_nullable_to_non_nullable
                   as double?,
-        hasCentralDrain: freezed == hasCentralDrain
+        hasCentralDrain: null == hasCentralDrain
             ? _value.hasCentralDrain
             : hasCentralDrain // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+                  as bool,
         waterSource: freezed == waterSource
             ? _value.waterSource
             : waterSource // ignore: cast_nullable_to_non_nullable
@@ -904,14 +1054,10 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
             ? _value.currentCycleId
             : currentCycleId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        maxBiomass: freezed == maxBiomass
-            ? _value.maxBiomass
-            : maxBiomass // ignore: cast_nullable_to_non_nullable
+        maxBiomassKgPerSqm: freezed == maxBiomassKgPerSqm
+            ? _value.maxBiomassKgPerSqm
+            : maxBiomassKgPerSqm // ignore: cast_nullable_to_non_nullable
                   as double?,
-        maxBiomassUnit: freezed == maxBiomassUnit
-            ? _value.maxBiomassUnit
-            : maxBiomassUnit // ignore: cast_nullable_to_non_nullable
-                  as String?,
         recommendedStockingDensity: freezed == recommendedStockingDensity
             ? _value.recommendedStockingDensity
             : recommendedStockingDensity // ignore: cast_nullable_to_non_nullable
@@ -920,14 +1066,42 @@ class __$$PondSummaryImplCopyWithImpl<$Res>
             ? _value.isActive
             : isActive // ignore: cast_nullable_to_non_nullable
                   as bool,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
+        createdDate: freezed == createdDate
+            ? _value.createdDate
+            : createdDate // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        deletedAt: freezed == deletedAt
-            ? _value.deletedAt
-            : deletedAt // ignore: cast_nullable_to_non_nullable
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        lastUpdatedDate: freezed == lastUpdatedDate
+            ? _value.lastUpdatedDate
+            : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        lastUpdatedBy: freezed == lastUpdatedBy
+            ? _value.lastUpdatedBy
+            : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        deletedDate: freezed == deletedDate
+            ? _value.deletedDate
+            : deletedDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        maxBiomass: freezed == maxBiomass
+            ? _value.maxBiomass
+            : maxBiomass // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        maxBiomassUnit: freezed == maxBiomassUnit
+            ? _value.maxBiomassUnit
+            : maxBiomassUnit // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        farmId: freezed == farmId
+            ? _value.farmId
+            : farmId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        farmUuid: freezed == farmUuid
+            ? _value.farmUuid
+            : farmUuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -939,9 +1113,10 @@ class _$PondSummaryImpl implements _PondSummary {
   const _$PondSummaryImpl({
     required this.id,
     required this.code,
+    this.pondUuid,
     this.name,
-    this.farmId,
-    this.farmName,
+    this.pondType,
+    this.pondShape,
     this.size,
     this.sizeUnit,
     this.pwa,
@@ -952,22 +1127,26 @@ class _$PondSummaryImpl implements _PondSummary {
     this.maxDepthUnit,
     this.volume,
     this.volumeUnit,
-    this.pondType,
-    this.pondShape,
     this.bottomType,
-    this.hasAerator,
+    this.hasAerator = false,
     this.aeratorCount,
     this.aeratorTotalHp,
-    this.hasCentralDrain,
+    this.hasCentralDrain = false,
     this.waterSource,
     this.pondStatus,
     this.currentCycleId,
-    this.maxBiomass,
-    this.maxBiomassUnit,
+    this.maxBiomassKgPerSqm,
     this.recommendedStockingDensity,
     this.isActive = true,
-    this.createdAt,
-    this.deletedAt,
+    this.createdDate,
+    this.createdBy,
+    this.lastUpdatedDate,
+    this.lastUpdatedBy,
+    this.deletedDate,
+    this.maxBiomass,
+    this.maxBiomassUnit,
+    this.farmId,
+    this.farmUuid,
   });
 
   @override
@@ -975,11 +1154,13 @@ class _$PondSummaryImpl implements _PondSummary {
   @override
   final String code;
   @override
+  final String? pondUuid;
+  @override
   final String? name;
   @override
-  final String? farmId;
+  final String? pondType;
   @override
-  final String? farmName;
+  final String? pondShape;
   @override
   final double? size;
   @override
@@ -1001,19 +1182,17 @@ class _$PondSummaryImpl implements _PondSummary {
   @override
   final String? volumeUnit;
   @override
-  final String? pondType;
-  @override
-  final String? pondShape;
-  @override
   final String? bottomType;
   @override
-  final bool? hasAerator;
+  @JsonKey()
+  final bool hasAerator;
   @override
   final int? aeratorCount;
   @override
   final double? aeratorTotalHp;
   @override
-  final bool? hasCentralDrain;
+  @JsonKey()
+  final bool hasCentralDrain;
   @override
   final String? waterSource;
   @override
@@ -1021,22 +1200,34 @@ class _$PondSummaryImpl implements _PondSummary {
   @override
   final int? currentCycleId;
   @override
-  final double? maxBiomass;
-  @override
-  final String? maxBiomassUnit;
+  final double? maxBiomassKgPerSqm;
   @override
   final double? recommendedStockingDensity;
   @override
   @JsonKey()
   final bool isActive;
   @override
-  final DateTime? createdAt;
+  final DateTime? createdDate;
   @override
-  final DateTime? deletedAt;
+  final int? createdBy;
+  @override
+  final DateTime? lastUpdatedDate;
+  @override
+  final int? lastUpdatedBy;
+  @override
+  final DateTime? deletedDate;
+  @override
+  final double? maxBiomass;
+  @override
+  final String? maxBiomassUnit;
+  @override
+  final int? farmId;
+  @override
+  final String? farmUuid;
 
   @override
   String toString() {
-    return 'PondSummary(id: $id, code: $code, name: $name, farmId: $farmId, farmName: $farmName, size: $size, sizeUnit: $sizeUnit, pwa: $pwa, pwaUnit: $pwaUnit, depth: $depth, depthUnit: $depthUnit, maxDepth: $maxDepth, maxDepthUnit: $maxDepthUnit, volume: $volume, volumeUnit: $volumeUnit, pondType: $pondType, pondShape: $pondShape, bottomType: $bottomType, hasAerator: $hasAerator, aeratorCount: $aeratorCount, aeratorTotalHp: $aeratorTotalHp, hasCentralDrain: $hasCentralDrain, waterSource: $waterSource, pondStatus: $pondStatus, currentCycleId: $currentCycleId, maxBiomass: $maxBiomass, maxBiomassUnit: $maxBiomassUnit, recommendedStockingDensity: $recommendedStockingDensity, isActive: $isActive, createdAt: $createdAt, deletedAt: $deletedAt)';
+    return 'PondSummary(id: $id, code: $code, pondUuid: $pondUuid, name: $name, pondType: $pondType, pondShape: $pondShape, size: $size, sizeUnit: $sizeUnit, pwa: $pwa, pwaUnit: $pwaUnit, depth: $depth, depthUnit: $depthUnit, maxDepth: $maxDepth, maxDepthUnit: $maxDepthUnit, volume: $volume, volumeUnit: $volumeUnit, bottomType: $bottomType, hasAerator: $hasAerator, aeratorCount: $aeratorCount, aeratorTotalHp: $aeratorTotalHp, hasCentralDrain: $hasCentralDrain, waterSource: $waterSource, pondStatus: $pondStatus, currentCycleId: $currentCycleId, maxBiomassKgPerSqm: $maxBiomassKgPerSqm, recommendedStockingDensity: $recommendedStockingDensity, isActive: $isActive, createdDate: $createdDate, createdBy: $createdBy, lastUpdatedDate: $lastUpdatedDate, lastUpdatedBy: $lastUpdatedBy, deletedDate: $deletedDate, maxBiomass: $maxBiomass, maxBiomassUnit: $maxBiomassUnit, farmId: $farmId, farmUuid: $farmUuid)';
   }
 
   @override
@@ -1046,10 +1237,13 @@ class _$PondSummaryImpl implements _PondSummary {
             other is _$PondSummaryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.code, code) || other.code == code) &&
+            (identical(other.pondUuid, pondUuid) ||
+                other.pondUuid == pondUuid) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.farmId, farmId) || other.farmId == farmId) &&
-            (identical(other.farmName, farmName) ||
-                other.farmName == farmName) &&
+            (identical(other.pondType, pondType) ||
+                other.pondType == pondType) &&
+            (identical(other.pondShape, pondShape) ||
+                other.pondShape == pondShape) &&
             (identical(other.size, size) || other.size == size) &&
             (identical(other.sizeUnit, sizeUnit) ||
                 other.sizeUnit == sizeUnit) &&
@@ -1065,10 +1259,6 @@ class _$PondSummaryImpl implements _PondSummary {
             (identical(other.volume, volume) || other.volume == volume) &&
             (identical(other.volumeUnit, volumeUnit) ||
                 other.volumeUnit == volumeUnit) &&
-            (identical(other.pondType, pondType) ||
-                other.pondType == pondType) &&
-            (identical(other.pondShape, pondShape) ||
-                other.pondShape == pondShape) &&
             (identical(other.bottomType, bottomType) ||
                 other.bottomType == bottomType) &&
             (identical(other.hasAerator, hasAerator) ||
@@ -1085,10 +1275,8 @@ class _$PondSummaryImpl implements _PondSummary {
                 other.pondStatus == pondStatus) &&
             (identical(other.currentCycleId, currentCycleId) ||
                 other.currentCycleId == currentCycleId) &&
-            (identical(other.maxBiomass, maxBiomass) ||
-                other.maxBiomass == maxBiomass) &&
-            (identical(other.maxBiomassUnit, maxBiomassUnit) ||
-                other.maxBiomassUnit == maxBiomassUnit) &&
+            (identical(other.maxBiomassKgPerSqm, maxBiomassKgPerSqm) ||
+                other.maxBiomassKgPerSqm == maxBiomassKgPerSqm) &&
             (identical(
                   other.recommendedStockingDensity,
                   recommendedStockingDensity,
@@ -1097,10 +1285,23 @@ class _$PondSummaryImpl implements _PondSummary {
                     recommendedStockingDensity) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.deletedAt, deletedAt) ||
-                other.deletedAt == deletedAt));
+            (identical(other.createdDate, createdDate) ||
+                other.createdDate == createdDate) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.lastUpdatedDate, lastUpdatedDate) ||
+                other.lastUpdatedDate == lastUpdatedDate) &&
+            (identical(other.lastUpdatedBy, lastUpdatedBy) ||
+                other.lastUpdatedBy == lastUpdatedBy) &&
+            (identical(other.deletedDate, deletedDate) ||
+                other.deletedDate == deletedDate) &&
+            (identical(other.maxBiomass, maxBiomass) ||
+                other.maxBiomass == maxBiomass) &&
+            (identical(other.maxBiomassUnit, maxBiomassUnit) ||
+                other.maxBiomassUnit == maxBiomassUnit) &&
+            (identical(other.farmId, farmId) || other.farmId == farmId) &&
+            (identical(other.farmUuid, farmUuid) ||
+                other.farmUuid == farmUuid));
   }
 
   @override
@@ -1108,9 +1309,10 @@ class _$PondSummaryImpl implements _PondSummary {
     runtimeType,
     id,
     code,
+    pondUuid,
     name,
-    farmId,
-    farmName,
+    pondType,
+    pondShape,
     size,
     sizeUnit,
     pwa,
@@ -1121,8 +1323,6 @@ class _$PondSummaryImpl implements _PondSummary {
     maxDepthUnit,
     volume,
     volumeUnit,
-    pondType,
-    pondShape,
     bottomType,
     hasAerator,
     aeratorCount,
@@ -1131,12 +1331,18 @@ class _$PondSummaryImpl implements _PondSummary {
     waterSource,
     pondStatus,
     currentCycleId,
-    maxBiomass,
-    maxBiomassUnit,
+    maxBiomassKgPerSqm,
     recommendedStockingDensity,
     isActive,
-    createdAt,
-    deletedAt,
+    createdDate,
+    createdBy,
+    lastUpdatedDate,
+    lastUpdatedBy,
+    deletedDate,
+    maxBiomass,
+    maxBiomassUnit,
+    farmId,
+    farmUuid,
   ]);
 
   /// Create a copy of PondSummary
@@ -1152,9 +1358,10 @@ abstract class _PondSummary implements PondSummary {
   const factory _PondSummary({
     required final String id,
     required final String code,
+    final String? pondUuid,
     final String? name,
-    final String? farmId,
-    final String? farmName,
+    final String? pondType,
+    final String? pondShape,
     final double? size,
     final String? sizeUnit,
     final double? pwa,
@@ -1165,22 +1372,26 @@ abstract class _PondSummary implements PondSummary {
     final String? maxDepthUnit,
     final double? volume,
     final String? volumeUnit,
-    final String? pondType,
-    final String? pondShape,
     final String? bottomType,
-    final bool? hasAerator,
+    final bool hasAerator,
     final int? aeratorCount,
     final double? aeratorTotalHp,
-    final bool? hasCentralDrain,
+    final bool hasCentralDrain,
     final String? waterSource,
     final String? pondStatus,
     final int? currentCycleId,
-    final double? maxBiomass,
-    final String? maxBiomassUnit,
+    final double? maxBiomassKgPerSqm,
     final double? recommendedStockingDensity,
     final bool isActive,
-    final DateTime? createdAt,
-    final DateTime? deletedAt,
+    final DateTime? createdDate,
+    final int? createdBy,
+    final DateTime? lastUpdatedDate,
+    final int? lastUpdatedBy,
+    final DateTime? deletedDate,
+    final double? maxBiomass,
+    final String? maxBiomassUnit,
+    final int? farmId,
+    final String? farmUuid,
   }) = _$PondSummaryImpl;
 
   @override
@@ -1188,11 +1399,13 @@ abstract class _PondSummary implements PondSummary {
   @override
   String get code;
   @override
+  String? get pondUuid;
+  @override
   String? get name;
   @override
-  String? get farmId;
+  String? get pondType;
   @override
-  String? get farmName;
+  String? get pondShape;
   @override
   double? get size;
   @override
@@ -1214,19 +1427,15 @@ abstract class _PondSummary implements PondSummary {
   @override
   String? get volumeUnit;
   @override
-  String? get pondType;
-  @override
-  String? get pondShape;
-  @override
   String? get bottomType;
   @override
-  bool? get hasAerator;
+  bool get hasAerator;
   @override
   int? get aeratorCount;
   @override
   double? get aeratorTotalHp;
   @override
-  bool? get hasCentralDrain;
+  bool get hasCentralDrain;
   @override
   String? get waterSource;
   @override
@@ -1234,17 +1443,29 @@ abstract class _PondSummary implements PondSummary {
   @override
   int? get currentCycleId;
   @override
-  double? get maxBiomass;
-  @override
-  String? get maxBiomassUnit;
+  double? get maxBiomassKgPerSqm;
   @override
   double? get recommendedStockingDensity;
   @override
   bool get isActive;
   @override
-  DateTime? get createdAt;
+  DateTime? get createdDate;
   @override
-  DateTime? get deletedAt;
+  int? get createdBy;
+  @override
+  DateTime? get lastUpdatedDate;
+  @override
+  int? get lastUpdatedBy;
+  @override
+  DateTime? get deletedDate;
+  @override
+  double? get maxBiomass;
+  @override
+  String? get maxBiomassUnit;
+  @override
+  int? get farmId;
+  @override
+  String? get farmUuid;
 
   /// Create a copy of PondSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -3113,5 +3334,1104 @@ abstract class _LabTestTypeEntity implements LabTestTypeEntity {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LabTestTypeEntityImplCopyWith<_$LabTestTypeEntityImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+LabParameterEntity _$LabParameterEntityFromJson(Map<String, dynamic> json) {
+  return _LabParameterEntity.fromJson(json);
+}
+
+/// @nodoc
+mixin _$LabParameterEntity {
+  String get id => throw _privateConstructorUsedError;
+  int get testTypeId => throw _privateConstructorUsedError;
+  String get parameterCode => throw _privateConstructorUsedError;
+  String get parameterName => throw _privateConstructorUsedError;
+  String? get parameterUuid => throw _privateConstructorUsedError;
+  String? get standardOperator => throw _privateConstructorUsedError;
+  double? get standardMin => throw _privateConstructorUsedError;
+  double? get standardMax => throw _privateConstructorUsedError;
+  String? get parameterUnit => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  DateTime? get createdDate => throw _privateConstructorUsedError;
+
+  /// Serializes this LabParameterEntity to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of LabParameterEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $LabParameterEntityCopyWith<LabParameterEntity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LabParameterEntityCopyWith<$Res> {
+  factory $LabParameterEntityCopyWith(
+    LabParameterEntity value,
+    $Res Function(LabParameterEntity) then,
+  ) = _$LabParameterEntityCopyWithImpl<$Res, LabParameterEntity>;
+  @useResult
+  $Res call({
+    String id,
+    int testTypeId,
+    String parameterCode,
+    String parameterName,
+    String? parameterUuid,
+    String? standardOperator,
+    double? standardMin,
+    double? standardMax,
+    String? parameterUnit,
+    bool isActive,
+    DateTime? createdDate,
+  });
+}
+
+/// @nodoc
+class _$LabParameterEntityCopyWithImpl<$Res, $Val extends LabParameterEntity>
+    implements $LabParameterEntityCopyWith<$Res> {
+  _$LabParameterEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of LabParameterEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? testTypeId = null,
+    Object? parameterCode = null,
+    Object? parameterName = null,
+    Object? parameterUuid = freezed,
+    Object? standardOperator = freezed,
+    Object? standardMin = freezed,
+    Object? standardMax = freezed,
+    Object? parameterUnit = freezed,
+    Object? isActive = null,
+    Object? createdDate = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            testTypeId: null == testTypeId
+                ? _value.testTypeId
+                : testTypeId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            parameterCode: null == parameterCode
+                ? _value.parameterCode
+                : parameterCode // ignore: cast_nullable_to_non_nullable
+                      as String,
+            parameterName: null == parameterName
+                ? _value.parameterName
+                : parameterName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            parameterUuid: freezed == parameterUuid
+                ? _value.parameterUuid
+                : parameterUuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            standardOperator: freezed == standardOperator
+                ? _value.standardOperator
+                : standardOperator // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            standardMin: freezed == standardMin
+                ? _value.standardMin
+                : standardMin // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            standardMax: freezed == standardMax
+                ? _value.standardMax
+                : standardMax // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            parameterUnit: freezed == parameterUnit
+                ? _value.parameterUnit
+                : parameterUnit // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdDate: freezed == createdDate
+                ? _value.createdDate
+                : createdDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$LabParameterEntityImplCopyWith<$Res>
+    implements $LabParameterEntityCopyWith<$Res> {
+  factory _$$LabParameterEntityImplCopyWith(
+    _$LabParameterEntityImpl value,
+    $Res Function(_$LabParameterEntityImpl) then,
+  ) = __$$LabParameterEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    int testTypeId,
+    String parameterCode,
+    String parameterName,
+    String? parameterUuid,
+    String? standardOperator,
+    double? standardMin,
+    double? standardMax,
+    String? parameterUnit,
+    bool isActive,
+    DateTime? createdDate,
+  });
+}
+
+/// @nodoc
+class __$$LabParameterEntityImplCopyWithImpl<$Res>
+    extends _$LabParameterEntityCopyWithImpl<$Res, _$LabParameterEntityImpl>
+    implements _$$LabParameterEntityImplCopyWith<$Res> {
+  __$$LabParameterEntityImplCopyWithImpl(
+    _$LabParameterEntityImpl _value,
+    $Res Function(_$LabParameterEntityImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of LabParameterEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? testTypeId = null,
+    Object? parameterCode = null,
+    Object? parameterName = null,
+    Object? parameterUuid = freezed,
+    Object? standardOperator = freezed,
+    Object? standardMin = freezed,
+    Object? standardMax = freezed,
+    Object? parameterUnit = freezed,
+    Object? isActive = null,
+    Object? createdDate = freezed,
+  }) {
+    return _then(
+      _$LabParameterEntityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        testTypeId: null == testTypeId
+            ? _value.testTypeId
+            : testTypeId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        parameterCode: null == parameterCode
+            ? _value.parameterCode
+            : parameterCode // ignore: cast_nullable_to_non_nullable
+                  as String,
+        parameterName: null == parameterName
+            ? _value.parameterName
+            : parameterName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        parameterUuid: freezed == parameterUuid
+            ? _value.parameterUuid
+            : parameterUuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        standardOperator: freezed == standardOperator
+            ? _value.standardOperator
+            : standardOperator // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        standardMin: freezed == standardMin
+            ? _value.standardMin
+            : standardMin // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        standardMax: freezed == standardMax
+            ? _value.standardMax
+            : standardMax // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        parameterUnit: freezed == parameterUnit
+            ? _value.parameterUnit
+            : parameterUnit // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdDate: freezed == createdDate
+            ? _value.createdDate
+            : createdDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$LabParameterEntityImpl implements _LabParameterEntity {
+  const _$LabParameterEntityImpl({
+    required this.id,
+    required this.testTypeId,
+    required this.parameterCode,
+    required this.parameterName,
+    this.parameterUuid,
+    this.standardOperator,
+    this.standardMin,
+    this.standardMax,
+    this.parameterUnit,
+    this.isActive = true,
+    this.createdDate,
+  });
+
+  factory _$LabParameterEntityImpl.fromJson(Map<String, dynamic> json) =>
+      _$$LabParameterEntityImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final int testTypeId;
+  @override
+  final String parameterCode;
+  @override
+  final String parameterName;
+  @override
+  final String? parameterUuid;
+  @override
+  final String? standardOperator;
+  @override
+  final double? standardMin;
+  @override
+  final double? standardMax;
+  @override
+  final String? parameterUnit;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final DateTime? createdDate;
+
+  @override
+  String toString() {
+    return 'LabParameterEntity(id: $id, testTypeId: $testTypeId, parameterCode: $parameterCode, parameterName: $parameterName, parameterUuid: $parameterUuid, standardOperator: $standardOperator, standardMin: $standardMin, standardMax: $standardMax, parameterUnit: $parameterUnit, isActive: $isActive, createdDate: $createdDate)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LabParameterEntityImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.testTypeId, testTypeId) ||
+                other.testTypeId == testTypeId) &&
+            (identical(other.parameterCode, parameterCode) ||
+                other.parameterCode == parameterCode) &&
+            (identical(other.parameterName, parameterName) ||
+                other.parameterName == parameterName) &&
+            (identical(other.parameterUuid, parameterUuid) ||
+                other.parameterUuid == parameterUuid) &&
+            (identical(other.standardOperator, standardOperator) ||
+                other.standardOperator == standardOperator) &&
+            (identical(other.standardMin, standardMin) ||
+                other.standardMin == standardMin) &&
+            (identical(other.standardMax, standardMax) ||
+                other.standardMax == standardMax) &&
+            (identical(other.parameterUnit, parameterUnit) ||
+                other.parameterUnit == parameterUnit) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.createdDate, createdDate) ||
+                other.createdDate == createdDate));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    testTypeId,
+    parameterCode,
+    parameterName,
+    parameterUuid,
+    standardOperator,
+    standardMin,
+    standardMax,
+    parameterUnit,
+    isActive,
+    createdDate,
+  );
+
+  /// Create a copy of LabParameterEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$LabParameterEntityImplCopyWith<_$LabParameterEntityImpl> get copyWith =>
+      __$$LabParameterEntityImplCopyWithImpl<_$LabParameterEntityImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$LabParameterEntityImplToJson(this);
+  }
+}
+
+abstract class _LabParameterEntity implements LabParameterEntity {
+  const factory _LabParameterEntity({
+    required final String id,
+    required final int testTypeId,
+    required final String parameterCode,
+    required final String parameterName,
+    final String? parameterUuid,
+    final String? standardOperator,
+    final double? standardMin,
+    final double? standardMax,
+    final String? parameterUnit,
+    final bool isActive,
+    final DateTime? createdDate,
+  }) = _$LabParameterEntityImpl;
+
+  factory _LabParameterEntity.fromJson(Map<String, dynamic> json) =
+      _$LabParameterEntityImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  int get testTypeId;
+  @override
+  String get parameterCode;
+  @override
+  String get parameterName;
+  @override
+  String? get parameterUuid;
+  @override
+  String? get standardOperator;
+  @override
+  double? get standardMin;
+  @override
+  double? get standardMax;
+  @override
+  String? get parameterUnit;
+  @override
+  bool get isActive;
+  @override
+  DateTime? get createdDate;
+
+  /// Create a copy of LabParameterEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$LabParameterEntityImplCopyWith<_$LabParameterEntityImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+LabTypeEntity _$LabTypeEntityFromJson(Map<String, dynamic> json) {
+  return _LabTypeEntity.fromJson(json);
+}
+
+/// @nodoc
+mixin _$LabTypeEntity {
+  String get id => throw _privateConstructorUsedError;
+  String get labSampleTestType => throw _privateConstructorUsedError;
+  String get testType => throw _privateConstructorUsedError;
+  String get testTypeDetail => throw _privateConstructorUsedError;
+  String? get uuid => throw _privateConstructorUsedError;
+  String? get standard => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  int? get createdBy => throw _privateConstructorUsedError;
+  DateTime? get createdDate => throw _privateConstructorUsedError;
+  int? get lastUpdatedBy => throw _privateConstructorUsedError;
+  DateTime? get lastUpdatedDate => throw _privateConstructorUsedError;
+
+  /// Serializes this LabTypeEntity to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of LabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $LabTypeEntityCopyWith<LabTypeEntity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LabTypeEntityCopyWith<$Res> {
+  factory $LabTypeEntityCopyWith(
+    LabTypeEntity value,
+    $Res Function(LabTypeEntity) then,
+  ) = _$LabTypeEntityCopyWithImpl<$Res, LabTypeEntity>;
+  @useResult
+  $Res call({
+    String id,
+    String labSampleTestType,
+    String testType,
+    String testTypeDetail,
+    String? uuid,
+    String? standard,
+    bool isActive,
+    int? createdBy,
+    DateTime? createdDate,
+    int? lastUpdatedBy,
+    DateTime? lastUpdatedDate,
+  });
+}
+
+/// @nodoc
+class _$LabTypeEntityCopyWithImpl<$Res, $Val extends LabTypeEntity>
+    implements $LabTypeEntityCopyWith<$Res> {
+  _$LabTypeEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of LabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? labSampleTestType = null,
+    Object? testType = null,
+    Object? testTypeDetail = null,
+    Object? uuid = freezed,
+    Object? standard = freezed,
+    Object? isActive = null,
+    Object? createdBy = freezed,
+    Object? createdDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? lastUpdatedDate = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            labSampleTestType: null == labSampleTestType
+                ? _value.labSampleTestType
+                : labSampleTestType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            testType: null == testType
+                ? _value.testType
+                : testType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            testTypeDetail: null == testTypeDetail
+                ? _value.testTypeDetail
+                : testTypeDetail // ignore: cast_nullable_to_non_nullable
+                      as String,
+            uuid: freezed == uuid
+                ? _value.uuid
+                : uuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            standard: freezed == standard
+                ? _value.standard
+                : standard // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            createdDate: freezed == createdDate
+                ? _value.createdDate
+                : createdDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            lastUpdatedBy: freezed == lastUpdatedBy
+                ? _value.lastUpdatedBy
+                : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            lastUpdatedDate: freezed == lastUpdatedDate
+                ? _value.lastUpdatedDate
+                : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$LabTypeEntityImplCopyWith<$Res>
+    implements $LabTypeEntityCopyWith<$Res> {
+  factory _$$LabTypeEntityImplCopyWith(
+    _$LabTypeEntityImpl value,
+    $Res Function(_$LabTypeEntityImpl) then,
+  ) = __$$LabTypeEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String labSampleTestType,
+    String testType,
+    String testTypeDetail,
+    String? uuid,
+    String? standard,
+    bool isActive,
+    int? createdBy,
+    DateTime? createdDate,
+    int? lastUpdatedBy,
+    DateTime? lastUpdatedDate,
+  });
+}
+
+/// @nodoc
+class __$$LabTypeEntityImplCopyWithImpl<$Res>
+    extends _$LabTypeEntityCopyWithImpl<$Res, _$LabTypeEntityImpl>
+    implements _$$LabTypeEntityImplCopyWith<$Res> {
+  __$$LabTypeEntityImplCopyWithImpl(
+    _$LabTypeEntityImpl _value,
+    $Res Function(_$LabTypeEntityImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of LabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? labSampleTestType = null,
+    Object? testType = null,
+    Object? testTypeDetail = null,
+    Object? uuid = freezed,
+    Object? standard = freezed,
+    Object? isActive = null,
+    Object? createdBy = freezed,
+    Object? createdDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? lastUpdatedDate = freezed,
+  }) {
+    return _then(
+      _$LabTypeEntityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        labSampleTestType: null == labSampleTestType
+            ? _value.labSampleTestType
+            : labSampleTestType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        testType: null == testType
+            ? _value.testType
+            : testType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        testTypeDetail: null == testTypeDetail
+            ? _value.testTypeDetail
+            : testTypeDetail // ignore: cast_nullable_to_non_nullable
+                  as String,
+        uuid: freezed == uuid
+            ? _value.uuid
+            : uuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        standard: freezed == standard
+            ? _value.standard
+            : standard // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        createdDate: freezed == createdDate
+            ? _value.createdDate
+            : createdDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        lastUpdatedBy: freezed == lastUpdatedBy
+            ? _value.lastUpdatedBy
+            : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        lastUpdatedDate: freezed == lastUpdatedDate
+            ? _value.lastUpdatedDate
+            : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$LabTypeEntityImpl implements _LabTypeEntity {
+  const _$LabTypeEntityImpl({
+    required this.id,
+    required this.labSampleTestType,
+    required this.testType,
+    required this.testTypeDetail,
+    this.uuid,
+    this.standard,
+    this.isActive = true,
+    this.createdBy,
+    this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+
+  factory _$LabTypeEntityImpl.fromJson(Map<String, dynamic> json) =>
+      _$$LabTypeEntityImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String labSampleTestType;
+  @override
+  final String testType;
+  @override
+  final String testTypeDetail;
+  @override
+  final String? uuid;
+  @override
+  final String? standard;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final int? createdBy;
+  @override
+  final DateTime? createdDate;
+  @override
+  final int? lastUpdatedBy;
+  @override
+  final DateTime? lastUpdatedDate;
+
+  @override
+  String toString() {
+    return 'LabTypeEntity(id: $id, labSampleTestType: $labSampleTestType, testType: $testType, testTypeDetail: $testTypeDetail, uuid: $uuid, standard: $standard, isActive: $isActive, createdBy: $createdBy, createdDate: $createdDate, lastUpdatedBy: $lastUpdatedBy, lastUpdatedDate: $lastUpdatedDate)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LabTypeEntityImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.labSampleTestType, labSampleTestType) ||
+                other.labSampleTestType == labSampleTestType) &&
+            (identical(other.testType, testType) ||
+                other.testType == testType) &&
+            (identical(other.testTypeDetail, testTypeDetail) ||
+                other.testTypeDetail == testTypeDetail) &&
+            (identical(other.uuid, uuid) || other.uuid == uuid) &&
+            (identical(other.standard, standard) ||
+                other.standard == standard) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.createdDate, createdDate) ||
+                other.createdDate == createdDate) &&
+            (identical(other.lastUpdatedBy, lastUpdatedBy) ||
+                other.lastUpdatedBy == lastUpdatedBy) &&
+            (identical(other.lastUpdatedDate, lastUpdatedDate) ||
+                other.lastUpdatedDate == lastUpdatedDate));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    labSampleTestType,
+    testType,
+    testTypeDetail,
+    uuid,
+    standard,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+
+  /// Create a copy of LabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$LabTypeEntityImplCopyWith<_$LabTypeEntityImpl> get copyWith =>
+      __$$LabTypeEntityImplCopyWithImpl<_$LabTypeEntityImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$LabTypeEntityImplToJson(this);
+  }
+}
+
+abstract class _LabTypeEntity implements LabTypeEntity {
+  const factory _LabTypeEntity({
+    required final String id,
+    required final String labSampleTestType,
+    required final String testType,
+    required final String testTypeDetail,
+    final String? uuid,
+    final String? standard,
+    final bool isActive,
+    final int? createdBy,
+    final DateTime? createdDate,
+    final int? lastUpdatedBy,
+    final DateTime? lastUpdatedDate,
+  }) = _$LabTypeEntityImpl;
+
+  factory _LabTypeEntity.fromJson(Map<String, dynamic> json) =
+      _$LabTypeEntityImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get labSampleTestType;
+  @override
+  String get testType;
+  @override
+  String get testTypeDetail;
+  @override
+  String? get uuid;
+  @override
+  String? get standard;
+  @override
+  bool get isActive;
+  @override
+  int? get createdBy;
+  @override
+  DateTime? get createdDate;
+  @override
+  int? get lastUpdatedBy;
+  @override
+  DateTime? get lastUpdatedDate;
+
+  /// Create a copy of LabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$LabTypeEntityImplCopyWith<_$LabTypeEntityImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SampleLabTypeEntity _$SampleLabTypeEntityFromJson(Map<String, dynamic> json) {
+  return _SampleLabTypeEntity.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SampleLabTypeEntity {
+  String get id => throw _privateConstructorUsedError;
+  String get sampleLabType => throw _privateConstructorUsedError;
+  String? get uuid => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  int? get createdBy => throw _privateConstructorUsedError;
+  DateTime? get createdDate => throw _privateConstructorUsedError;
+  int? get lastUpdatedBy => throw _privateConstructorUsedError;
+  DateTime? get lastUpdatedDate => throw _privateConstructorUsedError;
+
+  /// Serializes this SampleLabTypeEntity to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SampleLabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SampleLabTypeEntityCopyWith<SampleLabTypeEntity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SampleLabTypeEntityCopyWith<$Res> {
+  factory $SampleLabTypeEntityCopyWith(
+    SampleLabTypeEntity value,
+    $Res Function(SampleLabTypeEntity) then,
+  ) = _$SampleLabTypeEntityCopyWithImpl<$Res, SampleLabTypeEntity>;
+  @useResult
+  $Res call({
+    String id,
+    String sampleLabType,
+    String? uuid,
+    bool isActive,
+    int? createdBy,
+    DateTime? createdDate,
+    int? lastUpdatedBy,
+    DateTime? lastUpdatedDate,
+  });
+}
+
+/// @nodoc
+class _$SampleLabTypeEntityCopyWithImpl<$Res, $Val extends SampleLabTypeEntity>
+    implements $SampleLabTypeEntityCopyWith<$Res> {
+  _$SampleLabTypeEntityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SampleLabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sampleLabType = null,
+    Object? uuid = freezed,
+    Object? isActive = null,
+    Object? createdBy = freezed,
+    Object? createdDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? lastUpdatedDate = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            sampleLabType: null == sampleLabType
+                ? _value.sampleLabType
+                : sampleLabType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            uuid: freezed == uuid
+                ? _value.uuid
+                : uuid // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            createdDate: freezed == createdDate
+                ? _value.createdDate
+                : createdDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            lastUpdatedBy: freezed == lastUpdatedBy
+                ? _value.lastUpdatedBy
+                : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            lastUpdatedDate: freezed == lastUpdatedDate
+                ? _value.lastUpdatedDate
+                : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$SampleLabTypeEntityImplCopyWith<$Res>
+    implements $SampleLabTypeEntityCopyWith<$Res> {
+  factory _$$SampleLabTypeEntityImplCopyWith(
+    _$SampleLabTypeEntityImpl value,
+    $Res Function(_$SampleLabTypeEntityImpl) then,
+  ) = __$$SampleLabTypeEntityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String sampleLabType,
+    String? uuid,
+    bool isActive,
+    int? createdBy,
+    DateTime? createdDate,
+    int? lastUpdatedBy,
+    DateTime? lastUpdatedDate,
+  });
+}
+
+/// @nodoc
+class __$$SampleLabTypeEntityImplCopyWithImpl<$Res>
+    extends _$SampleLabTypeEntityCopyWithImpl<$Res, _$SampleLabTypeEntityImpl>
+    implements _$$SampleLabTypeEntityImplCopyWith<$Res> {
+  __$$SampleLabTypeEntityImplCopyWithImpl(
+    _$SampleLabTypeEntityImpl _value,
+    $Res Function(_$SampleLabTypeEntityImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of SampleLabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sampleLabType = null,
+    Object? uuid = freezed,
+    Object? isActive = null,
+    Object? createdBy = freezed,
+    Object? createdDate = freezed,
+    Object? lastUpdatedBy = freezed,
+    Object? lastUpdatedDate = freezed,
+  }) {
+    return _then(
+      _$SampleLabTypeEntityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        sampleLabType: null == sampleLabType
+            ? _value.sampleLabType
+            : sampleLabType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        uuid: freezed == uuid
+            ? _value.uuid
+            : uuid // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        createdDate: freezed == createdDate
+            ? _value.createdDate
+            : createdDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        lastUpdatedBy: freezed == lastUpdatedBy
+            ? _value.lastUpdatedBy
+            : lastUpdatedBy // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        lastUpdatedDate: freezed == lastUpdatedDate
+            ? _value.lastUpdatedDate
+            : lastUpdatedDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SampleLabTypeEntityImpl implements _SampleLabTypeEntity {
+  const _$SampleLabTypeEntityImpl({
+    required this.id,
+    required this.sampleLabType,
+    this.uuid,
+    this.isActive = true,
+    this.createdBy,
+    this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+
+  factory _$SampleLabTypeEntityImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SampleLabTypeEntityImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String sampleLabType;
+  @override
+  final String? uuid;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final int? createdBy;
+  @override
+  final DateTime? createdDate;
+  @override
+  final int? lastUpdatedBy;
+  @override
+  final DateTime? lastUpdatedDate;
+
+  @override
+  String toString() {
+    return 'SampleLabTypeEntity(id: $id, sampleLabType: $sampleLabType, uuid: $uuid, isActive: $isActive, createdBy: $createdBy, createdDate: $createdDate, lastUpdatedBy: $lastUpdatedBy, lastUpdatedDate: $lastUpdatedDate)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SampleLabTypeEntityImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.sampleLabType, sampleLabType) ||
+                other.sampleLabType == sampleLabType) &&
+            (identical(other.uuid, uuid) || other.uuid == uuid) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.createdDate, createdDate) ||
+                other.createdDate == createdDate) &&
+            (identical(other.lastUpdatedBy, lastUpdatedBy) ||
+                other.lastUpdatedBy == lastUpdatedBy) &&
+            (identical(other.lastUpdatedDate, lastUpdatedDate) ||
+                other.lastUpdatedDate == lastUpdatedDate));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    sampleLabType,
+    uuid,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+
+  /// Create a copy of SampleLabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SampleLabTypeEntityImplCopyWith<_$SampleLabTypeEntityImpl> get copyWith =>
+      __$$SampleLabTypeEntityImplCopyWithImpl<_$SampleLabTypeEntityImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SampleLabTypeEntityImplToJson(this);
+  }
+}
+
+abstract class _SampleLabTypeEntity implements SampleLabTypeEntity {
+  const factory _SampleLabTypeEntity({
+    required final String id,
+    required final String sampleLabType,
+    final String? uuid,
+    final bool isActive,
+    final int? createdBy,
+    final DateTime? createdDate,
+    final int? lastUpdatedBy,
+    final DateTime? lastUpdatedDate,
+  }) = _$SampleLabTypeEntityImpl;
+
+  factory _SampleLabTypeEntity.fromJson(Map<String, dynamic> json) =
+      _$SampleLabTypeEntityImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get sampleLabType;
+  @override
+  String? get uuid;
+  @override
+  bool get isActive;
+  @override
+  int? get createdBy;
+  @override
+  DateTime? get createdDate;
+  @override
+  int? get lastUpdatedBy;
+  @override
+  DateTime? get lastUpdatedDate;
+
+  /// Create a copy of SampleLabTypeEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SampleLabTypeEntityImplCopyWith<_$SampleLabTypeEntityImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

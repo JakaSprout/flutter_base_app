@@ -1,47 +1,154 @@
-import 'package:app_mobile_afms/core/utils/status_bar_config.dart';
-import 'package:app_mobile_afms/design_system/components/buttons/stp_bottom_action_button.dart';
 import 'package:app_mobile_afms/design_system/components/navigation/stp_app_bar.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_constants.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/constants/lab_request_design_constants.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/modals/lab_request_filter_modal.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/modals/lab_request_filter_options.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/modals/lab_request_sort_modal.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/providers/lab_request_provider.dart';
-import 'package:app_mobile_afms/features/lab_request/presentation/widgets/date_picker_field.dart';
-import 'package:app_mobile_afms/features/lab_request/presentation/widgets/lab_request_list_item.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/widgets/shared/lab_request_content.dart';
 import 'package:app_mobile_afms/router/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Lab request list screen.
 ///
-/// Displays a list of submitted lab requests with filter functionality.
-class LabRequestListScreen extends HookConsumerWidget {
+/// Displays a list of submitted lab requests with search, filter, and sort functionality.
+class LabRequestListScreen extends ConsumerStatefulWidget {
   /// Creates a new instance of [LabRequestListScreen].
   const LabRequestListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Filter state
-    final startDate = useState<DateTime?>(null);
-    final endDate = useState<DateTime?>(null);
-    final showFilter = useState(false);
+  ConsumerState<LabRequestListScreen> createState() =>
+      _LabRequestListScreenState();
+}
 
-    // Watch lab request list provider
-    final labRequestListAsync = ref.watch(
-      labRequestListDataProvider(
-        startDate: startDate.value,
-        endDate: endDate.value,
-      ),
+class _LabRequestListScreenState extends ConsumerState<LabRequestListScreen> {
+  String _searchQuery = '';
+  String _currentSort = LabRequestConstants.sortDateNewest;
+  LabRequestFilterOptions _filterOptions = LabRequestFilterOptions();
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+  }
+
+  void _onResetFilters() {
+    setState(() {
+      _filterOptions = LabRequestFilterOptions();
+    });
+  }
+
+  Future<void> _onSortTap() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => LabRequestSortModal(currentSort: _currentSort),
     );
 
-    // Set status bar for light background
-    useEffect(() {
-      StatusBarConfig.setLightStatusBar();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        StatusBarConfig.setLightStatusBar();
+    if (result != null) {
+      setState(() {
+        _currentSort = result;
       });
-      return null;
-    }, []);
+    }
+  }
+
+  Future<void> _onFilterTap() async {
+    final result = await showModalBottomSheet<LabRequestFilterOptions>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) =>
+          LabRequestFilterModal(currentOptions: _filterOptions),
+    );
+
+    if (result != null) {
+      setState(() {
+        _filterOptions = result;
+      });
+    }
+  }
+
+  /// Converts domain entities and filters/sorts them.
+  List<LabRequest> _filterAndSortRequests(List<LabRequest> requests) {
+    var filtered = requests;
+
+    // Search
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((request) {
+        final searchTerm = _searchQuery.toLowerCase();
+        return request.namaPengirim.toLowerCase().contains(searchTerm) ||
+            request.customer.toLowerCase().contains(searchTerm) ||
+            request.tambakAsal.toLowerCase().contains(searchTerm) ||
+            request.id.toLowerCase().contains(searchTerm);
+      }).toList();
+    }
+
+    // Filter by date
+    if (_filterOptions.startDate != null) {
+      filtered = filtered.where((request) {
+        final requestDate = request.tanggalRequest ?? request.tanggalPengiriman;
+        return requestDate.isAfter(
+          _filterOptions.startDate!.subtract(const Duration(seconds: 1)),
+        );
+      }).toList();
+    }
+
+    if (_filterOptions.endDate != null) {
+      filtered = filtered.where((request) {
+        final requestDate = request.tanggalRequest ?? request.tanggalPengiriman;
+        return requestDate.isBefore(
+          _filterOptions.endDate!.add(const Duration(days: 1)),
+        );
+      }).toList();
+    }
+
+    // Filter by status
+    if (_filterOptions.statuses.isNotEmpty) {
+      filtered = filtered.where((request) {
+        return request.status != null &&
+            _filterOptions.statuses.contains(request.status);
+      }).toList();
+    }
+
+    // Sort
+    filtered.sort((a, b) {
+      switch (_currentSort) {
+        case LabRequestConstants.sortDateNewest:
+          final aDate = a.tanggalRequest ?? a.tanggalPengiriman;
+          final bDate = b.tanggalRequest ?? b.tanggalPengiriman;
+          return bDate.compareTo(aDate);
+        case LabRequestConstants.sortDateOldest:
+          final aDate = a.tanggalRequest ?? a.tanggalPengiriman;
+          final bDate = b.tanggalRequest ?? b.tanggalPengiriman;
+          return aDate.compareTo(bDate);
+        case LabRequestConstants.sortStatus:
+          // Sort by status enum order (dikirim, diproses, selesai, ditolak)
+          final aStatus = a.status;
+          final bStatus = b.status;
+          if (aStatus == null && bStatus == null) return 0;
+          if (aStatus == null) return 1;
+          if (bStatus == null) return -1;
+          return aStatus.index.compareTo(bStatus.index);
+        case LabRequestConstants.sortCustomerAZ:
+          return a.customer.compareTo(b.customer);
+        case LabRequestConstants.sortCustomerZA:
+          return b.customer.compareTo(a.customer);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Watch lab request list provider
+    final labRequestListAsync = ref.watch(labRequestListDataProvider());
 
     return Scaffold(
       backgroundColor: LabRequestDesignConstants.white,
@@ -49,162 +156,41 @@ class LabRequestListScreen extends HookConsumerWidget {
         title: LabRequestConstants.screenTitle,
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => showFilter.value = !showFilter.value,
+            icon: const Icon(
+              Icons.help_outline,
+              color: LabRequestDesignConstants.gray100,
+            ),
+            onPressed: () {
+              // TODO: Show help
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.add,
+              color: LabRequestDesignConstants.gray100,
+            ),
+            onPressed: () {
+              context.push(Routes.labRequestForm);
+            },
           ),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Filter section
-            if (showFilter.value)
-              Container(
-                padding: const EdgeInsets.all(
-                  LabRequestDesignConstants.screenHorizontalPadding,
-                ),
-                color: LabRequestDesignConstants.gray05,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LabRequestConstants.filterLabel,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(
-                      height: LabRequestDesignConstants.spacingSmall,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: LabRequestDatePickerField(
-                            label: LabRequestConstants.filterTanggalRequest,
-                            selectedDate: startDate.value,
-                            onDateSelected: (date) {
-                              startDate.value = date;
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          width: LabRequestDesignConstants.spacingSmall,
-                        ),
-                        const Text(LabRequestConstants.filterTo),
-                        const SizedBox(
-                          width: LabRequestDesignConstants.spacingSmall,
-                        ),
-                        Expanded(
-                          child: LabRequestDatePickerField(
-                            label: '',
-                            selectedDate: endDate.value,
-                            onDateSelected: (date) {
-                              endDate.value = date;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: LabRequestDesignConstants.spacingSmall,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Refresh the list with new filters
-                          ref.invalidate(
-                            labRequestListDataProvider(
-                              startDate: startDate.value,
-                              endDate: endDate.value,
-                            ),
-                          );
-                        },
-                        child: const Text('Submit'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            // List content
-            Expanded(
-              child: labRequestListAsync.when(
-                data: (data) {
-                  if (data.requests.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.inbox_outlined,
-                            size: 64,
-                            color: LabRequestDesignConstants.gray70,
-                          ),
-                          const SizedBox(
-                            height: LabRequestDesignConstants.spacingMedium,
-                          ),
-                          Text(
-                            LabRequestConstants.emptyStateMessage,
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(color: LabRequestDesignConstants.gray70),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+        child: labRequestListAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(child: Text('Error: $error')),
+          data: (data) {
+            final filteredRequests = _filterAndSortRequests(data.requests);
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(
-                      LabRequestDesignConstants.screenHorizontalPadding,
-                    ),
-                    itemCount: data.requests.length,
-                    itemBuilder: (context, index) {
-                      final request = data.requests[index];
-                      return LabRequestListItem(request: request);
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: LabRequestDesignConstants.gray70,
-                      ),
-                      const SizedBox(
-                        height: LabRequestDesignConstants.spacingMedium,
-                      ),
-                      Text(
-                        'Error: $error',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: LabRequestDesignConstants.gray70,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Bottom Button - Request Baru
-            STPBottomActionButton(
-              onPressed: () {
-                context.push(Routes.labRequestForm);
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    LabRequestConstants.buttonNewRequest,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            return LabRequestContent(
+              requests: filteredRequests,
+              onSearchChanged: _onSearchChanged,
+              onSortTap: _onSortTap,
+              onFilterTap: _onFilterTap,
+              onResetFilterTap: _onResetFilters,
+              filterCount: _filterOptions.count,
+            );
+          },
         ),
       ),
     );

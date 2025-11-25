@@ -69,6 +69,10 @@ class LabRequestDesignConstants {
   /// Source: AppColors.gray100
   static const Color gray100 = AppColors.gray100;
 
+  /// Gray 60 color
+  /// Source: AppColors.gray60
+  static const Color gray60 = AppColors.gray60;
+
   /// Gray 70 color
   /// Source: AppColors.gray70
   static const Color gray70 = AppColors.gray70;
@@ -81,7 +85,21 @@ class LabRequestDesignConstants {
   /// Source: AppColors.gray05
   static const Color gray05 = AppColors.gray05;
 
+  /// Gray 10 color
+  /// Source: AppColors.gray10
+  static const Color gray10 = AppColors.gray10;
+
   /// Primary color
   /// Source: AppColors.primary
   static const Color primary = AppColors.primary;
+
+  // Button Styling
+  /// Button height (56px)
+  static const double buttonHeight = 56;
+
+  /// Button border radius (8px)
+  static const double buttonBorderRadius = 8;
+
+  /// Button font size (14px)
+  static const double buttonFontSize = 14;
 }

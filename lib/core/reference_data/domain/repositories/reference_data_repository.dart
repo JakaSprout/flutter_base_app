@@ -48,5 +48,23 @@ abstract class ReferenceDataRepository {
   /// [employeeId] The employee ID (currently unused, kept for consistency).
   /// Returns [Either] containing [Failure] on error or [List<UnitEntity>] on success.
   Future<Either<Failure, List<UnitEntity>>> getUnits(String employeeId);
+
+  /// Gets all lab parameters.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<LabParameterEntity>] on success.
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters(String employeeId);
+
+  /// Gets all lab types.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<LabTypeEntity>] on success.
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes(String employeeId);
+
+  /// Gets all sample lab types.
+  ///
+  /// [employeeId] The employee ID (currently unused, kept for consistency).
+  /// Returns [Either] containing [Failure] on error or [List<SampleLabTypeEntity>] on success.
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes(String employeeId);
 }
 

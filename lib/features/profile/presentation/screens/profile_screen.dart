@@ -69,7 +69,7 @@ class _DatabaseViewerButton extends ConsumerWidget {
     final ponds = await database.select(database.fmsMtPonds).get();
     AppLogger.debug('Total ponds in database: ${ponds.length}');
     for (final pond in ponds.take(5)) {
-      AppLogger.debug('Pond ${pond.pondCode}: farmId = ${pond.farmId}');
+      AppLogger.debug('Pond ${pond.pondCode}: farmUuid = ${pond.farmUuid}');
     }
 
     // Query farms to verify data

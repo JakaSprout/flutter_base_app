@@ -2,10 +2,15 @@ part of '../app_database.dart';
 
 /// Master data table for employees.
 /// 100% matches backend PostgreSQL schema.
+/// Based on schema.sql - fms_mt_employees
 @DataClassName('FmsMtEmployee')
 class FmsMtEmployees extends Table {
   IntColumn get employeeId => integer().autoIncrement()();
-  TextColumn get employeeUuid => text().unique()();
+  TextColumn get employeeUuid => text().unique().withDefault(
+    const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  )();
   TextColumn get employeeCode => text().unique()();
   TextColumn get employeeName => text()();
   TextColumn get username => text().nullable().unique()();
@@ -13,7 +18,7 @@ class FmsMtEmployees extends Table {
   TextColumn get employeeRole => text().nullable()();
   TextColumn get userAccessLevel => text().nullable()();
   TextColumn get employeeStatus =>
-      text().nullable().withDefault(const Constant('Active'))();
+      text().withDefault(const Constant('Active'))();
   TextColumn get email => text().nullable().unique()();
   TextColumn get phoneNumber => text().nullable()();
   TextColumn get address => text().nullable()();
@@ -25,7 +30,7 @@ class FmsMtEmployees extends Table {
   )();
   TextColumn get department => text().nullable()();
   DateTimeColumn get createdDate =>
-      dateTime().nullable().withDefault(currentDateAndTime)();
+      dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get deletedDate => dateTime().nullable()();
 
   @override

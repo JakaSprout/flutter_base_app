@@ -33,8 +33,11 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
   );
   static const VerificationMeta _employeeCodeMeta = const VerificationMeta(
     'employeeCode',
@@ -111,7 +114,7 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
   late final GeneratedColumn<String> employeeStatus = GeneratedColumn<String>(
     'employee_status',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant('Active'),
@@ -191,7 +194,7 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
   late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
     'created_date',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
@@ -253,8 +256,6 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
           _employeeUuidMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_employeeUuidMeta);
     }
     if (data.containsKey('employee_code')) {
       context.handle(
@@ -424,7 +425,7 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
       employeeStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}employee_status'],
-      ),
+      )!,
       email: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}email'],
@@ -452,7 +453,7 @@ class $FmsMtEmployeesTable extends FmsMtEmployees
       createdDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_date'],
-      ),
+      )!,
       deletedDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_date'],
@@ -475,14 +476,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
   final String? hashedPassword;
   final String? employeeRole;
   final String? userAccessLevel;
-  final String? employeeStatus;
+  final String employeeStatus;
   final String? email;
   final String? phoneNumber;
   final String? address;
   final DateTime? hireDate;
   final int? reportingTo;
   final String? department;
-  final DateTime? createdDate;
+  final DateTime createdDate;
   final DateTime? deletedDate;
   const FmsMtEmployee({
     required this.employeeId,
@@ -493,14 +494,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
     this.hashedPassword,
     this.employeeRole,
     this.userAccessLevel,
-    this.employeeStatus,
+    required this.employeeStatus,
     this.email,
     this.phoneNumber,
     this.address,
     this.hireDate,
     this.reportingTo,
     this.department,
-    this.createdDate,
+    required this.createdDate,
     this.deletedDate,
   });
   @override
@@ -522,9 +523,7 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
     if (!nullToAbsent || userAccessLevel != null) {
       map['user_access_level'] = Variable<String>(userAccessLevel);
     }
-    if (!nullToAbsent || employeeStatus != null) {
-      map['employee_status'] = Variable<String>(employeeStatus);
-    }
+    map['employee_status'] = Variable<String>(employeeStatus);
     if (!nullToAbsent || email != null) {
       map['email'] = Variable<String>(email);
     }
@@ -543,9 +542,7 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
     if (!nullToAbsent || department != null) {
       map['department'] = Variable<String>(department);
     }
-    if (!nullToAbsent || createdDate != null) {
-      map['created_date'] = Variable<DateTime>(createdDate);
-    }
+    map['created_date'] = Variable<DateTime>(createdDate);
     if (!nullToAbsent || deletedDate != null) {
       map['deleted_date'] = Variable<DateTime>(deletedDate);
     }
@@ -570,9 +567,7 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
       userAccessLevel: userAccessLevel == null && nullToAbsent
           ? const Value.absent()
           : Value(userAccessLevel),
-      employeeStatus: employeeStatus == null && nullToAbsent
-          ? const Value.absent()
-          : Value(employeeStatus),
+      employeeStatus: Value(employeeStatus),
       email: email == null && nullToAbsent
           ? const Value.absent()
           : Value(email),
@@ -591,9 +586,7 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
       department: department == null && nullToAbsent
           ? const Value.absent()
           : Value(department),
-      createdDate: createdDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createdDate),
+      createdDate: Value(createdDate),
       deletedDate: deletedDate == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedDate),
@@ -614,14 +607,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
       hashedPassword: serializer.fromJson<String?>(json['hashedPassword']),
       employeeRole: serializer.fromJson<String?>(json['employeeRole']),
       userAccessLevel: serializer.fromJson<String?>(json['userAccessLevel']),
-      employeeStatus: serializer.fromJson<String?>(json['employeeStatus']),
+      employeeStatus: serializer.fromJson<String>(json['employeeStatus']),
       email: serializer.fromJson<String?>(json['email']),
       phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
       address: serializer.fromJson<String?>(json['address']),
       hireDate: serializer.fromJson<DateTime?>(json['hireDate']),
       reportingTo: serializer.fromJson<int?>(json['reportingTo']),
       department: serializer.fromJson<String?>(json['department']),
-      createdDate: serializer.fromJson<DateTime?>(json['createdDate']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
       deletedDate: serializer.fromJson<DateTime?>(json['deletedDate']),
     );
   }
@@ -637,14 +630,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
       'hashedPassword': serializer.toJson<String?>(hashedPassword),
       'employeeRole': serializer.toJson<String?>(employeeRole),
       'userAccessLevel': serializer.toJson<String?>(userAccessLevel),
-      'employeeStatus': serializer.toJson<String?>(employeeStatus),
+      'employeeStatus': serializer.toJson<String>(employeeStatus),
       'email': serializer.toJson<String?>(email),
       'phoneNumber': serializer.toJson<String?>(phoneNumber),
       'address': serializer.toJson<String?>(address),
       'hireDate': serializer.toJson<DateTime?>(hireDate),
       'reportingTo': serializer.toJson<int?>(reportingTo),
       'department': serializer.toJson<String?>(department),
-      'createdDate': serializer.toJson<DateTime?>(createdDate),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
       'deletedDate': serializer.toJson<DateTime?>(deletedDate),
     };
   }
@@ -658,14 +651,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
     Value<String?> hashedPassword = const Value.absent(),
     Value<String?> employeeRole = const Value.absent(),
     Value<String?> userAccessLevel = const Value.absent(),
-    Value<String?> employeeStatus = const Value.absent(),
+    String? employeeStatus,
     Value<String?> email = const Value.absent(),
     Value<String?> phoneNumber = const Value.absent(),
     Value<String?> address = const Value.absent(),
     Value<DateTime?> hireDate = const Value.absent(),
     Value<int?> reportingTo = const Value.absent(),
     Value<String?> department = const Value.absent(),
-    Value<DateTime?> createdDate = const Value.absent(),
+    DateTime? createdDate,
     Value<DateTime?> deletedDate = const Value.absent(),
   }) => FmsMtEmployee(
     employeeId: employeeId ?? this.employeeId,
@@ -680,16 +673,14 @@ class FmsMtEmployee extends DataClass implements Insertable<FmsMtEmployee> {
     userAccessLevel: userAccessLevel.present
         ? userAccessLevel.value
         : this.userAccessLevel,
-    employeeStatus: employeeStatus.present
-        ? employeeStatus.value
-        : this.employeeStatus,
+    employeeStatus: employeeStatus ?? this.employeeStatus,
     email: email.present ? email.value : this.email,
     phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
     address: address.present ? address.value : this.address,
     hireDate: hireDate.present ? hireDate.value : this.hireDate,
     reportingTo: reportingTo.present ? reportingTo.value : this.reportingTo,
     department: department.present ? department.value : this.department,
-    createdDate: createdDate.present ? createdDate.value : this.createdDate,
+    createdDate: createdDate ?? this.createdDate,
     deletedDate: deletedDate.present ? deletedDate.value : this.deletedDate,
   );
   FmsMtEmployee copyWithCompanion(FmsMtEmployeesCompanion data) {
@@ -816,14 +807,14 @@ class FmsMtEmployeesCompanion extends UpdateCompanion<FmsMtEmployee> {
   final Value<String?> hashedPassword;
   final Value<String?> employeeRole;
   final Value<String?> userAccessLevel;
-  final Value<String?> employeeStatus;
+  final Value<String> employeeStatus;
   final Value<String?> email;
   final Value<String?> phoneNumber;
   final Value<String?> address;
   final Value<DateTime?> hireDate;
   final Value<int?> reportingTo;
   final Value<String?> department;
-  final Value<DateTime?> createdDate;
+  final Value<DateTime> createdDate;
   final Value<DateTime?> deletedDate;
   const FmsMtEmployeesCompanion({
     this.employeeId = const Value.absent(),
@@ -846,7 +837,7 @@ class FmsMtEmployeesCompanion extends UpdateCompanion<FmsMtEmployee> {
   });
   FmsMtEmployeesCompanion.insert({
     this.employeeId = const Value.absent(),
-    required String employeeUuid,
+    this.employeeUuid = const Value.absent(),
     required String employeeCode,
     required String employeeName,
     this.username = const Value.absent(),
@@ -862,8 +853,7 @@ class FmsMtEmployeesCompanion extends UpdateCompanion<FmsMtEmployee> {
     this.department = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.deletedDate = const Value.absent(),
-  }) : employeeUuid = Value(employeeUuid),
-       employeeCode = Value(employeeCode),
+  }) : employeeCode = Value(employeeCode),
        employeeName = Value(employeeName);
   static Insertable<FmsMtEmployee> custom({
     Expression<int>? employeeId,
@@ -914,14 +904,14 @@ class FmsMtEmployeesCompanion extends UpdateCompanion<FmsMtEmployee> {
     Value<String?>? hashedPassword,
     Value<String?>? employeeRole,
     Value<String?>? userAccessLevel,
-    Value<String?>? employeeStatus,
+    Value<String>? employeeStatus,
     Value<String?>? email,
     Value<String?>? phoneNumber,
     Value<String?>? address,
     Value<DateTime?>? hireDate,
     Value<int?>? reportingTo,
     Value<String?>? department,
-    Value<DateTime?>? createdDate,
+    Value<DateTime>? createdDate,
     Value<DateTime?>? deletedDate,
   }) {
     return FmsMtEmployeesCompanion(
@@ -1055,8 +1045,11 @@ class $FmsMtFarmsTable extends FmsMtFarms
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
   );
   static const VerificationMeta _farmCodeMeta = const VerificationMeta(
     'farmCode',
@@ -1189,7 +1182,7 @@ class $FmsMtFarmsTable extends FmsMtFarms
   late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
     'is_active',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -1204,7 +1197,7 @@ class $FmsMtFarmsTable extends FmsMtFarms
   late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
     'created_date',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
@@ -1215,6 +1208,20 @@ class $FmsMtFarmsTable extends FmsMtFarms
   @override
   late final GeneratedColumn<int> createdBy = GeneratedColumn<int>(
     'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_mt_employees (employee_id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<int> lastUpdatedBy = GeneratedColumn<int>(
+    'last_updated_by',
     aliasedName,
     true,
     type: DriftSqlType.int,
@@ -1241,6 +1248,7 @@ class $FmsMtFarmsTable extends FmsMtFarms
     isActive,
     createdDate,
     createdBy,
+    lastUpdatedBy,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1265,8 +1273,6 @@ class $FmsMtFarmsTable extends FmsMtFarms
         _farmUuidMeta,
         farmUuid.isAcceptableOrUnknown(data['farm_uuid']!, _farmUuidMeta),
       );
-    } else if (isInserting) {
-      context.missing(_farmUuidMeta);
     }
     if (data.containsKey('farm_code')) {
       context.handle(
@@ -1374,6 +1380,15 @@ class $FmsMtFarmsTable extends FmsMtFarms
         createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
       );
     }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1438,14 +1453,18 @@ class $FmsMtFarmsTable extends FmsMtFarms
       isActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
-      ),
+      )!,
       createdDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_date'],
-      ),
+      )!,
       createdBy: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}created_by'],
+      ),
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_updated_by'],
       ),
     );
   }
@@ -1470,9 +1489,10 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
   final String? ownerName;
   final String? contactInfo;
   final DateTime? establishedDate;
-  final bool? isActive;
-  final DateTime? createdDate;
+  final bool isActive;
+  final DateTime createdDate;
   final int? createdBy;
+  final int? lastUpdatedBy;
   const FmsMtFarm({
     required this.farmId,
     required this.farmUuid,
@@ -1487,9 +1507,10 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
     this.ownerName,
     this.contactInfo,
     this.establishedDate,
-    this.isActive,
-    this.createdDate,
+    required this.isActive,
+    required this.createdDate,
     this.createdBy,
+    this.lastUpdatedBy,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1525,14 +1546,13 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
     if (!nullToAbsent || establishedDate != null) {
       map['established_date'] = Variable<DateTime>(establishedDate);
     }
-    if (!nullToAbsent || isActive != null) {
-      map['is_active'] = Variable<bool>(isActive);
-    }
-    if (!nullToAbsent || createdDate != null) {
-      map['created_date'] = Variable<DateTime>(createdDate);
-    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_date'] = Variable<DateTime>(createdDate);
     if (!nullToAbsent || createdBy != null) {
       map['created_by'] = Variable<int>(createdBy);
+    }
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy);
     }
     return map;
   }
@@ -1570,15 +1590,14 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
       establishedDate: establishedDate == null && nullToAbsent
           ? const Value.absent()
           : Value(establishedDate),
-      isActive: isActive == null && nullToAbsent
-          ? const Value.absent()
-          : Value(isActive),
-      createdDate: createdDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createdDate),
+      isActive: Value(isActive),
+      createdDate: Value(createdDate),
       createdBy: createdBy == null && nullToAbsent
           ? const Value.absent()
           : Value(createdBy),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
     );
   }
 
@@ -1601,9 +1620,10 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
       ownerName: serializer.fromJson<String?>(json['ownerName']),
       contactInfo: serializer.fromJson<String?>(json['contactInfo']),
       establishedDate: serializer.fromJson<DateTime?>(json['establishedDate']),
-      isActive: serializer.fromJson<bool?>(json['isActive']),
-      createdDate: serializer.fromJson<DateTime?>(json['createdDate']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
       createdBy: serializer.fromJson<int?>(json['createdBy']),
+      lastUpdatedBy: serializer.fromJson<int?>(json['lastUpdatedBy']),
     );
   }
   @override
@@ -1623,9 +1643,10 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
       'ownerName': serializer.toJson<String?>(ownerName),
       'contactInfo': serializer.toJson<String?>(contactInfo),
       'establishedDate': serializer.toJson<DateTime?>(establishedDate),
-      'isActive': serializer.toJson<bool?>(isActive),
-      'createdDate': serializer.toJson<DateTime?>(createdDate),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
       'createdBy': serializer.toJson<int?>(createdBy),
+      'lastUpdatedBy': serializer.toJson<int?>(lastUpdatedBy),
     };
   }
 
@@ -1643,9 +1664,10 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
     Value<String?> ownerName = const Value.absent(),
     Value<String?> contactInfo = const Value.absent(),
     Value<DateTime?> establishedDate = const Value.absent(),
-    Value<bool?> isActive = const Value.absent(),
-    Value<DateTime?> createdDate = const Value.absent(),
+    bool? isActive,
+    DateTime? createdDate,
     Value<int?> createdBy = const Value.absent(),
+    Value<int?> lastUpdatedBy = const Value.absent(),
   }) => FmsMtFarm(
     farmId: farmId ?? this.farmId,
     farmUuid: farmUuid ?? this.farmUuid,
@@ -1662,9 +1684,12 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
     establishedDate: establishedDate.present
         ? establishedDate.value
         : this.establishedDate,
-    isActive: isActive.present ? isActive.value : this.isActive,
-    createdDate: createdDate.present ? createdDate.value : this.createdDate,
+    isActive: isActive ?? this.isActive,
+    createdDate: createdDate ?? this.createdDate,
     createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
   );
   FmsMtFarm copyWithCompanion(FmsMtFarmsCompanion data) {
     return FmsMtFarm(
@@ -1696,6 +1721,9 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
           ? data.createdDate.value
           : this.createdDate,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
     );
   }
 
@@ -1717,7 +1745,8 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
           ..write('establishedDate: $establishedDate, ')
           ..write('isActive: $isActive, ')
           ..write('createdDate: $createdDate, ')
-          ..write('createdBy: $createdBy')
+          ..write('createdBy: $createdBy, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy')
           ..write(')'))
         .toString();
   }
@@ -1740,6 +1769,7 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
     isActive,
     createdDate,
     createdBy,
+    lastUpdatedBy,
   );
   @override
   bool operator ==(Object other) =>
@@ -1760,7 +1790,8 @@ class FmsMtFarm extends DataClass implements Insertable<FmsMtFarm> {
           other.establishedDate == this.establishedDate &&
           other.isActive == this.isActive &&
           other.createdDate == this.createdDate &&
-          other.createdBy == this.createdBy);
+          other.createdBy == this.createdBy &&
+          other.lastUpdatedBy == this.lastUpdatedBy);
 }
 
 class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
@@ -1777,9 +1808,10 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
   final Value<String?> ownerName;
   final Value<String?> contactInfo;
   final Value<DateTime?> establishedDate;
-  final Value<bool?> isActive;
-  final Value<DateTime?> createdDate;
+  final Value<bool> isActive;
+  final Value<DateTime> createdDate;
   final Value<int?> createdBy;
+  final Value<int?> lastUpdatedBy;
   const FmsMtFarmsCompanion({
     this.farmId = const Value.absent(),
     this.farmUuid = const Value.absent(),
@@ -1797,10 +1829,11 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
     this.isActive = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.createdBy = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
   });
   FmsMtFarmsCompanion.insert({
     this.farmId = const Value.absent(),
-    required String farmUuid,
+    this.farmUuid = const Value.absent(),
     required String farmCode,
     required String farmName,
     this.farmLocation = const Value.absent(),
@@ -1815,8 +1848,8 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
     this.isActive = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.createdBy = const Value.absent(),
-  }) : farmUuid = Value(farmUuid),
-       farmCode = Value(farmCode),
+    this.lastUpdatedBy = const Value.absent(),
+  }) : farmCode = Value(farmCode),
        farmName = Value(farmName);
   static Insertable<FmsMtFarm> custom({
     Expression<int>? farmId,
@@ -1835,6 +1868,7 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
     Expression<bool>? isActive,
     Expression<DateTime>? createdDate,
     Expression<int>? createdBy,
+    Expression<int>? lastUpdatedBy,
   }) {
     return RawValuesInsertable({
       if (farmId != null) 'farm_id': farmId,
@@ -1853,6 +1887,7 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
       if (isActive != null) 'is_active': isActive,
       if (createdDate != null) 'created_date': createdDate,
       if (createdBy != null) 'created_by': createdBy,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
     });
   }
 
@@ -1870,9 +1905,10 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
     Value<String?>? ownerName,
     Value<String?>? contactInfo,
     Value<DateTime?>? establishedDate,
-    Value<bool?>? isActive,
-    Value<DateTime?>? createdDate,
+    Value<bool>? isActive,
+    Value<DateTime>? createdDate,
     Value<int?>? createdBy,
+    Value<int?>? lastUpdatedBy,
   }) {
     return FmsMtFarmsCompanion(
       farmId: farmId ?? this.farmId,
@@ -1891,6 +1927,7 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
       isActive: isActive ?? this.isActive,
       createdDate: createdDate ?? this.createdDate,
       createdBy: createdBy ?? this.createdBy,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
     );
   }
 
@@ -1945,6 +1982,9 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
     if (createdBy.present) {
       map['created_by'] = Variable<int>(createdBy.value);
     }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy.value);
+    }
     return map;
   }
 
@@ -1966,7 +2006,8 @@ class FmsMtFarmsCompanion extends UpdateCompanion<FmsMtFarm> {
           ..write('establishedDate: $establishedDate, ')
           ..write('isActive: $isActive, ')
           ..write('createdDate: $createdDate, ')
-          ..write('createdBy: $createdBy')
+          ..write('createdBy: $createdBy, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy')
           ..write(')'))
         .toString();
   }
@@ -2000,19 +2041,10 @@ class $FmsMtPondsTable extends FmsMtPonds
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
-  );
-  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
-  @override
-  late final GeneratedColumn<int> farmId = GeneratedColumn<int>(
-    'farm_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES fms_mt_farms (farm_id) ON DELETE SET NULL',
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
     ),
   );
   static const VerificationMeta _pondCodeMeta = const VerificationMeta(
@@ -2033,6 +2065,28 @@ class $FmsMtPondsTable extends FmsMtPonds
   @override
   late final GeneratedColumn<String> pondName = GeneratedColumn<String>(
     'pond_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pondTypeMeta = const VerificationMeta(
+    'pondType',
+  );
+  @override
+  late final GeneratedColumn<String> pondType = GeneratedColumn<String>(
+    'pond_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pondShapeMeta = const VerificationMeta(
+    'pondShape',
+  );
+  @override
+  late final GeneratedColumn<String> pondShape = GeneratedColumn<String>(
+    'pond_shape',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -2147,28 +2201,6 @@ class $FmsMtPondsTable extends FmsMtPonds
     requiredDuringInsert: false,
     defaultValue: const Constant('cubic_meter'),
   );
-  static const VerificationMeta _pondTypeMeta = const VerificationMeta(
-    'pondType',
-  );
-  @override
-  late final GeneratedColumn<String> pondType = GeneratedColumn<String>(
-    'pond_type',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _pondShapeMeta = const VerificationMeta(
-    'pondShape',
-  );
-  @override
-  late final GeneratedColumn<String> pondShape = GeneratedColumn<String>(
-    'pond_shape',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _bottomTypeMeta = const VerificationMeta(
     'bottomType',
   );
@@ -2187,7 +2219,7 @@ class $FmsMtPondsTable extends FmsMtPonds
   late final GeneratedColumn<bool> hasAerator = GeneratedColumn<bool>(
     'has_aerator',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -2224,7 +2256,7 @@ class $FmsMtPondsTable extends FmsMtPonds
   late final GeneratedColumn<bool> hasCentralDrain = GeneratedColumn<bool>(
     'has_central_drain',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -2250,7 +2282,7 @@ class $FmsMtPondsTable extends FmsMtPonds
   late final GeneratedColumn<String> pondStatus = GeneratedColumn<String>(
     'pond_status',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant('Available'),
@@ -2264,6 +2296,107 @@ class $FmsMtPondsTable extends FmsMtPonds
     aliasedName,
     true,
     type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _maxBiomassKgPerSqmMeta =
+      const VerificationMeta('maxBiomassKgPerSqm');
+  @override
+  late final GeneratedColumn<double> maxBiomassKgPerSqm =
+      GeneratedColumn<double>(
+        'max_biomass_kg_per_sqm',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _recommendedStockingDensityMeta =
+      const VerificationMeta('recommendedStockingDensity');
+  @override
+  late final GeneratedColumn<double> recommendedStockingDensity =
+      GeneratedColumn<double>(
+        'recommended_stocking_density',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<int> createdBy = GeneratedColumn<int>(
+    'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_mt_employees (employee_id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _lastUpdatedDateMeta = const VerificationMeta(
+    'lastUpdatedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedDate =
+      GeneratedColumn<DateTime>(
+        'last_updated_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+        defaultValue: currentDateAndTime,
+      );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<int> lastUpdatedBy = GeneratedColumn<int>(
+    'last_updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_mt_employees (employee_id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _deletedDateMeta = const VerificationMeta(
+    'deletedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedDate = GeneratedColumn<DateTime>(
+    'deleted_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _maxBiomassMeta = const VerificationMeta(
@@ -2287,64 +2420,38 @@ class $FmsMtPondsTable extends FmsMtPonds
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant('kg_per_sqm'),
   );
-  static const VerificationMeta _recommendedStockingDensityMeta =
-      const VerificationMeta('recommendedStockingDensity');
+  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
   @override
-  late final GeneratedColumn<double> recommendedStockingDensity =
-      GeneratedColumn<double>(
-        'recommended_stocking_density',
-        aliasedName,
-        true,
-        type: DriftSqlType.double,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _isActiveMeta = const VerificationMeta(
-    'isActive',
-  );
-  @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-    'is_active',
+  late final GeneratedColumn<int> farmId = GeneratedColumn<int>(
+    'farm_id',
     aliasedName,
     true,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_active" IN (0, 1))',
+      'REFERENCES fms_mt_farms (farm_id) ON DELETE SET NULL',
     ),
-    defaultValue: const Constant(true),
   );
-  static const VerificationMeta _createdDateMeta = const VerificationMeta(
-    'createdDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
-    'created_date',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _deletedDateMeta = const VerificationMeta(
-    'deletedDate',
+  static const VerificationMeta _farmUuidMeta = const VerificationMeta(
+    'farmUuid',
   );
   @override
-  late final GeneratedColumn<DateTime> deletedDate = GeneratedColumn<DateTime>(
-    'deleted_date',
+  late final GeneratedColumn<String> farmUuid = GeneratedColumn<String>(
+    'farm_uuid',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [
     pondId,
     pondUuid,
-    farmId,
     pondCode,
     pondName,
+    pondType,
+    pondShape,
     pondSize,
     pondSizeUnit,
     pwa,
@@ -2355,8 +2462,6 @@ class $FmsMtPondsTable extends FmsMtPonds
     maxDepthUnit,
     volume,
     volumeUnit,
-    pondType,
-    pondShape,
     bottomType,
     hasAerator,
     aeratorCount,
@@ -2365,12 +2470,18 @@ class $FmsMtPondsTable extends FmsMtPonds
     waterSource,
     pondStatus,
     currentCycleId,
-    maxBiomass,
-    maxBiomassUnit,
+    maxBiomassKgPerSqm,
     recommendedStockingDensity,
     isActive,
     createdDate,
+    createdBy,
+    lastUpdatedDate,
+    lastUpdatedBy,
     deletedDate,
+    maxBiomass,
+    maxBiomassUnit,
+    farmId,
+    farmUuid,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2395,14 +2506,6 @@ class $FmsMtPondsTable extends FmsMtPonds
         _pondUuidMeta,
         pondUuid.isAcceptableOrUnknown(data['pond_uuid']!, _pondUuidMeta),
       );
-    } else if (isInserting) {
-      context.missing(_pondUuidMeta);
-    }
-    if (data.containsKey('farm_id')) {
-      context.handle(
-        _farmIdMeta,
-        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
-      );
     }
     if (data.containsKey('pond_code')) {
       context.handle(
@@ -2416,6 +2519,20 @@ class $FmsMtPondsTable extends FmsMtPonds
       context.handle(
         _pondNameMeta,
         pondName.isAcceptableOrUnknown(data['pond_name']!, _pondNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pondNameMeta);
+    }
+    if (data.containsKey('pond_type')) {
+      context.handle(
+        _pondTypeMeta,
+        pondType.isAcceptableOrUnknown(data['pond_type']!, _pondTypeMeta),
+      );
+    }
+    if (data.containsKey('pond_shape')) {
+      context.handle(
+        _pondShapeMeta,
+        pondShape.isAcceptableOrUnknown(data['pond_shape']!, _pondShapeMeta),
       );
     }
     if (data.containsKey('pond_size')) {
@@ -2484,18 +2601,6 @@ class $FmsMtPondsTable extends FmsMtPonds
         volumeUnit.isAcceptableOrUnknown(data['volume_unit']!, _volumeUnitMeta),
       );
     }
-    if (data.containsKey('pond_type')) {
-      context.handle(
-        _pondTypeMeta,
-        pondType.isAcceptableOrUnknown(data['pond_type']!, _pondTypeMeta),
-      );
-    }
-    if (data.containsKey('pond_shape')) {
-      context.handle(
-        _pondShapeMeta,
-        pondShape.isAcceptableOrUnknown(data['pond_shape']!, _pondShapeMeta),
-      );
-    }
     if (data.containsKey('bottom_type')) {
       context.handle(
         _bottomTypeMeta,
@@ -2559,18 +2664,12 @@ class $FmsMtPondsTable extends FmsMtPonds
         ),
       );
     }
-    if (data.containsKey('max_biomass')) {
+    if (data.containsKey('max_biomass_kg_per_sqm')) {
       context.handle(
-        _maxBiomassMeta,
-        maxBiomass.isAcceptableOrUnknown(data['max_biomass']!, _maxBiomassMeta),
-      );
-    }
-    if (data.containsKey('max_biomass_unit')) {
-      context.handle(
-        _maxBiomassUnitMeta,
-        maxBiomassUnit.isAcceptableOrUnknown(
-          data['max_biomass_unit']!,
-          _maxBiomassUnitMeta,
+        _maxBiomassKgPerSqmMeta,
+        maxBiomassKgPerSqm.isAcceptableOrUnknown(
+          data['max_biomass_kg_per_sqm']!,
+          _maxBiomassKgPerSqmMeta,
         ),
       );
     }
@@ -2598,6 +2697,30 @@ class $FmsMtPondsTable extends FmsMtPonds
         ),
       );
     }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
+    if (data.containsKey('last_updated_date')) {
+      context.handle(
+        _lastUpdatedDateMeta,
+        lastUpdatedDate.isAcceptableOrUnknown(
+          data['last_updated_date']!,
+          _lastUpdatedDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
     if (data.containsKey('deleted_date')) {
       context.handle(
         _deletedDateMeta,
@@ -2605,6 +2728,33 @@ class $FmsMtPondsTable extends FmsMtPonds
           data['deleted_date']!,
           _deletedDateMeta,
         ),
+      );
+    }
+    if (data.containsKey('max_biomass')) {
+      context.handle(
+        _maxBiomassMeta,
+        maxBiomass.isAcceptableOrUnknown(data['max_biomass']!, _maxBiomassMeta),
+      );
+    }
+    if (data.containsKey('max_biomass_unit')) {
+      context.handle(
+        _maxBiomassUnitMeta,
+        maxBiomassUnit.isAcceptableOrUnknown(
+          data['max_biomass_unit']!,
+          _maxBiomassUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('farm_id')) {
+      context.handle(
+        _farmIdMeta,
+        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
+      );
+    }
+    if (data.containsKey('farm_uuid')) {
+      context.handle(
+        _farmUuidMeta,
+        farmUuid.isAcceptableOrUnknown(data['farm_uuid']!, _farmUuidMeta),
       );
     }
     return context;
@@ -2624,10 +2774,6 @@ class $FmsMtPondsTable extends FmsMtPonds
         DriftSqlType.string,
         data['${effectivePrefix}pond_uuid'],
       )!,
-      farmId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}farm_id'],
-      ),
       pondCode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}pond_code'],
@@ -2635,6 +2781,14 @@ class $FmsMtPondsTable extends FmsMtPonds
       pondName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}pond_name'],
+      )!,
+      pondType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pond_type'],
+      ),
+      pondShape: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pond_shape'],
       ),
       pondSize: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -2676,14 +2830,6 @@ class $FmsMtPondsTable extends FmsMtPonds
         DriftSqlType.string,
         data['${effectivePrefix}volume_unit'],
       ),
-      pondType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}pond_type'],
-      ),
-      pondShape: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}pond_shape'],
-      ),
       bottomType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}bottom_type'],
@@ -2691,7 +2837,7 @@ class $FmsMtPondsTable extends FmsMtPonds
       hasAerator: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}has_aerator'],
-      ),
+      )!,
       aeratorCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}aerator_count'],
@@ -2703,7 +2849,7 @@ class $FmsMtPondsTable extends FmsMtPonds
       hasCentralDrain: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}has_central_drain'],
-      ),
+      )!,
       waterSource: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}water_source'],
@@ -2711,10 +2857,42 @@ class $FmsMtPondsTable extends FmsMtPonds
       pondStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}pond_status'],
-      ),
+      )!,
       currentCycleId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}current_cycle_id'],
+      ),
+      maxBiomassKgPerSqm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}max_biomass_kg_per_sqm'],
+      ),
+      recommendedStockingDensity: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}recommended_stocking_density'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_by'],
+      ),
+      lastUpdatedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_date'],
+      )!,
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_updated_by'],
+      ),
+      deletedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_date'],
       ),
       maxBiomass: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -2724,21 +2902,13 @@ class $FmsMtPondsTable extends FmsMtPonds
         DriftSqlType.string,
         data['${effectivePrefix}max_biomass_unit'],
       ),
-      recommendedStockingDensity: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}recommended_stocking_density'],
+      farmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}farm_id'],
       ),
-      isActive: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_active'],
-      ),
-      createdDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_date'],
-      ),
-      deletedDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}deleted_date'],
+      farmUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_uuid'],
       ),
     );
   }
@@ -2752,9 +2922,10 @@ class $FmsMtPondsTable extends FmsMtPonds
 class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
   final int pondId;
   final String pondUuid;
-  final int? farmId;
   final String pondCode;
-  final String? pondName;
+  final String pondName;
+  final String? pondType;
+  final String? pondShape;
   final double? pondSize;
   final String? pondSizeUnit;
   final double? pwa;
@@ -2765,28 +2936,33 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
   final String? maxDepthUnit;
   final double? volume;
   final String? volumeUnit;
-  final String? pondType;
-  final String? pondShape;
   final String? bottomType;
-  final bool? hasAerator;
+  final bool hasAerator;
   final int? aeratorCount;
   final double? aeratorTotalHp;
-  final bool? hasCentralDrain;
+  final bool hasCentralDrain;
   final String? waterSource;
-  final String? pondStatus;
+  final String pondStatus;
   final int? currentCycleId;
+  final double? maxBiomassKgPerSqm;
+  final double? recommendedStockingDensity;
+  final bool isActive;
+  final DateTime createdDate;
+  final int? createdBy;
+  final DateTime lastUpdatedDate;
+  final int? lastUpdatedBy;
+  final DateTime? deletedDate;
   final double? maxBiomass;
   final String? maxBiomassUnit;
-  final double? recommendedStockingDensity;
-  final bool? isActive;
-  final DateTime? createdDate;
-  final DateTime? deletedDate;
+  final int? farmId;
+  final String? farmUuid;
   const FmsMtPond({
     required this.pondId,
     required this.pondUuid,
-    this.farmId,
     required this.pondCode,
-    this.pondName,
+    required this.pondName,
+    this.pondType,
+    this.pondShape,
     this.pondSize,
     this.pondSizeUnit,
     this.pwa,
@@ -2797,34 +2973,39 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     this.maxDepthUnit,
     this.volume,
     this.volumeUnit,
-    this.pondType,
-    this.pondShape,
     this.bottomType,
-    this.hasAerator,
+    required this.hasAerator,
     this.aeratorCount,
     this.aeratorTotalHp,
-    this.hasCentralDrain,
+    required this.hasCentralDrain,
     this.waterSource,
-    this.pondStatus,
+    required this.pondStatus,
     this.currentCycleId,
+    this.maxBiomassKgPerSqm,
+    this.recommendedStockingDensity,
+    required this.isActive,
+    required this.createdDate,
+    this.createdBy,
+    required this.lastUpdatedDate,
+    this.lastUpdatedBy,
+    this.deletedDate,
     this.maxBiomass,
     this.maxBiomassUnit,
-    this.recommendedStockingDensity,
-    this.isActive,
-    this.createdDate,
-    this.deletedDate,
+    this.farmId,
+    this.farmUuid,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['pond_id'] = Variable<int>(pondId);
     map['pond_uuid'] = Variable<String>(pondUuid);
-    if (!nullToAbsent || farmId != null) {
-      map['farm_id'] = Variable<int>(farmId);
-    }
     map['pond_code'] = Variable<String>(pondCode);
-    if (!nullToAbsent || pondName != null) {
-      map['pond_name'] = Variable<String>(pondName);
+    map['pond_name'] = Variable<String>(pondName);
+    if (!nullToAbsent || pondType != null) {
+      map['pond_type'] = Variable<String>(pondType);
+    }
+    if (!nullToAbsent || pondShape != null) {
+      map['pond_shape'] = Variable<String>(pondShape);
     }
     if (!nullToAbsent || pondSize != null) {
       map['pond_size'] = Variable<double>(pondSize);
@@ -2856,35 +3037,43 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     if (!nullToAbsent || volumeUnit != null) {
       map['volume_unit'] = Variable<String>(volumeUnit);
     }
-    if (!nullToAbsent || pondType != null) {
-      map['pond_type'] = Variable<String>(pondType);
-    }
-    if (!nullToAbsent || pondShape != null) {
-      map['pond_shape'] = Variable<String>(pondShape);
-    }
     if (!nullToAbsent || bottomType != null) {
       map['bottom_type'] = Variable<String>(bottomType);
     }
-    if (!nullToAbsent || hasAerator != null) {
-      map['has_aerator'] = Variable<bool>(hasAerator);
-    }
+    map['has_aerator'] = Variable<bool>(hasAerator);
     if (!nullToAbsent || aeratorCount != null) {
       map['aerator_count'] = Variable<int>(aeratorCount);
     }
     if (!nullToAbsent || aeratorTotalHp != null) {
       map['aerator_total_hp'] = Variable<double>(aeratorTotalHp);
     }
-    if (!nullToAbsent || hasCentralDrain != null) {
-      map['has_central_drain'] = Variable<bool>(hasCentralDrain);
-    }
+    map['has_central_drain'] = Variable<bool>(hasCentralDrain);
     if (!nullToAbsent || waterSource != null) {
       map['water_source'] = Variable<String>(waterSource);
     }
-    if (!nullToAbsent || pondStatus != null) {
-      map['pond_status'] = Variable<String>(pondStatus);
-    }
+    map['pond_status'] = Variable<String>(pondStatus);
     if (!nullToAbsent || currentCycleId != null) {
       map['current_cycle_id'] = Variable<int>(currentCycleId);
+    }
+    if (!nullToAbsent || maxBiomassKgPerSqm != null) {
+      map['max_biomass_kg_per_sqm'] = Variable<double>(maxBiomassKgPerSqm);
+    }
+    if (!nullToAbsent || recommendedStockingDensity != null) {
+      map['recommended_stocking_density'] = Variable<double>(
+        recommendedStockingDensity,
+      );
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_date'] = Variable<DateTime>(createdDate);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<int>(createdBy);
+    }
+    map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate);
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy);
+    }
+    if (!nullToAbsent || deletedDate != null) {
+      map['deleted_date'] = Variable<DateTime>(deletedDate);
     }
     if (!nullToAbsent || maxBiomass != null) {
       map['max_biomass'] = Variable<double>(maxBiomass);
@@ -2892,19 +3081,11 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     if (!nullToAbsent || maxBiomassUnit != null) {
       map['max_biomass_unit'] = Variable<String>(maxBiomassUnit);
     }
-    if (!nullToAbsent || recommendedStockingDensity != null) {
-      map['recommended_stocking_density'] = Variable<double>(
-        recommendedStockingDensity,
-      );
+    if (!nullToAbsent || farmId != null) {
+      map['farm_id'] = Variable<int>(farmId);
     }
-    if (!nullToAbsent || isActive != null) {
-      map['is_active'] = Variable<bool>(isActive);
-    }
-    if (!nullToAbsent || createdDate != null) {
-      map['created_date'] = Variable<DateTime>(createdDate);
-    }
-    if (!nullToAbsent || deletedDate != null) {
-      map['deleted_date'] = Variable<DateTime>(deletedDate);
+    if (!nullToAbsent || farmUuid != null) {
+      map['farm_uuid'] = Variable<String>(farmUuid);
     }
     return map;
   }
@@ -2913,13 +3094,14 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     return FmsMtPondsCompanion(
       pondId: Value(pondId),
       pondUuid: Value(pondUuid),
-      farmId: farmId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(farmId),
       pondCode: Value(pondCode),
-      pondName: pondName == null && nullToAbsent
+      pondName: Value(pondName),
+      pondType: pondType == null && nullToAbsent
           ? const Value.absent()
-          : Value(pondName),
+          : Value(pondType),
+      pondShape: pondShape == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pondShape),
       pondSize: pondSize == null && nullToAbsent
           ? const Value.absent()
           : Value(pondSize),
@@ -2948,55 +3130,55 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       volumeUnit: volumeUnit == null && nullToAbsent
           ? const Value.absent()
           : Value(volumeUnit),
-      pondType: pondType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(pondType),
-      pondShape: pondShape == null && nullToAbsent
-          ? const Value.absent()
-          : Value(pondShape),
       bottomType: bottomType == null && nullToAbsent
           ? const Value.absent()
           : Value(bottomType),
-      hasAerator: hasAerator == null && nullToAbsent
-          ? const Value.absent()
-          : Value(hasAerator),
+      hasAerator: Value(hasAerator),
       aeratorCount: aeratorCount == null && nullToAbsent
           ? const Value.absent()
           : Value(aeratorCount),
       aeratorTotalHp: aeratorTotalHp == null && nullToAbsent
           ? const Value.absent()
           : Value(aeratorTotalHp),
-      hasCentralDrain: hasCentralDrain == null && nullToAbsent
-          ? const Value.absent()
-          : Value(hasCentralDrain),
+      hasCentralDrain: Value(hasCentralDrain),
       waterSource: waterSource == null && nullToAbsent
           ? const Value.absent()
           : Value(waterSource),
-      pondStatus: pondStatus == null && nullToAbsent
-          ? const Value.absent()
-          : Value(pondStatus),
+      pondStatus: Value(pondStatus),
       currentCycleId: currentCycleId == null && nullToAbsent
           ? const Value.absent()
           : Value(currentCycleId),
+      maxBiomassKgPerSqm: maxBiomassKgPerSqm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maxBiomassKgPerSqm),
+      recommendedStockingDensity:
+          recommendedStockingDensity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recommendedStockingDensity),
+      isActive: Value(isActive),
+      createdDate: Value(createdDate),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      lastUpdatedDate: Value(lastUpdatedDate),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
+      deletedDate: deletedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedDate),
       maxBiomass: maxBiomass == null && nullToAbsent
           ? const Value.absent()
           : Value(maxBiomass),
       maxBiomassUnit: maxBiomassUnit == null && nullToAbsent
           ? const Value.absent()
           : Value(maxBiomassUnit),
-      recommendedStockingDensity:
-          recommendedStockingDensity == null && nullToAbsent
+      farmId: farmId == null && nullToAbsent
           ? const Value.absent()
-          : Value(recommendedStockingDensity),
-      isActive: isActive == null && nullToAbsent
+          : Value(farmId),
+      farmUuid: farmUuid == null && nullToAbsent
           ? const Value.absent()
-          : Value(isActive),
-      createdDate: createdDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createdDate),
-      deletedDate: deletedDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deletedDate),
+          : Value(farmUuid),
     );
   }
 
@@ -3008,9 +3190,10 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     return FmsMtPond(
       pondId: serializer.fromJson<int>(json['pondId']),
       pondUuid: serializer.fromJson<String>(json['pondUuid']),
-      farmId: serializer.fromJson<int?>(json['farmId']),
       pondCode: serializer.fromJson<String>(json['pondCode']),
-      pondName: serializer.fromJson<String?>(json['pondName']),
+      pondName: serializer.fromJson<String>(json['pondName']),
+      pondType: serializer.fromJson<String?>(json['pondType']),
+      pondShape: serializer.fromJson<String?>(json['pondShape']),
       pondSize: serializer.fromJson<double?>(json['pondSize']),
       pondSizeUnit: serializer.fromJson<String?>(json['pondSizeUnit']),
       pwa: serializer.fromJson<double?>(json['pwa']),
@@ -3021,24 +3204,30 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       maxDepthUnit: serializer.fromJson<String?>(json['maxDepthUnit']),
       volume: serializer.fromJson<double?>(json['volume']),
       volumeUnit: serializer.fromJson<String?>(json['volumeUnit']),
-      pondType: serializer.fromJson<String?>(json['pondType']),
-      pondShape: serializer.fromJson<String?>(json['pondShape']),
       bottomType: serializer.fromJson<String?>(json['bottomType']),
-      hasAerator: serializer.fromJson<bool?>(json['hasAerator']),
+      hasAerator: serializer.fromJson<bool>(json['hasAerator']),
       aeratorCount: serializer.fromJson<int?>(json['aeratorCount']),
       aeratorTotalHp: serializer.fromJson<double?>(json['aeratorTotalHp']),
-      hasCentralDrain: serializer.fromJson<bool?>(json['hasCentralDrain']),
+      hasCentralDrain: serializer.fromJson<bool>(json['hasCentralDrain']),
       waterSource: serializer.fromJson<String?>(json['waterSource']),
-      pondStatus: serializer.fromJson<String?>(json['pondStatus']),
+      pondStatus: serializer.fromJson<String>(json['pondStatus']),
       currentCycleId: serializer.fromJson<int?>(json['currentCycleId']),
-      maxBiomass: serializer.fromJson<double?>(json['maxBiomass']),
-      maxBiomassUnit: serializer.fromJson<String?>(json['maxBiomassUnit']),
+      maxBiomassKgPerSqm: serializer.fromJson<double?>(
+        json['maxBiomassKgPerSqm'],
+      ),
       recommendedStockingDensity: serializer.fromJson<double?>(
         json['recommendedStockingDensity'],
       ),
-      isActive: serializer.fromJson<bool?>(json['isActive']),
-      createdDate: serializer.fromJson<DateTime?>(json['createdDate']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+      createdBy: serializer.fromJson<int?>(json['createdBy']),
+      lastUpdatedDate: serializer.fromJson<DateTime>(json['lastUpdatedDate']),
+      lastUpdatedBy: serializer.fromJson<int?>(json['lastUpdatedBy']),
       deletedDate: serializer.fromJson<DateTime?>(json['deletedDate']),
+      maxBiomass: serializer.fromJson<double?>(json['maxBiomass']),
+      maxBiomassUnit: serializer.fromJson<String?>(json['maxBiomassUnit']),
+      farmId: serializer.fromJson<int?>(json['farmId']),
+      farmUuid: serializer.fromJson<String?>(json['farmUuid']),
     );
   }
   @override
@@ -3047,9 +3236,10 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     return <String, dynamic>{
       'pondId': serializer.toJson<int>(pondId),
       'pondUuid': serializer.toJson<String>(pondUuid),
-      'farmId': serializer.toJson<int?>(farmId),
       'pondCode': serializer.toJson<String>(pondCode),
-      'pondName': serializer.toJson<String?>(pondName),
+      'pondName': serializer.toJson<String>(pondName),
+      'pondType': serializer.toJson<String?>(pondType),
+      'pondShape': serializer.toJson<String?>(pondShape),
       'pondSize': serializer.toJson<double?>(pondSize),
       'pondSizeUnit': serializer.toJson<String?>(pondSizeUnit),
       'pwa': serializer.toJson<double?>(pwa),
@@ -3060,33 +3250,38 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       'maxDepthUnit': serializer.toJson<String?>(maxDepthUnit),
       'volume': serializer.toJson<double?>(volume),
       'volumeUnit': serializer.toJson<String?>(volumeUnit),
-      'pondType': serializer.toJson<String?>(pondType),
-      'pondShape': serializer.toJson<String?>(pondShape),
       'bottomType': serializer.toJson<String?>(bottomType),
-      'hasAerator': serializer.toJson<bool?>(hasAerator),
+      'hasAerator': serializer.toJson<bool>(hasAerator),
       'aeratorCount': serializer.toJson<int?>(aeratorCount),
       'aeratorTotalHp': serializer.toJson<double?>(aeratorTotalHp),
-      'hasCentralDrain': serializer.toJson<bool?>(hasCentralDrain),
+      'hasCentralDrain': serializer.toJson<bool>(hasCentralDrain),
       'waterSource': serializer.toJson<String?>(waterSource),
-      'pondStatus': serializer.toJson<String?>(pondStatus),
+      'pondStatus': serializer.toJson<String>(pondStatus),
       'currentCycleId': serializer.toJson<int?>(currentCycleId),
-      'maxBiomass': serializer.toJson<double?>(maxBiomass),
-      'maxBiomassUnit': serializer.toJson<String?>(maxBiomassUnit),
+      'maxBiomassKgPerSqm': serializer.toJson<double?>(maxBiomassKgPerSqm),
       'recommendedStockingDensity': serializer.toJson<double?>(
         recommendedStockingDensity,
       ),
-      'isActive': serializer.toJson<bool?>(isActive),
-      'createdDate': serializer.toJson<DateTime?>(createdDate),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+      'createdBy': serializer.toJson<int?>(createdBy),
+      'lastUpdatedDate': serializer.toJson<DateTime>(lastUpdatedDate),
+      'lastUpdatedBy': serializer.toJson<int?>(lastUpdatedBy),
       'deletedDate': serializer.toJson<DateTime?>(deletedDate),
+      'maxBiomass': serializer.toJson<double?>(maxBiomass),
+      'maxBiomassUnit': serializer.toJson<String?>(maxBiomassUnit),
+      'farmId': serializer.toJson<int?>(farmId),
+      'farmUuid': serializer.toJson<String?>(farmUuid),
     };
   }
 
   FmsMtPond copyWith({
     int? pondId,
     String? pondUuid,
-    Value<int?> farmId = const Value.absent(),
     String? pondCode,
-    Value<String?> pondName = const Value.absent(),
+    String? pondName,
+    Value<String?> pondType = const Value.absent(),
+    Value<String?> pondShape = const Value.absent(),
     Value<double?> pondSize = const Value.absent(),
     Value<String?> pondSizeUnit = const Value.absent(),
     Value<double?> pwa = const Value.absent(),
@@ -3097,28 +3292,33 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     Value<String?> maxDepthUnit = const Value.absent(),
     Value<double?> volume = const Value.absent(),
     Value<String?> volumeUnit = const Value.absent(),
-    Value<String?> pondType = const Value.absent(),
-    Value<String?> pondShape = const Value.absent(),
     Value<String?> bottomType = const Value.absent(),
-    Value<bool?> hasAerator = const Value.absent(),
+    bool? hasAerator,
     Value<int?> aeratorCount = const Value.absent(),
     Value<double?> aeratorTotalHp = const Value.absent(),
-    Value<bool?> hasCentralDrain = const Value.absent(),
+    bool? hasCentralDrain,
     Value<String?> waterSource = const Value.absent(),
-    Value<String?> pondStatus = const Value.absent(),
+    String? pondStatus,
     Value<int?> currentCycleId = const Value.absent(),
+    Value<double?> maxBiomassKgPerSqm = const Value.absent(),
+    Value<double?> recommendedStockingDensity = const Value.absent(),
+    bool? isActive,
+    DateTime? createdDate,
+    Value<int?> createdBy = const Value.absent(),
+    DateTime? lastUpdatedDate,
+    Value<int?> lastUpdatedBy = const Value.absent(),
+    Value<DateTime?> deletedDate = const Value.absent(),
     Value<double?> maxBiomass = const Value.absent(),
     Value<String?> maxBiomassUnit = const Value.absent(),
-    Value<double?> recommendedStockingDensity = const Value.absent(),
-    Value<bool?> isActive = const Value.absent(),
-    Value<DateTime?> createdDate = const Value.absent(),
-    Value<DateTime?> deletedDate = const Value.absent(),
+    Value<int?> farmId = const Value.absent(),
+    Value<String?> farmUuid = const Value.absent(),
   }) => FmsMtPond(
     pondId: pondId ?? this.pondId,
     pondUuid: pondUuid ?? this.pondUuid,
-    farmId: farmId.present ? farmId.value : this.farmId,
     pondCode: pondCode ?? this.pondCode,
-    pondName: pondName.present ? pondName.value : this.pondName,
+    pondName: pondName ?? this.pondName,
+    pondType: pondType.present ? pondType.value : this.pondType,
+    pondShape: pondShape.present ? pondShape.value : this.pondShape,
     pondSize: pondSize.present ? pondSize.value : this.pondSize,
     pondSizeUnit: pondSizeUnit.present ? pondSizeUnit.value : this.pondSizeUnit,
     pwa: pwa.present ? pwa.value : this.pwa,
@@ -3129,40 +3329,47 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     maxDepthUnit: maxDepthUnit.present ? maxDepthUnit.value : this.maxDepthUnit,
     volume: volume.present ? volume.value : this.volume,
     volumeUnit: volumeUnit.present ? volumeUnit.value : this.volumeUnit,
-    pondType: pondType.present ? pondType.value : this.pondType,
-    pondShape: pondShape.present ? pondShape.value : this.pondShape,
     bottomType: bottomType.present ? bottomType.value : this.bottomType,
-    hasAerator: hasAerator.present ? hasAerator.value : this.hasAerator,
+    hasAerator: hasAerator ?? this.hasAerator,
     aeratorCount: aeratorCount.present ? aeratorCount.value : this.aeratorCount,
     aeratorTotalHp: aeratorTotalHp.present
         ? aeratorTotalHp.value
         : this.aeratorTotalHp,
-    hasCentralDrain: hasCentralDrain.present
-        ? hasCentralDrain.value
-        : this.hasCentralDrain,
+    hasCentralDrain: hasCentralDrain ?? this.hasCentralDrain,
     waterSource: waterSource.present ? waterSource.value : this.waterSource,
-    pondStatus: pondStatus.present ? pondStatus.value : this.pondStatus,
+    pondStatus: pondStatus ?? this.pondStatus,
     currentCycleId: currentCycleId.present
         ? currentCycleId.value
         : this.currentCycleId,
+    maxBiomassKgPerSqm: maxBiomassKgPerSqm.present
+        ? maxBiomassKgPerSqm.value
+        : this.maxBiomassKgPerSqm,
+    recommendedStockingDensity: recommendedStockingDensity.present
+        ? recommendedStockingDensity.value
+        : this.recommendedStockingDensity,
+    isActive: isActive ?? this.isActive,
+    createdDate: createdDate ?? this.createdDate,
+    createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
+    deletedDate: deletedDate.present ? deletedDate.value : this.deletedDate,
     maxBiomass: maxBiomass.present ? maxBiomass.value : this.maxBiomass,
     maxBiomassUnit: maxBiomassUnit.present
         ? maxBiomassUnit.value
         : this.maxBiomassUnit,
-    recommendedStockingDensity: recommendedStockingDensity.present
-        ? recommendedStockingDensity.value
-        : this.recommendedStockingDensity,
-    isActive: isActive.present ? isActive.value : this.isActive,
-    createdDate: createdDate.present ? createdDate.value : this.createdDate,
-    deletedDate: deletedDate.present ? deletedDate.value : this.deletedDate,
+    farmId: farmId.present ? farmId.value : this.farmId,
+    farmUuid: farmUuid.present ? farmUuid.value : this.farmUuid,
   );
   FmsMtPond copyWithCompanion(FmsMtPondsCompanion data) {
     return FmsMtPond(
       pondId: data.pondId.present ? data.pondId.value : this.pondId,
       pondUuid: data.pondUuid.present ? data.pondUuid.value : this.pondUuid,
-      farmId: data.farmId.present ? data.farmId.value : this.farmId,
       pondCode: data.pondCode.present ? data.pondCode.value : this.pondCode,
       pondName: data.pondName.present ? data.pondName.value : this.pondName,
+      pondType: data.pondType.present ? data.pondType.value : this.pondType,
+      pondShape: data.pondShape.present ? data.pondShape.value : this.pondShape,
       pondSize: data.pondSize.present ? data.pondSize.value : this.pondSize,
       pondSizeUnit: data.pondSizeUnit.present
           ? data.pondSizeUnit.value
@@ -3179,8 +3386,6 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       volumeUnit: data.volumeUnit.present
           ? data.volumeUnit.value
           : this.volumeUnit,
-      pondType: data.pondType.present ? data.pondType.value : this.pondType,
-      pondShape: data.pondShape.present ? data.pondShape.value : this.pondShape,
       bottomType: data.bottomType.present
           ? data.bottomType.value
           : this.bottomType,
@@ -3205,12 +3410,9 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       currentCycleId: data.currentCycleId.present
           ? data.currentCycleId.value
           : this.currentCycleId,
-      maxBiomass: data.maxBiomass.present
-          ? data.maxBiomass.value
-          : this.maxBiomass,
-      maxBiomassUnit: data.maxBiomassUnit.present
-          ? data.maxBiomassUnit.value
-          : this.maxBiomassUnit,
+      maxBiomassKgPerSqm: data.maxBiomassKgPerSqm.present
+          ? data.maxBiomassKgPerSqm.value
+          : this.maxBiomassKgPerSqm,
       recommendedStockingDensity: data.recommendedStockingDensity.present
           ? data.recommendedStockingDensity.value
           : this.recommendedStockingDensity,
@@ -3218,9 +3420,24 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       createdDate: data.createdDate.present
           ? data.createdDate.value
           : this.createdDate,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      lastUpdatedDate: data.lastUpdatedDate.present
+          ? data.lastUpdatedDate.value
+          : this.lastUpdatedDate,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
       deletedDate: data.deletedDate.present
           ? data.deletedDate.value
           : this.deletedDate,
+      maxBiomass: data.maxBiomass.present
+          ? data.maxBiomass.value
+          : this.maxBiomass,
+      maxBiomassUnit: data.maxBiomassUnit.present
+          ? data.maxBiomassUnit.value
+          : this.maxBiomassUnit,
+      farmId: data.farmId.present ? data.farmId.value : this.farmId,
+      farmUuid: data.farmUuid.present ? data.farmUuid.value : this.farmUuid,
     );
   }
 
@@ -3229,9 +3446,10 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     return (StringBuffer('FmsMtPond(')
           ..write('pondId: $pondId, ')
           ..write('pondUuid: $pondUuid, ')
-          ..write('farmId: $farmId, ')
           ..write('pondCode: $pondCode, ')
           ..write('pondName: $pondName, ')
+          ..write('pondType: $pondType, ')
+          ..write('pondShape: $pondShape, ')
           ..write('pondSize: $pondSize, ')
           ..write('pondSizeUnit: $pondSizeUnit, ')
           ..write('pwa: $pwa, ')
@@ -3242,8 +3460,6 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
           ..write('maxDepthUnit: $maxDepthUnit, ')
           ..write('volume: $volume, ')
           ..write('volumeUnit: $volumeUnit, ')
-          ..write('pondType: $pondType, ')
-          ..write('pondShape: $pondShape, ')
           ..write('bottomType: $bottomType, ')
           ..write('hasAerator: $hasAerator, ')
           ..write('aeratorCount: $aeratorCount, ')
@@ -3252,12 +3468,18 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
           ..write('waterSource: $waterSource, ')
           ..write('pondStatus: $pondStatus, ')
           ..write('currentCycleId: $currentCycleId, ')
-          ..write('maxBiomass: $maxBiomass, ')
-          ..write('maxBiomassUnit: $maxBiomassUnit, ')
+          ..write('maxBiomassKgPerSqm: $maxBiomassKgPerSqm, ')
           ..write('recommendedStockingDensity: $recommendedStockingDensity, ')
           ..write('isActive: $isActive, ')
           ..write('createdDate: $createdDate, ')
-          ..write('deletedDate: $deletedDate')
+          ..write('createdBy: $createdBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('deletedDate: $deletedDate, ')
+          ..write('maxBiomass: $maxBiomass, ')
+          ..write('maxBiomassUnit: $maxBiomassUnit, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmUuid: $farmUuid')
           ..write(')'))
         .toString();
   }
@@ -3266,9 +3488,10 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
   int get hashCode => Object.hashAll([
     pondId,
     pondUuid,
-    farmId,
     pondCode,
     pondName,
+    pondType,
+    pondShape,
     pondSize,
     pondSizeUnit,
     pwa,
@@ -3279,8 +3502,6 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     maxDepthUnit,
     volume,
     volumeUnit,
-    pondType,
-    pondShape,
     bottomType,
     hasAerator,
     aeratorCount,
@@ -3289,12 +3510,18 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
     waterSource,
     pondStatus,
     currentCycleId,
-    maxBiomass,
-    maxBiomassUnit,
+    maxBiomassKgPerSqm,
     recommendedStockingDensity,
     isActive,
     createdDate,
+    createdBy,
+    lastUpdatedDate,
+    lastUpdatedBy,
     deletedDate,
+    maxBiomass,
+    maxBiomassUnit,
+    farmId,
+    farmUuid,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -3302,9 +3529,10 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
       (other is FmsMtPond &&
           other.pondId == this.pondId &&
           other.pondUuid == this.pondUuid &&
-          other.farmId == this.farmId &&
           other.pondCode == this.pondCode &&
           other.pondName == this.pondName &&
+          other.pondType == this.pondType &&
+          other.pondShape == this.pondShape &&
           other.pondSize == this.pondSize &&
           other.pondSizeUnit == this.pondSizeUnit &&
           other.pwa == this.pwa &&
@@ -3315,8 +3543,6 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
           other.maxDepthUnit == this.maxDepthUnit &&
           other.volume == this.volume &&
           other.volumeUnit == this.volumeUnit &&
-          other.pondType == this.pondType &&
-          other.pondShape == this.pondShape &&
           other.bottomType == this.bottomType &&
           other.hasAerator == this.hasAerator &&
           other.aeratorCount == this.aeratorCount &&
@@ -3325,20 +3551,27 @@ class FmsMtPond extends DataClass implements Insertable<FmsMtPond> {
           other.waterSource == this.waterSource &&
           other.pondStatus == this.pondStatus &&
           other.currentCycleId == this.currentCycleId &&
-          other.maxBiomass == this.maxBiomass &&
-          other.maxBiomassUnit == this.maxBiomassUnit &&
+          other.maxBiomassKgPerSqm == this.maxBiomassKgPerSqm &&
           other.recommendedStockingDensity == this.recommendedStockingDensity &&
           other.isActive == this.isActive &&
           other.createdDate == this.createdDate &&
-          other.deletedDate == this.deletedDate);
+          other.createdBy == this.createdBy &&
+          other.lastUpdatedDate == this.lastUpdatedDate &&
+          other.lastUpdatedBy == this.lastUpdatedBy &&
+          other.deletedDate == this.deletedDate &&
+          other.maxBiomass == this.maxBiomass &&
+          other.maxBiomassUnit == this.maxBiomassUnit &&
+          other.farmId == this.farmId &&
+          other.farmUuid == this.farmUuid);
 }
 
 class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
   final Value<int> pondId;
   final Value<String> pondUuid;
-  final Value<int?> farmId;
   final Value<String> pondCode;
-  final Value<String?> pondName;
+  final Value<String> pondName;
+  final Value<String?> pondType;
+  final Value<String?> pondShape;
   final Value<double?> pondSize;
   final Value<String?> pondSizeUnit;
   final Value<double?> pwa;
@@ -3349,28 +3582,33 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
   final Value<String?> maxDepthUnit;
   final Value<double?> volume;
   final Value<String?> volumeUnit;
-  final Value<String?> pondType;
-  final Value<String?> pondShape;
   final Value<String?> bottomType;
-  final Value<bool?> hasAerator;
+  final Value<bool> hasAerator;
   final Value<int?> aeratorCount;
   final Value<double?> aeratorTotalHp;
-  final Value<bool?> hasCentralDrain;
+  final Value<bool> hasCentralDrain;
   final Value<String?> waterSource;
-  final Value<String?> pondStatus;
+  final Value<String> pondStatus;
   final Value<int?> currentCycleId;
+  final Value<double?> maxBiomassKgPerSqm;
+  final Value<double?> recommendedStockingDensity;
+  final Value<bool> isActive;
+  final Value<DateTime> createdDate;
+  final Value<int?> createdBy;
+  final Value<DateTime> lastUpdatedDate;
+  final Value<int?> lastUpdatedBy;
+  final Value<DateTime?> deletedDate;
   final Value<double?> maxBiomass;
   final Value<String?> maxBiomassUnit;
-  final Value<double?> recommendedStockingDensity;
-  final Value<bool?> isActive;
-  final Value<DateTime?> createdDate;
-  final Value<DateTime?> deletedDate;
+  final Value<int?> farmId;
+  final Value<String?> farmUuid;
   const FmsMtPondsCompanion({
     this.pondId = const Value.absent(),
     this.pondUuid = const Value.absent(),
-    this.farmId = const Value.absent(),
     this.pondCode = const Value.absent(),
     this.pondName = const Value.absent(),
+    this.pondType = const Value.absent(),
+    this.pondShape = const Value.absent(),
     this.pondSize = const Value.absent(),
     this.pondSizeUnit = const Value.absent(),
     this.pwa = const Value.absent(),
@@ -3381,8 +3619,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     this.maxDepthUnit = const Value.absent(),
     this.volume = const Value.absent(),
     this.volumeUnit = const Value.absent(),
-    this.pondType = const Value.absent(),
-    this.pondShape = const Value.absent(),
     this.bottomType = const Value.absent(),
     this.hasAerator = const Value.absent(),
     this.aeratorCount = const Value.absent(),
@@ -3391,19 +3627,26 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     this.waterSource = const Value.absent(),
     this.pondStatus = const Value.absent(),
     this.currentCycleId = const Value.absent(),
-    this.maxBiomass = const Value.absent(),
-    this.maxBiomassUnit = const Value.absent(),
+    this.maxBiomassKgPerSqm = const Value.absent(),
     this.recommendedStockingDensity = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdDate = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
     this.deletedDate = const Value.absent(),
+    this.maxBiomass = const Value.absent(),
+    this.maxBiomassUnit = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.farmUuid = const Value.absent(),
   });
   FmsMtPondsCompanion.insert({
     this.pondId = const Value.absent(),
-    required String pondUuid,
-    this.farmId = const Value.absent(),
+    this.pondUuid = const Value.absent(),
     required String pondCode,
-    this.pondName = const Value.absent(),
+    required String pondName,
+    this.pondType = const Value.absent(),
+    this.pondShape = const Value.absent(),
     this.pondSize = const Value.absent(),
     this.pondSizeUnit = const Value.absent(),
     this.pwa = const Value.absent(),
@@ -3414,8 +3657,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     this.maxDepthUnit = const Value.absent(),
     this.volume = const Value.absent(),
     this.volumeUnit = const Value.absent(),
-    this.pondType = const Value.absent(),
-    this.pondShape = const Value.absent(),
     this.bottomType = const Value.absent(),
     this.hasAerator = const Value.absent(),
     this.aeratorCount = const Value.absent(),
@@ -3424,20 +3665,27 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     this.waterSource = const Value.absent(),
     this.pondStatus = const Value.absent(),
     this.currentCycleId = const Value.absent(),
-    this.maxBiomass = const Value.absent(),
-    this.maxBiomassUnit = const Value.absent(),
+    this.maxBiomassKgPerSqm = const Value.absent(),
     this.recommendedStockingDensity = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdDate = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
     this.deletedDate = const Value.absent(),
-  }) : pondUuid = Value(pondUuid),
-       pondCode = Value(pondCode);
+    this.maxBiomass = const Value.absent(),
+    this.maxBiomassUnit = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.farmUuid = const Value.absent(),
+  }) : pondCode = Value(pondCode),
+       pondName = Value(pondName);
   static Insertable<FmsMtPond> custom({
     Expression<int>? pondId,
     Expression<String>? pondUuid,
-    Expression<int>? farmId,
     Expression<String>? pondCode,
     Expression<String>? pondName,
+    Expression<String>? pondType,
+    Expression<String>? pondShape,
     Expression<double>? pondSize,
     Expression<String>? pondSizeUnit,
     Expression<double>? pwa,
@@ -3448,8 +3696,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     Expression<String>? maxDepthUnit,
     Expression<double>? volume,
     Expression<String>? volumeUnit,
-    Expression<String>? pondType,
-    Expression<String>? pondShape,
     Expression<String>? bottomType,
     Expression<bool>? hasAerator,
     Expression<int>? aeratorCount,
@@ -3458,19 +3704,26 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     Expression<String>? waterSource,
     Expression<String>? pondStatus,
     Expression<int>? currentCycleId,
-    Expression<double>? maxBiomass,
-    Expression<String>? maxBiomassUnit,
+    Expression<double>? maxBiomassKgPerSqm,
     Expression<double>? recommendedStockingDensity,
     Expression<bool>? isActive,
     Expression<DateTime>? createdDate,
+    Expression<int>? createdBy,
+    Expression<DateTime>? lastUpdatedDate,
+    Expression<int>? lastUpdatedBy,
     Expression<DateTime>? deletedDate,
+    Expression<double>? maxBiomass,
+    Expression<String>? maxBiomassUnit,
+    Expression<int>? farmId,
+    Expression<String>? farmUuid,
   }) {
     return RawValuesInsertable({
       if (pondId != null) 'pond_id': pondId,
       if (pondUuid != null) 'pond_uuid': pondUuid,
-      if (farmId != null) 'farm_id': farmId,
       if (pondCode != null) 'pond_code': pondCode,
       if (pondName != null) 'pond_name': pondName,
+      if (pondType != null) 'pond_type': pondType,
+      if (pondShape != null) 'pond_shape': pondShape,
       if (pondSize != null) 'pond_size': pondSize,
       if (pondSizeUnit != null) 'pond_size_unit': pondSizeUnit,
       if (pwa != null) 'pwa': pwa,
@@ -3481,8 +3734,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
       if (maxDepthUnit != null) 'max_depth_unit': maxDepthUnit,
       if (volume != null) 'volume': volume,
       if (volumeUnit != null) 'volume_unit': volumeUnit,
-      if (pondType != null) 'pond_type': pondType,
-      if (pondShape != null) 'pond_shape': pondShape,
       if (bottomType != null) 'bottom_type': bottomType,
       if (hasAerator != null) 'has_aerator': hasAerator,
       if (aeratorCount != null) 'aerator_count': aeratorCount,
@@ -3491,22 +3742,30 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
       if (waterSource != null) 'water_source': waterSource,
       if (pondStatus != null) 'pond_status': pondStatus,
       if (currentCycleId != null) 'current_cycle_id': currentCycleId,
-      if (maxBiomass != null) 'max_biomass': maxBiomass,
-      if (maxBiomassUnit != null) 'max_biomass_unit': maxBiomassUnit,
+      if (maxBiomassKgPerSqm != null)
+        'max_biomass_kg_per_sqm': maxBiomassKgPerSqm,
       if (recommendedStockingDensity != null)
         'recommended_stocking_density': recommendedStockingDensity,
       if (isActive != null) 'is_active': isActive,
       if (createdDate != null) 'created_date': createdDate,
+      if (createdBy != null) 'created_by': createdBy,
+      if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
       if (deletedDate != null) 'deleted_date': deletedDate,
+      if (maxBiomass != null) 'max_biomass': maxBiomass,
+      if (maxBiomassUnit != null) 'max_biomass_unit': maxBiomassUnit,
+      if (farmId != null) 'farm_id': farmId,
+      if (farmUuid != null) 'farm_uuid': farmUuid,
     });
   }
 
   FmsMtPondsCompanion copyWith({
     Value<int>? pondId,
     Value<String>? pondUuid,
-    Value<int?>? farmId,
     Value<String>? pondCode,
-    Value<String?>? pondName,
+    Value<String>? pondName,
+    Value<String?>? pondType,
+    Value<String?>? pondShape,
     Value<double?>? pondSize,
     Value<String?>? pondSizeUnit,
     Value<double?>? pwa,
@@ -3517,29 +3776,34 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     Value<String?>? maxDepthUnit,
     Value<double?>? volume,
     Value<String?>? volumeUnit,
-    Value<String?>? pondType,
-    Value<String?>? pondShape,
     Value<String?>? bottomType,
-    Value<bool?>? hasAerator,
+    Value<bool>? hasAerator,
     Value<int?>? aeratorCount,
     Value<double?>? aeratorTotalHp,
-    Value<bool?>? hasCentralDrain,
+    Value<bool>? hasCentralDrain,
     Value<String?>? waterSource,
-    Value<String?>? pondStatus,
+    Value<String>? pondStatus,
     Value<int?>? currentCycleId,
+    Value<double?>? maxBiomassKgPerSqm,
+    Value<double?>? recommendedStockingDensity,
+    Value<bool>? isActive,
+    Value<DateTime>? createdDate,
+    Value<int?>? createdBy,
+    Value<DateTime>? lastUpdatedDate,
+    Value<int?>? lastUpdatedBy,
+    Value<DateTime?>? deletedDate,
     Value<double?>? maxBiomass,
     Value<String?>? maxBiomassUnit,
-    Value<double?>? recommendedStockingDensity,
-    Value<bool?>? isActive,
-    Value<DateTime?>? createdDate,
-    Value<DateTime?>? deletedDate,
+    Value<int?>? farmId,
+    Value<String?>? farmUuid,
   }) {
     return FmsMtPondsCompanion(
       pondId: pondId ?? this.pondId,
       pondUuid: pondUuid ?? this.pondUuid,
-      farmId: farmId ?? this.farmId,
       pondCode: pondCode ?? this.pondCode,
       pondName: pondName ?? this.pondName,
+      pondType: pondType ?? this.pondType,
+      pondShape: pondShape ?? this.pondShape,
       pondSize: pondSize ?? this.pondSize,
       pondSizeUnit: pondSizeUnit ?? this.pondSizeUnit,
       pwa: pwa ?? this.pwa,
@@ -3550,8 +3814,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
       maxDepthUnit: maxDepthUnit ?? this.maxDepthUnit,
       volume: volume ?? this.volume,
       volumeUnit: volumeUnit ?? this.volumeUnit,
-      pondType: pondType ?? this.pondType,
-      pondShape: pondShape ?? this.pondShape,
       bottomType: bottomType ?? this.bottomType,
       hasAerator: hasAerator ?? this.hasAerator,
       aeratorCount: aeratorCount ?? this.aeratorCount,
@@ -3560,13 +3822,19 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
       waterSource: waterSource ?? this.waterSource,
       pondStatus: pondStatus ?? this.pondStatus,
       currentCycleId: currentCycleId ?? this.currentCycleId,
-      maxBiomass: maxBiomass ?? this.maxBiomass,
-      maxBiomassUnit: maxBiomassUnit ?? this.maxBiomassUnit,
+      maxBiomassKgPerSqm: maxBiomassKgPerSqm ?? this.maxBiomassKgPerSqm,
       recommendedStockingDensity:
           recommendedStockingDensity ?? this.recommendedStockingDensity,
       isActive: isActive ?? this.isActive,
       createdDate: createdDate ?? this.createdDate,
+      createdBy: createdBy ?? this.createdBy,
+      lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
       deletedDate: deletedDate ?? this.deletedDate,
+      maxBiomass: maxBiomass ?? this.maxBiomass,
+      maxBiomassUnit: maxBiomassUnit ?? this.maxBiomassUnit,
+      farmId: farmId ?? this.farmId,
+      farmUuid: farmUuid ?? this.farmUuid,
     );
   }
 
@@ -3579,14 +3847,17 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     if (pondUuid.present) {
       map['pond_uuid'] = Variable<String>(pondUuid.value);
     }
-    if (farmId.present) {
-      map['farm_id'] = Variable<int>(farmId.value);
-    }
     if (pondCode.present) {
       map['pond_code'] = Variable<String>(pondCode.value);
     }
     if (pondName.present) {
       map['pond_name'] = Variable<String>(pondName.value);
+    }
+    if (pondType.present) {
+      map['pond_type'] = Variable<String>(pondType.value);
+    }
+    if (pondShape.present) {
+      map['pond_shape'] = Variable<String>(pondShape.value);
     }
     if (pondSize.present) {
       map['pond_size'] = Variable<double>(pondSize.value);
@@ -3618,12 +3889,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     if (volumeUnit.present) {
       map['volume_unit'] = Variable<String>(volumeUnit.value);
     }
-    if (pondType.present) {
-      map['pond_type'] = Variable<String>(pondType.value);
-    }
-    if (pondShape.present) {
-      map['pond_shape'] = Variable<String>(pondShape.value);
-    }
     if (bottomType.present) {
       map['bottom_type'] = Variable<String>(bottomType.value);
     }
@@ -3648,11 +3913,10 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     if (currentCycleId.present) {
       map['current_cycle_id'] = Variable<int>(currentCycleId.value);
     }
-    if (maxBiomass.present) {
-      map['max_biomass'] = Variable<double>(maxBiomass.value);
-    }
-    if (maxBiomassUnit.present) {
-      map['max_biomass_unit'] = Variable<String>(maxBiomassUnit.value);
+    if (maxBiomassKgPerSqm.present) {
+      map['max_biomass_kg_per_sqm'] = Variable<double>(
+        maxBiomassKgPerSqm.value,
+      );
     }
     if (recommendedStockingDensity.present) {
       map['recommended_stocking_density'] = Variable<double>(
@@ -3665,8 +3929,29 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     if (createdDate.present) {
       map['created_date'] = Variable<DateTime>(createdDate.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<int>(createdBy.value);
+    }
+    if (lastUpdatedDate.present) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate.value);
+    }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy.value);
+    }
     if (deletedDate.present) {
       map['deleted_date'] = Variable<DateTime>(deletedDate.value);
+    }
+    if (maxBiomass.present) {
+      map['max_biomass'] = Variable<double>(maxBiomass.value);
+    }
+    if (maxBiomassUnit.present) {
+      map['max_biomass_unit'] = Variable<String>(maxBiomassUnit.value);
+    }
+    if (farmId.present) {
+      map['farm_id'] = Variable<int>(farmId.value);
+    }
+    if (farmUuid.present) {
+      map['farm_uuid'] = Variable<String>(farmUuid.value);
     }
     return map;
   }
@@ -3676,9 +3961,10 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
     return (StringBuffer('FmsMtPondsCompanion(')
           ..write('pondId: $pondId, ')
           ..write('pondUuid: $pondUuid, ')
-          ..write('farmId: $farmId, ')
           ..write('pondCode: $pondCode, ')
           ..write('pondName: $pondName, ')
+          ..write('pondType: $pondType, ')
+          ..write('pondShape: $pondShape, ')
           ..write('pondSize: $pondSize, ')
           ..write('pondSizeUnit: $pondSizeUnit, ')
           ..write('pwa: $pwa, ')
@@ -3689,8 +3975,6 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
           ..write('maxDepthUnit: $maxDepthUnit, ')
           ..write('volume: $volume, ')
           ..write('volumeUnit: $volumeUnit, ')
-          ..write('pondType: $pondType, ')
-          ..write('pondShape: $pondShape, ')
           ..write('bottomType: $bottomType, ')
           ..write('hasAerator: $hasAerator, ')
           ..write('aeratorCount: $aeratorCount, ')
@@ -3699,12 +3983,18 @@ class FmsMtPondsCompanion extends UpdateCompanion<FmsMtPond> {
           ..write('waterSource: $waterSource, ')
           ..write('pondStatus: $pondStatus, ')
           ..write('currentCycleId: $currentCycleId, ')
-          ..write('maxBiomass: $maxBiomass, ')
-          ..write('maxBiomassUnit: $maxBiomassUnit, ')
+          ..write('maxBiomassKgPerSqm: $maxBiomassKgPerSqm, ')
           ..write('recommendedStockingDensity: $recommendedStockingDensity, ')
           ..write('isActive: $isActive, ')
           ..write('createdDate: $createdDate, ')
-          ..write('deletedDate: $deletedDate')
+          ..write('createdBy: $createdBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('deletedDate: $deletedDate, ')
+          ..write('maxBiomass: $maxBiomass, ')
+          ..write('maxBiomassUnit: $maxBiomassUnit, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmUuid: $farmUuid')
           ..write(')'))
         .toString();
   }
@@ -5940,6 +6230,6043 @@ class FmsMtExchangeRatesCompanion extends UpdateCompanion<FmsMtExchangeRate> {
           ..write('createdBy: $createdBy, ')
           ..write('lastUpdatedDate: $lastUpdatedDate, ')
           ..write('lastUpdatedBy: $lastUpdatedBy')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FmsMtLabTestTypesTable extends FmsMtLabTestTypes
+    with TableInfo<$FmsMtLabTestTypesTable, FmsMtLabTestType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FmsMtLabTestTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _testTypeIdMeta = const VerificationMeta(
+    'testTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> testTypeId = GeneratedColumn<int>(
+    'test_type_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _testTypeUuidMeta = const VerificationMeta(
+    'testTypeUuid',
+  );
+  @override
+  late final GeneratedColumn<String> testTypeUuid = GeneratedColumn<String>(
+    'test_type_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _testTypeCodeMeta = const VerificationMeta(
+    'testTypeCode',
+  );
+  @override
+  late final GeneratedColumn<String> testTypeCode = GeneratedColumn<String>(
+    'test_type_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _testTypeNameMeta = const VerificationMeta(
+    'testTypeName',
+  );
+  @override
+  late final GeneratedColumn<String> testTypeName = GeneratedColumn<String>(
+    'test_type_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    testTypeId,
+    testTypeUuid,
+    testTypeCode,
+    testTypeName,
+    isActive,
+    createdDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_mt_lab_test_types';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FmsMtLabTestType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('test_type_id')) {
+      context.handle(
+        _testTypeIdMeta,
+        testTypeId.isAcceptableOrUnknown(
+          data['test_type_id']!,
+          _testTypeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('test_type_uuid')) {
+      context.handle(
+        _testTypeUuidMeta,
+        testTypeUuid.isAcceptableOrUnknown(
+          data['test_type_uuid']!,
+          _testTypeUuidMeta,
+        ),
+      );
+    }
+    if (data.containsKey('test_type_code')) {
+      context.handle(
+        _testTypeCodeMeta,
+        testTypeCode.isAcceptableOrUnknown(
+          data['test_type_code']!,
+          _testTypeCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeCodeMeta);
+    }
+    if (data.containsKey('test_type_name')) {
+      context.handle(
+        _testTypeNameMeta,
+        testTypeName.isAcceptableOrUnknown(
+          data['test_type_name']!,
+          _testTypeNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeNameMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {testTypeId};
+  @override
+  FmsMtLabTestType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FmsMtLabTestType(
+      testTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}test_type_id'],
+      )!,
+      testTypeUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type_uuid'],
+      )!,
+      testTypeCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type_code'],
+      )!,
+      testTypeName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type_name'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+    );
+  }
+
+  @override
+  $FmsMtLabTestTypesTable createAlias(String alias) {
+    return $FmsMtLabTestTypesTable(attachedDatabase, alias);
+  }
+}
+
+class FmsMtLabTestType extends DataClass
+    implements Insertable<FmsMtLabTestType> {
+  final int testTypeId;
+  final String testTypeUuid;
+  final String testTypeCode;
+  final String testTypeName;
+  final bool isActive;
+  final DateTime createdDate;
+  const FmsMtLabTestType({
+    required this.testTypeId,
+    required this.testTypeUuid,
+    required this.testTypeCode,
+    required this.testTypeName,
+    required this.isActive,
+    required this.createdDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['test_type_id'] = Variable<int>(testTypeId);
+    map['test_type_uuid'] = Variable<String>(testTypeUuid);
+    map['test_type_code'] = Variable<String>(testTypeCode);
+    map['test_type_name'] = Variable<String>(testTypeName);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_date'] = Variable<DateTime>(createdDate);
+    return map;
+  }
+
+  FmsMtLabTestTypesCompanion toCompanion(bool nullToAbsent) {
+    return FmsMtLabTestTypesCompanion(
+      testTypeId: Value(testTypeId),
+      testTypeUuid: Value(testTypeUuid),
+      testTypeCode: Value(testTypeCode),
+      testTypeName: Value(testTypeName),
+      isActive: Value(isActive),
+      createdDate: Value(createdDate),
+    );
+  }
+
+  factory FmsMtLabTestType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FmsMtLabTestType(
+      testTypeId: serializer.fromJson<int>(json['testTypeId']),
+      testTypeUuid: serializer.fromJson<String>(json['testTypeUuid']),
+      testTypeCode: serializer.fromJson<String>(json['testTypeCode']),
+      testTypeName: serializer.fromJson<String>(json['testTypeName']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'testTypeId': serializer.toJson<int>(testTypeId),
+      'testTypeUuid': serializer.toJson<String>(testTypeUuid),
+      'testTypeCode': serializer.toJson<String>(testTypeCode),
+      'testTypeName': serializer.toJson<String>(testTypeName),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+    };
+  }
+
+  FmsMtLabTestType copyWith({
+    int? testTypeId,
+    String? testTypeUuid,
+    String? testTypeCode,
+    String? testTypeName,
+    bool? isActive,
+    DateTime? createdDate,
+  }) => FmsMtLabTestType(
+    testTypeId: testTypeId ?? this.testTypeId,
+    testTypeUuid: testTypeUuid ?? this.testTypeUuid,
+    testTypeCode: testTypeCode ?? this.testTypeCode,
+    testTypeName: testTypeName ?? this.testTypeName,
+    isActive: isActive ?? this.isActive,
+    createdDate: createdDate ?? this.createdDate,
+  );
+  FmsMtLabTestType copyWithCompanion(FmsMtLabTestTypesCompanion data) {
+    return FmsMtLabTestType(
+      testTypeId: data.testTypeId.present
+          ? data.testTypeId.value
+          : this.testTypeId,
+      testTypeUuid: data.testTypeUuid.present
+          ? data.testTypeUuid.value
+          : this.testTypeUuid,
+      testTypeCode: data.testTypeCode.present
+          ? data.testTypeCode.value
+          : this.testTypeCode,
+      testTypeName: data.testTypeName.present
+          ? data.testTypeName.value
+          : this.testTypeName,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabTestType(')
+          ..write('testTypeId: $testTypeId, ')
+          ..write('testTypeUuid: $testTypeUuid, ')
+          ..write('testTypeCode: $testTypeCode, ')
+          ..write('testTypeName: $testTypeName, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdDate: $createdDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    testTypeId,
+    testTypeUuid,
+    testTypeCode,
+    testTypeName,
+    isActive,
+    createdDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FmsMtLabTestType &&
+          other.testTypeId == this.testTypeId &&
+          other.testTypeUuid == this.testTypeUuid &&
+          other.testTypeCode == this.testTypeCode &&
+          other.testTypeName == this.testTypeName &&
+          other.isActive == this.isActive &&
+          other.createdDate == this.createdDate);
+}
+
+class FmsMtLabTestTypesCompanion extends UpdateCompanion<FmsMtLabTestType> {
+  final Value<int> testTypeId;
+  final Value<String> testTypeUuid;
+  final Value<String> testTypeCode;
+  final Value<String> testTypeName;
+  final Value<bool> isActive;
+  final Value<DateTime> createdDate;
+  const FmsMtLabTestTypesCompanion({
+    this.testTypeId = const Value.absent(),
+    this.testTypeUuid = const Value.absent(),
+    this.testTypeCode = const Value.absent(),
+    this.testTypeName = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  });
+  FmsMtLabTestTypesCompanion.insert({
+    this.testTypeId = const Value.absent(),
+    this.testTypeUuid = const Value.absent(),
+    required String testTypeCode,
+    required String testTypeName,
+    this.isActive = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  }) : testTypeCode = Value(testTypeCode),
+       testTypeName = Value(testTypeName);
+  static Insertable<FmsMtLabTestType> custom({
+    Expression<int>? testTypeId,
+    Expression<String>? testTypeUuid,
+    Expression<String>? testTypeCode,
+    Expression<String>? testTypeName,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdDate,
+  }) {
+    return RawValuesInsertable({
+      if (testTypeId != null) 'test_type_id': testTypeId,
+      if (testTypeUuid != null) 'test_type_uuid': testTypeUuid,
+      if (testTypeCode != null) 'test_type_code': testTypeCode,
+      if (testTypeName != null) 'test_type_name': testTypeName,
+      if (isActive != null) 'is_active': isActive,
+      if (createdDate != null) 'created_date': createdDate,
+    });
+  }
+
+  FmsMtLabTestTypesCompanion copyWith({
+    Value<int>? testTypeId,
+    Value<String>? testTypeUuid,
+    Value<String>? testTypeCode,
+    Value<String>? testTypeName,
+    Value<bool>? isActive,
+    Value<DateTime>? createdDate,
+  }) {
+    return FmsMtLabTestTypesCompanion(
+      testTypeId: testTypeId ?? this.testTypeId,
+      testTypeUuid: testTypeUuid ?? this.testTypeUuid,
+      testTypeCode: testTypeCode ?? this.testTypeCode,
+      testTypeName: testTypeName ?? this.testTypeName,
+      isActive: isActive ?? this.isActive,
+      createdDate: createdDate ?? this.createdDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (testTypeId.present) {
+      map['test_type_id'] = Variable<int>(testTypeId.value);
+    }
+    if (testTypeUuid.present) {
+      map['test_type_uuid'] = Variable<String>(testTypeUuid.value);
+    }
+    if (testTypeCode.present) {
+      map['test_type_code'] = Variable<String>(testTypeCode.value);
+    }
+    if (testTypeName.present) {
+      map['test_type_name'] = Variable<String>(testTypeName.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabTestTypesCompanion(')
+          ..write('testTypeId: $testTypeId, ')
+          ..write('testTypeUuid: $testTypeUuid, ')
+          ..write('testTypeCode: $testTypeCode, ')
+          ..write('testTypeName: $testTypeName, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdDate: $createdDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FmsMtLabParametersTable extends FmsMtLabParameters
+    with TableInfo<$FmsMtLabParametersTable, FmsMtLabParameter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FmsMtLabParametersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _parameterIdMeta = const VerificationMeta(
+    'parameterId',
+  );
+  @override
+  late final GeneratedColumn<int> parameterId = GeneratedColumn<int>(
+    'parameter_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _parameterUuidMeta = const VerificationMeta(
+    'parameterUuid',
+  );
+  @override
+  late final GeneratedColumn<String> parameterUuid = GeneratedColumn<String>(
+    'parameter_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _testTypeIdMeta = const VerificationMeta(
+    'testTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> testTypeId = GeneratedColumn<int>(
+    'test_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_mt_lab_test_types (test_type_id)',
+    ),
+  );
+  static const VerificationMeta _parameterCodeMeta = const VerificationMeta(
+    'parameterCode',
+  );
+  @override
+  late final GeneratedColumn<String> parameterCode = GeneratedColumn<String>(
+    'parameter_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parameterNameMeta = const VerificationMeta(
+    'parameterName',
+  );
+  @override
+  late final GeneratedColumn<String> parameterName = GeneratedColumn<String>(
+    'parameter_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _standardOperatorMeta = const VerificationMeta(
+    'standardOperator',
+  );
+  @override
+  late final GeneratedColumn<String> standardOperator = GeneratedColumn<String>(
+    'standard_operator',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _standardMinMeta = const VerificationMeta(
+    'standardMin',
+  );
+  @override
+  late final GeneratedColumn<double> standardMin = GeneratedColumn<double>(
+    'standard_min',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _standardMaxMeta = const VerificationMeta(
+    'standardMax',
+  );
+  @override
+  late final GeneratedColumn<double> standardMax = GeneratedColumn<double>(
+    'standard_max',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parameterUnitMeta = const VerificationMeta(
+    'parameterUnit',
+  );
+  @override
+  late final GeneratedColumn<String> parameterUnit = GeneratedColumn<String>(
+    'parameter_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    parameterId,
+    parameterUuid,
+    testTypeId,
+    parameterCode,
+    parameterName,
+    standardOperator,
+    standardMin,
+    standardMax,
+    parameterUnit,
+    isActive,
+    createdDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_mt_lab_parameters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FmsMtLabParameter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('parameter_id')) {
+      context.handle(
+        _parameterIdMeta,
+        parameterId.isAcceptableOrUnknown(
+          data['parameter_id']!,
+          _parameterIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('parameter_uuid')) {
+      context.handle(
+        _parameterUuidMeta,
+        parameterUuid.isAcceptableOrUnknown(
+          data['parameter_uuid']!,
+          _parameterUuidMeta,
+        ),
+      );
+    }
+    if (data.containsKey('test_type_id')) {
+      context.handle(
+        _testTypeIdMeta,
+        testTypeId.isAcceptableOrUnknown(
+          data['test_type_id']!,
+          _testTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeIdMeta);
+    }
+    if (data.containsKey('parameter_code')) {
+      context.handle(
+        _parameterCodeMeta,
+        parameterCode.isAcceptableOrUnknown(
+          data['parameter_code']!,
+          _parameterCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_parameterCodeMeta);
+    }
+    if (data.containsKey('parameter_name')) {
+      context.handle(
+        _parameterNameMeta,
+        parameterName.isAcceptableOrUnknown(
+          data['parameter_name']!,
+          _parameterNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_parameterNameMeta);
+    }
+    if (data.containsKey('standard_operator')) {
+      context.handle(
+        _standardOperatorMeta,
+        standardOperator.isAcceptableOrUnknown(
+          data['standard_operator']!,
+          _standardOperatorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('standard_min')) {
+      context.handle(
+        _standardMinMeta,
+        standardMin.isAcceptableOrUnknown(
+          data['standard_min']!,
+          _standardMinMeta,
+        ),
+      );
+    }
+    if (data.containsKey('standard_max')) {
+      context.handle(
+        _standardMaxMeta,
+        standardMax.isAcceptableOrUnknown(
+          data['standard_max']!,
+          _standardMaxMeta,
+        ),
+      );
+    }
+    if (data.containsKey('parameter_unit')) {
+      context.handle(
+        _parameterUnitMeta,
+        parameterUnit.isAcceptableOrUnknown(
+          data['parameter_unit']!,
+          _parameterUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {parameterId};
+  @override
+  FmsMtLabParameter map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FmsMtLabParameter(
+      parameterId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parameter_id'],
+      )!,
+      parameterUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parameter_uuid'],
+      )!,
+      testTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}test_type_id'],
+      )!,
+      parameterCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parameter_code'],
+      )!,
+      parameterName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parameter_name'],
+      )!,
+      standardOperator: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}standard_operator'],
+      ),
+      standardMin: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}standard_min'],
+      ),
+      standardMax: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}standard_max'],
+      ),
+      parameterUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parameter_unit'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+    );
+  }
+
+  @override
+  $FmsMtLabParametersTable createAlias(String alias) {
+    return $FmsMtLabParametersTable(attachedDatabase, alias);
+  }
+}
+
+class FmsMtLabParameter extends DataClass
+    implements Insertable<FmsMtLabParameter> {
+  final int parameterId;
+  final String parameterUuid;
+  final int testTypeId;
+  final String parameterCode;
+  final String parameterName;
+  final String? standardOperator;
+  final double? standardMin;
+  final double? standardMax;
+  final String? parameterUnit;
+  final bool isActive;
+  final DateTime createdDate;
+  const FmsMtLabParameter({
+    required this.parameterId,
+    required this.parameterUuid,
+    required this.testTypeId,
+    required this.parameterCode,
+    required this.parameterName,
+    this.standardOperator,
+    this.standardMin,
+    this.standardMax,
+    this.parameterUnit,
+    required this.isActive,
+    required this.createdDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['parameter_id'] = Variable<int>(parameterId);
+    map['parameter_uuid'] = Variable<String>(parameterUuid);
+    map['test_type_id'] = Variable<int>(testTypeId);
+    map['parameter_code'] = Variable<String>(parameterCode);
+    map['parameter_name'] = Variable<String>(parameterName);
+    if (!nullToAbsent || standardOperator != null) {
+      map['standard_operator'] = Variable<String>(standardOperator);
+    }
+    if (!nullToAbsent || standardMin != null) {
+      map['standard_min'] = Variable<double>(standardMin);
+    }
+    if (!nullToAbsent || standardMax != null) {
+      map['standard_max'] = Variable<double>(standardMax);
+    }
+    if (!nullToAbsent || parameterUnit != null) {
+      map['parameter_unit'] = Variable<String>(parameterUnit);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_date'] = Variable<DateTime>(createdDate);
+    return map;
+  }
+
+  FmsMtLabParametersCompanion toCompanion(bool nullToAbsent) {
+    return FmsMtLabParametersCompanion(
+      parameterId: Value(parameterId),
+      parameterUuid: Value(parameterUuid),
+      testTypeId: Value(testTypeId),
+      parameterCode: Value(parameterCode),
+      parameterName: Value(parameterName),
+      standardOperator: standardOperator == null && nullToAbsent
+          ? const Value.absent()
+          : Value(standardOperator),
+      standardMin: standardMin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(standardMin),
+      standardMax: standardMax == null && nullToAbsent
+          ? const Value.absent()
+          : Value(standardMax),
+      parameterUnit: parameterUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parameterUnit),
+      isActive: Value(isActive),
+      createdDate: Value(createdDate),
+    );
+  }
+
+  factory FmsMtLabParameter.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FmsMtLabParameter(
+      parameterId: serializer.fromJson<int>(json['parameterId']),
+      parameterUuid: serializer.fromJson<String>(json['parameterUuid']),
+      testTypeId: serializer.fromJson<int>(json['testTypeId']),
+      parameterCode: serializer.fromJson<String>(json['parameterCode']),
+      parameterName: serializer.fromJson<String>(json['parameterName']),
+      standardOperator: serializer.fromJson<String?>(json['standardOperator']),
+      standardMin: serializer.fromJson<double?>(json['standardMin']),
+      standardMax: serializer.fromJson<double?>(json['standardMax']),
+      parameterUnit: serializer.fromJson<String?>(json['parameterUnit']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'parameterId': serializer.toJson<int>(parameterId),
+      'parameterUuid': serializer.toJson<String>(parameterUuid),
+      'testTypeId': serializer.toJson<int>(testTypeId),
+      'parameterCode': serializer.toJson<String>(parameterCode),
+      'parameterName': serializer.toJson<String>(parameterName),
+      'standardOperator': serializer.toJson<String?>(standardOperator),
+      'standardMin': serializer.toJson<double?>(standardMin),
+      'standardMax': serializer.toJson<double?>(standardMax),
+      'parameterUnit': serializer.toJson<String?>(parameterUnit),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+    };
+  }
+
+  FmsMtLabParameter copyWith({
+    int? parameterId,
+    String? parameterUuid,
+    int? testTypeId,
+    String? parameterCode,
+    String? parameterName,
+    Value<String?> standardOperator = const Value.absent(),
+    Value<double?> standardMin = const Value.absent(),
+    Value<double?> standardMax = const Value.absent(),
+    Value<String?> parameterUnit = const Value.absent(),
+    bool? isActive,
+    DateTime? createdDate,
+  }) => FmsMtLabParameter(
+    parameterId: parameterId ?? this.parameterId,
+    parameterUuid: parameterUuid ?? this.parameterUuid,
+    testTypeId: testTypeId ?? this.testTypeId,
+    parameterCode: parameterCode ?? this.parameterCode,
+    parameterName: parameterName ?? this.parameterName,
+    standardOperator: standardOperator.present
+        ? standardOperator.value
+        : this.standardOperator,
+    standardMin: standardMin.present ? standardMin.value : this.standardMin,
+    standardMax: standardMax.present ? standardMax.value : this.standardMax,
+    parameterUnit: parameterUnit.present
+        ? parameterUnit.value
+        : this.parameterUnit,
+    isActive: isActive ?? this.isActive,
+    createdDate: createdDate ?? this.createdDate,
+  );
+  FmsMtLabParameter copyWithCompanion(FmsMtLabParametersCompanion data) {
+    return FmsMtLabParameter(
+      parameterId: data.parameterId.present
+          ? data.parameterId.value
+          : this.parameterId,
+      parameterUuid: data.parameterUuid.present
+          ? data.parameterUuid.value
+          : this.parameterUuid,
+      testTypeId: data.testTypeId.present
+          ? data.testTypeId.value
+          : this.testTypeId,
+      parameterCode: data.parameterCode.present
+          ? data.parameterCode.value
+          : this.parameterCode,
+      parameterName: data.parameterName.present
+          ? data.parameterName.value
+          : this.parameterName,
+      standardOperator: data.standardOperator.present
+          ? data.standardOperator.value
+          : this.standardOperator,
+      standardMin: data.standardMin.present
+          ? data.standardMin.value
+          : this.standardMin,
+      standardMax: data.standardMax.present
+          ? data.standardMax.value
+          : this.standardMax,
+      parameterUnit: data.parameterUnit.present
+          ? data.parameterUnit.value
+          : this.parameterUnit,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabParameter(')
+          ..write('parameterId: $parameterId, ')
+          ..write('parameterUuid: $parameterUuid, ')
+          ..write('testTypeId: $testTypeId, ')
+          ..write('parameterCode: $parameterCode, ')
+          ..write('parameterName: $parameterName, ')
+          ..write('standardOperator: $standardOperator, ')
+          ..write('standardMin: $standardMin, ')
+          ..write('standardMax: $standardMax, ')
+          ..write('parameterUnit: $parameterUnit, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdDate: $createdDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    parameterId,
+    parameterUuid,
+    testTypeId,
+    parameterCode,
+    parameterName,
+    standardOperator,
+    standardMin,
+    standardMax,
+    parameterUnit,
+    isActive,
+    createdDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FmsMtLabParameter &&
+          other.parameterId == this.parameterId &&
+          other.parameterUuid == this.parameterUuid &&
+          other.testTypeId == this.testTypeId &&
+          other.parameterCode == this.parameterCode &&
+          other.parameterName == this.parameterName &&
+          other.standardOperator == this.standardOperator &&
+          other.standardMin == this.standardMin &&
+          other.standardMax == this.standardMax &&
+          other.parameterUnit == this.parameterUnit &&
+          other.isActive == this.isActive &&
+          other.createdDate == this.createdDate);
+}
+
+class FmsMtLabParametersCompanion extends UpdateCompanion<FmsMtLabParameter> {
+  final Value<int> parameterId;
+  final Value<String> parameterUuid;
+  final Value<int> testTypeId;
+  final Value<String> parameterCode;
+  final Value<String> parameterName;
+  final Value<String?> standardOperator;
+  final Value<double?> standardMin;
+  final Value<double?> standardMax;
+  final Value<String?> parameterUnit;
+  final Value<bool> isActive;
+  final Value<DateTime> createdDate;
+  const FmsMtLabParametersCompanion({
+    this.parameterId = const Value.absent(),
+    this.parameterUuid = const Value.absent(),
+    this.testTypeId = const Value.absent(),
+    this.parameterCode = const Value.absent(),
+    this.parameterName = const Value.absent(),
+    this.standardOperator = const Value.absent(),
+    this.standardMin = const Value.absent(),
+    this.standardMax = const Value.absent(),
+    this.parameterUnit = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  });
+  FmsMtLabParametersCompanion.insert({
+    this.parameterId = const Value.absent(),
+    this.parameterUuid = const Value.absent(),
+    required int testTypeId,
+    required String parameterCode,
+    required String parameterName,
+    this.standardOperator = const Value.absent(),
+    this.standardMin = const Value.absent(),
+    this.standardMax = const Value.absent(),
+    this.parameterUnit = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  }) : testTypeId = Value(testTypeId),
+       parameterCode = Value(parameterCode),
+       parameterName = Value(parameterName);
+  static Insertable<FmsMtLabParameter> custom({
+    Expression<int>? parameterId,
+    Expression<String>? parameterUuid,
+    Expression<int>? testTypeId,
+    Expression<String>? parameterCode,
+    Expression<String>? parameterName,
+    Expression<String>? standardOperator,
+    Expression<double>? standardMin,
+    Expression<double>? standardMax,
+    Expression<String>? parameterUnit,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdDate,
+  }) {
+    return RawValuesInsertable({
+      if (parameterId != null) 'parameter_id': parameterId,
+      if (parameterUuid != null) 'parameter_uuid': parameterUuid,
+      if (testTypeId != null) 'test_type_id': testTypeId,
+      if (parameterCode != null) 'parameter_code': parameterCode,
+      if (parameterName != null) 'parameter_name': parameterName,
+      if (standardOperator != null) 'standard_operator': standardOperator,
+      if (standardMin != null) 'standard_min': standardMin,
+      if (standardMax != null) 'standard_max': standardMax,
+      if (parameterUnit != null) 'parameter_unit': parameterUnit,
+      if (isActive != null) 'is_active': isActive,
+      if (createdDate != null) 'created_date': createdDate,
+    });
+  }
+
+  FmsMtLabParametersCompanion copyWith({
+    Value<int>? parameterId,
+    Value<String>? parameterUuid,
+    Value<int>? testTypeId,
+    Value<String>? parameterCode,
+    Value<String>? parameterName,
+    Value<String?>? standardOperator,
+    Value<double?>? standardMin,
+    Value<double?>? standardMax,
+    Value<String?>? parameterUnit,
+    Value<bool>? isActive,
+    Value<DateTime>? createdDate,
+  }) {
+    return FmsMtLabParametersCompanion(
+      parameterId: parameterId ?? this.parameterId,
+      parameterUuid: parameterUuid ?? this.parameterUuid,
+      testTypeId: testTypeId ?? this.testTypeId,
+      parameterCode: parameterCode ?? this.parameterCode,
+      parameterName: parameterName ?? this.parameterName,
+      standardOperator: standardOperator ?? this.standardOperator,
+      standardMin: standardMin ?? this.standardMin,
+      standardMax: standardMax ?? this.standardMax,
+      parameterUnit: parameterUnit ?? this.parameterUnit,
+      isActive: isActive ?? this.isActive,
+      createdDate: createdDate ?? this.createdDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (parameterId.present) {
+      map['parameter_id'] = Variable<int>(parameterId.value);
+    }
+    if (parameterUuid.present) {
+      map['parameter_uuid'] = Variable<String>(parameterUuid.value);
+    }
+    if (testTypeId.present) {
+      map['test_type_id'] = Variable<int>(testTypeId.value);
+    }
+    if (parameterCode.present) {
+      map['parameter_code'] = Variable<String>(parameterCode.value);
+    }
+    if (parameterName.present) {
+      map['parameter_name'] = Variable<String>(parameterName.value);
+    }
+    if (standardOperator.present) {
+      map['standard_operator'] = Variable<String>(standardOperator.value);
+    }
+    if (standardMin.present) {
+      map['standard_min'] = Variable<double>(standardMin.value);
+    }
+    if (standardMax.present) {
+      map['standard_max'] = Variable<double>(standardMax.value);
+    }
+    if (parameterUnit.present) {
+      map['parameter_unit'] = Variable<String>(parameterUnit.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabParametersCompanion(')
+          ..write('parameterId: $parameterId, ')
+          ..write('parameterUuid: $parameterUuid, ')
+          ..write('testTypeId: $testTypeId, ')
+          ..write('parameterCode: $parameterCode, ')
+          ..write('parameterName: $parameterName, ')
+          ..write('standardOperator: $standardOperator, ')
+          ..write('standardMin: $standardMin, ')
+          ..write('standardMax: $standardMax, ')
+          ..write('parameterUnit: $parameterUnit, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdDate: $createdDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FmsMtLabTypesTable extends FmsMtLabTypes
+    with TableInfo<$FmsMtLabTypesTable, FmsMtLabType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FmsMtLabTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _labTypeIdMeta = const VerificationMeta(
+    'labTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> labTypeId = GeneratedColumn<int>(
+    'lab_type_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _idUuidMeta = const VerificationMeta('idUuid');
+  @override
+  late final GeneratedColumn<String> idUuid = GeneratedColumn<String>(
+    'id_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _labSampleTestTypeMeta = const VerificationMeta(
+    'labSampleTestType',
+  );
+  @override
+  late final GeneratedColumn<String> labSampleTestType =
+      GeneratedColumn<String>(
+        'lab_sample_test_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _standardMeta = const VerificationMeta(
+    'standard',
+  );
+  @override
+  late final GeneratedColumn<String> standard = GeneratedColumn<String>(
+    'standard',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testTypeMeta = const VerificationMeta(
+    'testType',
+  );
+  @override
+  late final GeneratedColumn<String> testType = GeneratedColumn<String>(
+    'test_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _testTypeDetailMeta = const VerificationMeta(
+    'testTypeDetail',
+  );
+  @override
+  late final GeneratedColumn<String> testTypeDetail = GeneratedColumn<String>(
+    'test_type_detail',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<int> createdBy = GeneratedColumn<int>(
+    'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<int> lastUpdatedBy = GeneratedColumn<int>(
+    'last_updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastUpdatedDateMeta = const VerificationMeta(
+    'lastUpdatedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedDate =
+      GeneratedColumn<DateTime>(
+        'last_updated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    labTypeId,
+    idUuid,
+    labSampleTestType,
+    standard,
+    testType,
+    testTypeDetail,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_mt_lab_type';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FmsMtLabType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('lab_type_id')) {
+      context.handle(
+        _labTypeIdMeta,
+        labTypeId.isAcceptableOrUnknown(data['lab_type_id']!, _labTypeIdMeta),
+      );
+    }
+    if (data.containsKey('id_uuid')) {
+      context.handle(
+        _idUuidMeta,
+        idUuid.isAcceptableOrUnknown(data['id_uuid']!, _idUuidMeta),
+      );
+    }
+    if (data.containsKey('lab_sample_test_type')) {
+      context.handle(
+        _labSampleTestTypeMeta,
+        labSampleTestType.isAcceptableOrUnknown(
+          data['lab_sample_test_type']!,
+          _labSampleTestTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_labSampleTestTypeMeta);
+    }
+    if (data.containsKey('standard')) {
+      context.handle(
+        _standardMeta,
+        standard.isAcceptableOrUnknown(data['standard']!, _standardMeta),
+      );
+    }
+    if (data.containsKey('test_type')) {
+      context.handle(
+        _testTypeMeta,
+        testType.isAcceptableOrUnknown(data['test_type']!, _testTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeMeta);
+    }
+    if (data.containsKey('test_type_detail')) {
+      context.handle(
+        _testTypeDetailMeta,
+        testTypeDetail.isAcceptableOrUnknown(
+          data['test_type_detail']!,
+          _testTypeDetailMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeDetailMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_date')) {
+      context.handle(
+        _lastUpdatedDateMeta,
+        lastUpdatedDate.isAcceptableOrUnknown(
+          data['last_updated_date']!,
+          _lastUpdatedDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {labTypeId};
+  @override
+  FmsMtLabType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FmsMtLabType(
+      labTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}lab_type_id'],
+      )!,
+      idUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id_uuid'],
+      )!,
+      labSampleTestType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lab_sample_test_type'],
+      )!,
+      standard: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}standard'],
+      ),
+      testType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type'],
+      )!,
+      testTypeDetail: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type_detail'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_by'],
+      ),
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_updated_by'],
+      ),
+      lastUpdatedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_date'],
+      ),
+    );
+  }
+
+  @override
+  $FmsMtLabTypesTable createAlias(String alias) {
+    return $FmsMtLabTypesTable(attachedDatabase, alias);
+  }
+}
+
+class FmsMtLabType extends DataClass implements Insertable<FmsMtLabType> {
+  final int labTypeId;
+  final String idUuid;
+  final String labSampleTestType;
+  final String? standard;
+  final String testType;
+  final String testTypeDetail;
+  final bool isActive;
+  final int? createdBy;
+  final DateTime createdDate;
+  final int? lastUpdatedBy;
+  final DateTime? lastUpdatedDate;
+  const FmsMtLabType({
+    required this.labTypeId,
+    required this.idUuid,
+    required this.labSampleTestType,
+    this.standard,
+    required this.testType,
+    required this.testTypeDetail,
+    required this.isActive,
+    this.createdBy,
+    required this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lab_type_id'] = Variable<int>(labTypeId);
+    map['id_uuid'] = Variable<String>(idUuid);
+    map['lab_sample_test_type'] = Variable<String>(labSampleTestType);
+    if (!nullToAbsent || standard != null) {
+      map['standard'] = Variable<String>(standard);
+    }
+    map['test_type'] = Variable<String>(testType);
+    map['test_type_detail'] = Variable<String>(testTypeDetail);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<int>(createdBy);
+    }
+    map['created_date'] = Variable<DateTime>(createdDate);
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy);
+    }
+    if (!nullToAbsent || lastUpdatedDate != null) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate);
+    }
+    return map;
+  }
+
+  FmsMtLabTypesCompanion toCompanion(bool nullToAbsent) {
+    return FmsMtLabTypesCompanion(
+      labTypeId: Value(labTypeId),
+      idUuid: Value(idUuid),
+      labSampleTestType: Value(labSampleTestType),
+      standard: standard == null && nullToAbsent
+          ? const Value.absent()
+          : Value(standard),
+      testType: Value(testType),
+      testTypeDetail: Value(testTypeDetail),
+      isActive: Value(isActive),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      createdDate: Value(createdDate),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
+      lastUpdatedDate: lastUpdatedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedDate),
+    );
+  }
+
+  factory FmsMtLabType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FmsMtLabType(
+      labTypeId: serializer.fromJson<int>(json['labTypeId']),
+      idUuid: serializer.fromJson<String>(json['idUuid']),
+      labSampleTestType: serializer.fromJson<String>(json['labSampleTestType']),
+      standard: serializer.fromJson<String?>(json['standard']),
+      testType: serializer.fromJson<String>(json['testType']),
+      testTypeDetail: serializer.fromJson<String>(json['testTypeDetail']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdBy: serializer.fromJson<int?>(json['createdBy']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+      lastUpdatedBy: serializer.fromJson<int?>(json['lastUpdatedBy']),
+      lastUpdatedDate: serializer.fromJson<DateTime?>(json['lastUpdatedDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'labTypeId': serializer.toJson<int>(labTypeId),
+      'idUuid': serializer.toJson<String>(idUuid),
+      'labSampleTestType': serializer.toJson<String>(labSampleTestType),
+      'standard': serializer.toJson<String?>(standard),
+      'testType': serializer.toJson<String>(testType),
+      'testTypeDetail': serializer.toJson<String>(testTypeDetail),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdBy': serializer.toJson<int?>(createdBy),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+      'lastUpdatedBy': serializer.toJson<int?>(lastUpdatedBy),
+      'lastUpdatedDate': serializer.toJson<DateTime?>(lastUpdatedDate),
+    };
+  }
+
+  FmsMtLabType copyWith({
+    int? labTypeId,
+    String? idUuid,
+    String? labSampleTestType,
+    Value<String?> standard = const Value.absent(),
+    String? testType,
+    String? testTypeDetail,
+    bool? isActive,
+    Value<int?> createdBy = const Value.absent(),
+    DateTime? createdDate,
+    Value<int?> lastUpdatedBy = const Value.absent(),
+    Value<DateTime?> lastUpdatedDate = const Value.absent(),
+  }) => FmsMtLabType(
+    labTypeId: labTypeId ?? this.labTypeId,
+    idUuid: idUuid ?? this.idUuid,
+    labSampleTestType: labSampleTestType ?? this.labSampleTestType,
+    standard: standard.present ? standard.value : this.standard,
+    testType: testType ?? this.testType,
+    testTypeDetail: testTypeDetail ?? this.testTypeDetail,
+    isActive: isActive ?? this.isActive,
+    createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    createdDate: createdDate ?? this.createdDate,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
+    lastUpdatedDate: lastUpdatedDate.present
+        ? lastUpdatedDate.value
+        : this.lastUpdatedDate,
+  );
+  FmsMtLabType copyWithCompanion(FmsMtLabTypesCompanion data) {
+    return FmsMtLabType(
+      labTypeId: data.labTypeId.present ? data.labTypeId.value : this.labTypeId,
+      idUuid: data.idUuid.present ? data.idUuid.value : this.idUuid,
+      labSampleTestType: data.labSampleTestType.present
+          ? data.labSampleTestType.value
+          : this.labSampleTestType,
+      standard: data.standard.present ? data.standard.value : this.standard,
+      testType: data.testType.present ? data.testType.value : this.testType,
+      testTypeDetail: data.testTypeDetail.present
+          ? data.testTypeDetail.value
+          : this.testTypeDetail,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
+      lastUpdatedDate: data.lastUpdatedDate.present
+          ? data.lastUpdatedDate.value
+          : this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabType(')
+          ..write('labTypeId: $labTypeId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('labSampleTestType: $labSampleTestType, ')
+          ..write('standard: $standard, ')
+          ..write('testType: $testType, ')
+          ..write('testTypeDetail: $testTypeDetail, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    labTypeId,
+    idUuid,
+    labSampleTestType,
+    standard,
+    testType,
+    testTypeDetail,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FmsMtLabType &&
+          other.labTypeId == this.labTypeId &&
+          other.idUuid == this.idUuid &&
+          other.labSampleTestType == this.labSampleTestType &&
+          other.standard == this.standard &&
+          other.testType == this.testType &&
+          other.testTypeDetail == this.testTypeDetail &&
+          other.isActive == this.isActive &&
+          other.createdBy == this.createdBy &&
+          other.createdDate == this.createdDate &&
+          other.lastUpdatedBy == this.lastUpdatedBy &&
+          other.lastUpdatedDate == this.lastUpdatedDate);
+}
+
+class FmsMtLabTypesCompanion extends UpdateCompanion<FmsMtLabType> {
+  final Value<int> labTypeId;
+  final Value<String> idUuid;
+  final Value<String> labSampleTestType;
+  final Value<String?> standard;
+  final Value<String> testType;
+  final Value<String> testTypeDetail;
+  final Value<bool> isActive;
+  final Value<int?> createdBy;
+  final Value<DateTime> createdDate;
+  final Value<int?> lastUpdatedBy;
+  final Value<DateTime?> lastUpdatedDate;
+  const FmsMtLabTypesCompanion({
+    this.labTypeId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    this.labSampleTestType = const Value.absent(),
+    this.standard = const Value.absent(),
+    this.testType = const Value.absent(),
+    this.testTypeDetail = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  });
+  FmsMtLabTypesCompanion.insert({
+    this.labTypeId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    required String labSampleTestType,
+    this.standard = const Value.absent(),
+    required String testType,
+    required String testTypeDetail,
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  }) : labSampleTestType = Value(labSampleTestType),
+       testType = Value(testType),
+       testTypeDetail = Value(testTypeDetail);
+  static Insertable<FmsMtLabType> custom({
+    Expression<int>? labTypeId,
+    Expression<String>? idUuid,
+    Expression<String>? labSampleTestType,
+    Expression<String>? standard,
+    Expression<String>? testType,
+    Expression<String>? testTypeDetail,
+    Expression<bool>? isActive,
+    Expression<int>? createdBy,
+    Expression<DateTime>? createdDate,
+    Expression<int>? lastUpdatedBy,
+    Expression<DateTime>? lastUpdatedDate,
+  }) {
+    return RawValuesInsertable({
+      if (labTypeId != null) 'lab_type_id': labTypeId,
+      if (idUuid != null) 'id_uuid': idUuid,
+      if (labSampleTestType != null) 'lab_sample_test_type': labSampleTestType,
+      if (standard != null) 'standard': standard,
+      if (testType != null) 'test_type': testType,
+      if (testTypeDetail != null) 'test_type_detail': testTypeDetail,
+      if (isActive != null) 'is_active': isActive,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdDate != null) 'created_date': createdDate,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
+      if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
+    });
+  }
+
+  FmsMtLabTypesCompanion copyWith({
+    Value<int>? labTypeId,
+    Value<String>? idUuid,
+    Value<String>? labSampleTestType,
+    Value<String?>? standard,
+    Value<String>? testType,
+    Value<String>? testTypeDetail,
+    Value<bool>? isActive,
+    Value<int?>? createdBy,
+    Value<DateTime>? createdDate,
+    Value<int?>? lastUpdatedBy,
+    Value<DateTime?>? lastUpdatedDate,
+  }) {
+    return FmsMtLabTypesCompanion(
+      labTypeId: labTypeId ?? this.labTypeId,
+      idUuid: idUuid ?? this.idUuid,
+      labSampleTestType: labSampleTestType ?? this.labSampleTestType,
+      standard: standard ?? this.standard,
+      testType: testType ?? this.testType,
+      testTypeDetail: testTypeDetail ?? this.testTypeDetail,
+      isActive: isActive ?? this.isActive,
+      createdBy: createdBy ?? this.createdBy,
+      createdDate: createdDate ?? this.createdDate,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
+      lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (labTypeId.present) {
+      map['lab_type_id'] = Variable<int>(labTypeId.value);
+    }
+    if (idUuid.present) {
+      map['id_uuid'] = Variable<String>(idUuid.value);
+    }
+    if (labSampleTestType.present) {
+      map['lab_sample_test_type'] = Variable<String>(labSampleTestType.value);
+    }
+    if (standard.present) {
+      map['standard'] = Variable<String>(standard.value);
+    }
+    if (testType.present) {
+      map['test_type'] = Variable<String>(testType.value);
+    }
+    if (testTypeDetail.present) {
+      map['test_type_detail'] = Variable<String>(testTypeDetail.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<int>(createdBy.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy.value);
+    }
+    if (lastUpdatedDate.present) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtLabTypesCompanion(')
+          ..write('labTypeId: $labTypeId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('labSampleTestType: $labSampleTestType, ')
+          ..write('standard: $standard, ')
+          ..write('testType: $testType, ')
+          ..write('testTypeDetail: $testTypeDetail, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FmsMtSampleLabTypesTable extends FmsMtSampleLabTypes
+    with TableInfo<$FmsMtSampleLabTypesTable, FmsMtSampleLabType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FmsMtSampleLabTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sampleLabTypeIdMeta = const VerificationMeta(
+    'sampleLabTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> sampleLabTypeId = GeneratedColumn<int>(
+    'sample_lab_type_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _idUuidMeta = const VerificationMeta('idUuid');
+  @override
+  late final GeneratedColumn<String> idUuid = GeneratedColumn<String>(
+    'id_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _sampleLabTypeMeta = const VerificationMeta(
+    'sampleLabType',
+  );
+  @override
+  late final GeneratedColumn<String> sampleLabType = GeneratedColumn<String>(
+    'sample_lab_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<int> createdBy = GeneratedColumn<int>(
+    'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<int> lastUpdatedBy = GeneratedColumn<int>(
+    'last_updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastUpdatedDateMeta = const VerificationMeta(
+    'lastUpdatedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedDate =
+      GeneratedColumn<DateTime>(
+        'last_updated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    sampleLabTypeId,
+    idUuid,
+    sampleLabType,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_mt_sample_lab_type';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FmsMtSampleLabType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sample_lab_type_id')) {
+      context.handle(
+        _sampleLabTypeIdMeta,
+        sampleLabTypeId.isAcceptableOrUnknown(
+          data['sample_lab_type_id']!,
+          _sampleLabTypeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id_uuid')) {
+      context.handle(
+        _idUuidMeta,
+        idUuid.isAcceptableOrUnknown(data['id_uuid']!, _idUuidMeta),
+      );
+    }
+    if (data.containsKey('sample_lab_type')) {
+      context.handle(
+        _sampleLabTypeMeta,
+        sampleLabType.isAcceptableOrUnknown(
+          data['sample_lab_type']!,
+          _sampleLabTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sampleLabTypeMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_date')) {
+      context.handle(
+        _lastUpdatedDateMeta,
+        lastUpdatedDate.isAcceptableOrUnknown(
+          data['last_updated_date']!,
+          _lastUpdatedDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {sampleLabTypeId};
+  @override
+  FmsMtSampleLabType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FmsMtSampleLabType(
+      sampleLabTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sample_lab_type_id'],
+      )!,
+      idUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id_uuid'],
+      )!,
+      sampleLabType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sample_lab_type'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_by'],
+      ),
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_updated_by'],
+      ),
+      lastUpdatedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_date'],
+      ),
+    );
+  }
+
+  @override
+  $FmsMtSampleLabTypesTable createAlias(String alias) {
+    return $FmsMtSampleLabTypesTable(attachedDatabase, alias);
+  }
+}
+
+class FmsMtSampleLabType extends DataClass
+    implements Insertable<FmsMtSampleLabType> {
+  final int sampleLabTypeId;
+  final String idUuid;
+  final String sampleLabType;
+  final bool isActive;
+  final int? createdBy;
+  final DateTime createdDate;
+  final int? lastUpdatedBy;
+  final DateTime? lastUpdatedDate;
+  const FmsMtSampleLabType({
+    required this.sampleLabTypeId,
+    required this.idUuid,
+    required this.sampleLabType,
+    required this.isActive,
+    this.createdBy,
+    required this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sample_lab_type_id'] = Variable<int>(sampleLabTypeId);
+    map['id_uuid'] = Variable<String>(idUuid);
+    map['sample_lab_type'] = Variable<String>(sampleLabType);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<int>(createdBy);
+    }
+    map['created_date'] = Variable<DateTime>(createdDate);
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy);
+    }
+    if (!nullToAbsent || lastUpdatedDate != null) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate);
+    }
+    return map;
+  }
+
+  FmsMtSampleLabTypesCompanion toCompanion(bool nullToAbsent) {
+    return FmsMtSampleLabTypesCompanion(
+      sampleLabTypeId: Value(sampleLabTypeId),
+      idUuid: Value(idUuid),
+      sampleLabType: Value(sampleLabType),
+      isActive: Value(isActive),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      createdDate: Value(createdDate),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
+      lastUpdatedDate: lastUpdatedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedDate),
+    );
+  }
+
+  factory FmsMtSampleLabType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FmsMtSampleLabType(
+      sampleLabTypeId: serializer.fromJson<int>(json['sampleLabTypeId']),
+      idUuid: serializer.fromJson<String>(json['idUuid']),
+      sampleLabType: serializer.fromJson<String>(json['sampleLabType']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdBy: serializer.fromJson<int?>(json['createdBy']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+      lastUpdatedBy: serializer.fromJson<int?>(json['lastUpdatedBy']),
+      lastUpdatedDate: serializer.fromJson<DateTime?>(json['lastUpdatedDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sampleLabTypeId': serializer.toJson<int>(sampleLabTypeId),
+      'idUuid': serializer.toJson<String>(idUuid),
+      'sampleLabType': serializer.toJson<String>(sampleLabType),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdBy': serializer.toJson<int?>(createdBy),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+      'lastUpdatedBy': serializer.toJson<int?>(lastUpdatedBy),
+      'lastUpdatedDate': serializer.toJson<DateTime?>(lastUpdatedDate),
+    };
+  }
+
+  FmsMtSampleLabType copyWith({
+    int? sampleLabTypeId,
+    String? idUuid,
+    String? sampleLabType,
+    bool? isActive,
+    Value<int?> createdBy = const Value.absent(),
+    DateTime? createdDate,
+    Value<int?> lastUpdatedBy = const Value.absent(),
+    Value<DateTime?> lastUpdatedDate = const Value.absent(),
+  }) => FmsMtSampleLabType(
+    sampleLabTypeId: sampleLabTypeId ?? this.sampleLabTypeId,
+    idUuid: idUuid ?? this.idUuid,
+    sampleLabType: sampleLabType ?? this.sampleLabType,
+    isActive: isActive ?? this.isActive,
+    createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    createdDate: createdDate ?? this.createdDate,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
+    lastUpdatedDate: lastUpdatedDate.present
+        ? lastUpdatedDate.value
+        : this.lastUpdatedDate,
+  );
+  FmsMtSampleLabType copyWithCompanion(FmsMtSampleLabTypesCompanion data) {
+    return FmsMtSampleLabType(
+      sampleLabTypeId: data.sampleLabTypeId.present
+          ? data.sampleLabTypeId.value
+          : this.sampleLabTypeId,
+      idUuid: data.idUuid.present ? data.idUuid.value : this.idUuid,
+      sampleLabType: data.sampleLabType.present
+          ? data.sampleLabType.value
+          : this.sampleLabType,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
+      lastUpdatedDate: data.lastUpdatedDate.present
+          ? data.lastUpdatedDate.value
+          : this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtSampleLabType(')
+          ..write('sampleLabTypeId: $sampleLabTypeId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('sampleLabType: $sampleLabType, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    sampleLabTypeId,
+    idUuid,
+    sampleLabType,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FmsMtSampleLabType &&
+          other.sampleLabTypeId == this.sampleLabTypeId &&
+          other.idUuid == this.idUuid &&
+          other.sampleLabType == this.sampleLabType &&
+          other.isActive == this.isActive &&
+          other.createdBy == this.createdBy &&
+          other.createdDate == this.createdDate &&
+          other.lastUpdatedBy == this.lastUpdatedBy &&
+          other.lastUpdatedDate == this.lastUpdatedDate);
+}
+
+class FmsMtSampleLabTypesCompanion extends UpdateCompanion<FmsMtSampleLabType> {
+  final Value<int> sampleLabTypeId;
+  final Value<String> idUuid;
+  final Value<String> sampleLabType;
+  final Value<bool> isActive;
+  final Value<int?> createdBy;
+  final Value<DateTime> createdDate;
+  final Value<int?> lastUpdatedBy;
+  final Value<DateTime?> lastUpdatedDate;
+  const FmsMtSampleLabTypesCompanion({
+    this.sampleLabTypeId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    this.sampleLabType = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  });
+  FmsMtSampleLabTypesCompanion.insert({
+    this.sampleLabTypeId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    required String sampleLabType,
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  }) : sampleLabType = Value(sampleLabType);
+  static Insertable<FmsMtSampleLabType> custom({
+    Expression<int>? sampleLabTypeId,
+    Expression<String>? idUuid,
+    Expression<String>? sampleLabType,
+    Expression<bool>? isActive,
+    Expression<int>? createdBy,
+    Expression<DateTime>? createdDate,
+    Expression<int>? lastUpdatedBy,
+    Expression<DateTime>? lastUpdatedDate,
+  }) {
+    return RawValuesInsertable({
+      if (sampleLabTypeId != null) 'sample_lab_type_id': sampleLabTypeId,
+      if (idUuid != null) 'id_uuid': idUuid,
+      if (sampleLabType != null) 'sample_lab_type': sampleLabType,
+      if (isActive != null) 'is_active': isActive,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdDate != null) 'created_date': createdDate,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
+      if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
+    });
+  }
+
+  FmsMtSampleLabTypesCompanion copyWith({
+    Value<int>? sampleLabTypeId,
+    Value<String>? idUuid,
+    Value<String>? sampleLabType,
+    Value<bool>? isActive,
+    Value<int?>? createdBy,
+    Value<DateTime>? createdDate,
+    Value<int?>? lastUpdatedBy,
+    Value<DateTime?>? lastUpdatedDate,
+  }) {
+    return FmsMtSampleLabTypesCompanion(
+      sampleLabTypeId: sampleLabTypeId ?? this.sampleLabTypeId,
+      idUuid: idUuid ?? this.idUuid,
+      sampleLabType: sampleLabType ?? this.sampleLabType,
+      isActive: isActive ?? this.isActive,
+      createdBy: createdBy ?? this.createdBy,
+      createdDate: createdDate ?? this.createdDate,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
+      lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sampleLabTypeId.present) {
+      map['sample_lab_type_id'] = Variable<int>(sampleLabTypeId.value);
+    }
+    if (idUuid.present) {
+      map['id_uuid'] = Variable<String>(idUuid.value);
+    }
+    if (sampleLabType.present) {
+      map['sample_lab_type'] = Variable<String>(sampleLabType.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<int>(createdBy.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<int>(lastUpdatedBy.value);
+    }
+    if (lastUpdatedDate.present) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FmsMtSampleLabTypesCompanion(')
+          ..write('sampleLabTypeId: $sampleLabTypeId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('sampleLabType: $sampleLabType, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $Fms20LabRequestsTable extends Fms20LabRequests
+    with TableInfo<$Fms20LabRequestsTable, Fms20LabRequest> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $Fms20LabRequestsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _labRequestIdMeta = const VerificationMeta(
+    'labRequestId',
+  );
+  @override
+  late final GeneratedColumn<int> labRequestId = GeneratedColumn<int>(
+    'lab_request_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _idUuidMeta = const VerificationMeta('idUuid');
+  @override
+  late final GeneratedColumn<String> idUuid = GeneratedColumn<String>(
+    'id_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _employeeUuidMeta = const VerificationMeta(
+    'employeeUuid',
+  );
+  @override
+  late final GeneratedColumn<String> employeeUuid = GeneratedColumn<String>(
+    'employee_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _orderDateMeta = const VerificationMeta(
+    'orderDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> orderDate = GeneratedColumn<DateTime>(
+    'order_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _farmUuidMeta = const VerificationMeta(
+    'farmUuid',
+  );
+  @override
+  late final GeneratedColumn<String> farmUuid = GeneratedColumn<String>(
+    'farm_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _testTypeMeta = const VerificationMeta(
+    'testType',
+  );
+  @override
+  late final GeneratedColumn<String> testType = GeneratedColumn<String>(
+    'test_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anamnesaMeta = const VerificationMeta(
+    'anamnesa',
+  );
+  @override
+  late final GeneratedColumn<String> anamnesa = GeneratedColumn<String>(
+    'anamnesa',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastUpdatedBy = GeneratedColumn<String>(
+    'last_updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastUpdatedDateMeta = const VerificationMeta(
+    'lastUpdatedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedDate =
+      GeneratedColumn<DateTime>(
+        'last_updated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    labRequestId,
+    idUuid,
+    employeeUuid,
+    orderDate,
+    farmUuid,
+    testType,
+    anamnesa,
+    status,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_20_lab_request';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Fms20LabRequest> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('lab_request_id')) {
+      context.handle(
+        _labRequestIdMeta,
+        labRequestId.isAcceptableOrUnknown(
+          data['lab_request_id']!,
+          _labRequestIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id_uuid')) {
+      context.handle(
+        _idUuidMeta,
+        idUuid.isAcceptableOrUnknown(data['id_uuid']!, _idUuidMeta),
+      );
+    }
+    if (data.containsKey('employee_uuid')) {
+      context.handle(
+        _employeeUuidMeta,
+        employeeUuid.isAcceptableOrUnknown(
+          data['employee_uuid']!,
+          _employeeUuidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_employeeUuidMeta);
+    }
+    if (data.containsKey('order_date')) {
+      context.handle(
+        _orderDateMeta,
+        orderDate.isAcceptableOrUnknown(data['order_date']!, _orderDateMeta),
+      );
+    }
+    if (data.containsKey('farm_uuid')) {
+      context.handle(
+        _farmUuidMeta,
+        farmUuid.isAcceptableOrUnknown(data['farm_uuid']!, _farmUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmUuidMeta);
+    }
+    if (data.containsKey('test_type')) {
+      context.handle(
+        _testTypeMeta,
+        testType.isAcceptableOrUnknown(data['test_type']!, _testTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_testTypeMeta);
+    }
+    if (data.containsKey('anamnesa')) {
+      context.handle(
+        _anamnesaMeta,
+        anamnesa.isAcceptableOrUnknown(data['anamnesa']!, _anamnesaMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_anamnesaMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_date')) {
+      context.handle(
+        _lastUpdatedDateMeta,
+        lastUpdatedDate.isAcceptableOrUnknown(
+          data['last_updated_date']!,
+          _lastUpdatedDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {labRequestId};
+  @override
+  Fms20LabRequest map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Fms20LabRequest(
+      labRequestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}lab_request_id'],
+      )!,
+      idUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id_uuid'],
+      )!,
+      employeeUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}employee_uuid'],
+      )!,
+      orderDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}order_date'],
+      )!,
+      farmUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_uuid'],
+      )!,
+      testType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type'],
+      )!,
+      anamnesa: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}anamnesa'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      ),
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_updated_by'],
+      ),
+      lastUpdatedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_date'],
+      ),
+    );
+  }
+
+  @override
+  $Fms20LabRequestsTable createAlias(String alias) {
+    return $Fms20LabRequestsTable(attachedDatabase, alias);
+  }
+}
+
+class Fms20LabRequest extends DataClass implements Insertable<Fms20LabRequest> {
+  final int labRequestId;
+  final String idUuid;
+  final String employeeUuid;
+  final DateTime orderDate;
+  final String farmUuid;
+  final String testType;
+  final String anamnesa;
+  final String status;
+  final bool isActive;
+  final String? createdBy;
+  final DateTime createdDate;
+  final String? lastUpdatedBy;
+  final DateTime? lastUpdatedDate;
+  const Fms20LabRequest({
+    required this.labRequestId,
+    required this.idUuid,
+    required this.employeeUuid,
+    required this.orderDate,
+    required this.farmUuid,
+    required this.testType,
+    required this.anamnesa,
+    required this.status,
+    required this.isActive,
+    this.createdBy,
+    required this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lab_request_id'] = Variable<int>(labRequestId);
+    map['id_uuid'] = Variable<String>(idUuid);
+    map['employee_uuid'] = Variable<String>(employeeUuid);
+    map['order_date'] = Variable<DateTime>(orderDate);
+    map['farm_uuid'] = Variable<String>(farmUuid);
+    map['test_type'] = Variable<String>(testType);
+    map['anamnesa'] = Variable<String>(anamnesa);
+    map['status'] = Variable<String>(status);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
+    map['created_date'] = Variable<DateTime>(createdDate);
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<String>(lastUpdatedBy);
+    }
+    if (!nullToAbsent || lastUpdatedDate != null) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate);
+    }
+    return map;
+  }
+
+  Fms20LabRequestsCompanion toCompanion(bool nullToAbsent) {
+    return Fms20LabRequestsCompanion(
+      labRequestId: Value(labRequestId),
+      idUuid: Value(idUuid),
+      employeeUuid: Value(employeeUuid),
+      orderDate: Value(orderDate),
+      farmUuid: Value(farmUuid),
+      testType: Value(testType),
+      anamnesa: Value(anamnesa),
+      status: Value(status),
+      isActive: Value(isActive),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      createdDate: Value(createdDate),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
+      lastUpdatedDate: lastUpdatedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedDate),
+    );
+  }
+
+  factory Fms20LabRequest.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Fms20LabRequest(
+      labRequestId: serializer.fromJson<int>(json['labRequestId']),
+      idUuid: serializer.fromJson<String>(json['idUuid']),
+      employeeUuid: serializer.fromJson<String>(json['employeeUuid']),
+      orderDate: serializer.fromJson<DateTime>(json['orderDate']),
+      farmUuid: serializer.fromJson<String>(json['farmUuid']),
+      testType: serializer.fromJson<String>(json['testType']),
+      anamnesa: serializer.fromJson<String>(json['anamnesa']),
+      status: serializer.fromJson<String>(json['status']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+      lastUpdatedBy: serializer.fromJson<String?>(json['lastUpdatedBy']),
+      lastUpdatedDate: serializer.fromJson<DateTime?>(json['lastUpdatedDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'labRequestId': serializer.toJson<int>(labRequestId),
+      'idUuid': serializer.toJson<String>(idUuid),
+      'employeeUuid': serializer.toJson<String>(employeeUuid),
+      'orderDate': serializer.toJson<DateTime>(orderDate),
+      'farmUuid': serializer.toJson<String>(farmUuid),
+      'testType': serializer.toJson<String>(testType),
+      'anamnesa': serializer.toJson<String>(anamnesa),
+      'status': serializer.toJson<String>(status),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdBy': serializer.toJson<String?>(createdBy),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+      'lastUpdatedBy': serializer.toJson<String?>(lastUpdatedBy),
+      'lastUpdatedDate': serializer.toJson<DateTime?>(lastUpdatedDate),
+    };
+  }
+
+  Fms20LabRequest copyWith({
+    int? labRequestId,
+    String? idUuid,
+    String? employeeUuid,
+    DateTime? orderDate,
+    String? farmUuid,
+    String? testType,
+    String? anamnesa,
+    String? status,
+    bool? isActive,
+    Value<String?> createdBy = const Value.absent(),
+    DateTime? createdDate,
+    Value<String?> lastUpdatedBy = const Value.absent(),
+    Value<DateTime?> lastUpdatedDate = const Value.absent(),
+  }) => Fms20LabRequest(
+    labRequestId: labRequestId ?? this.labRequestId,
+    idUuid: idUuid ?? this.idUuid,
+    employeeUuid: employeeUuid ?? this.employeeUuid,
+    orderDate: orderDate ?? this.orderDate,
+    farmUuid: farmUuid ?? this.farmUuid,
+    testType: testType ?? this.testType,
+    anamnesa: anamnesa ?? this.anamnesa,
+    status: status ?? this.status,
+    isActive: isActive ?? this.isActive,
+    createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    createdDate: createdDate ?? this.createdDate,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
+    lastUpdatedDate: lastUpdatedDate.present
+        ? lastUpdatedDate.value
+        : this.lastUpdatedDate,
+  );
+  Fms20LabRequest copyWithCompanion(Fms20LabRequestsCompanion data) {
+    return Fms20LabRequest(
+      labRequestId: data.labRequestId.present
+          ? data.labRequestId.value
+          : this.labRequestId,
+      idUuid: data.idUuid.present ? data.idUuid.value : this.idUuid,
+      employeeUuid: data.employeeUuid.present
+          ? data.employeeUuid.value
+          : this.employeeUuid,
+      orderDate: data.orderDate.present ? data.orderDate.value : this.orderDate,
+      farmUuid: data.farmUuid.present ? data.farmUuid.value : this.farmUuid,
+      testType: data.testType.present ? data.testType.value : this.testType,
+      anamnesa: data.anamnesa.present ? data.anamnesa.value : this.anamnesa,
+      status: data.status.present ? data.status.value : this.status,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
+      lastUpdatedDate: data.lastUpdatedDate.present
+          ? data.lastUpdatedDate.value
+          : this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms20LabRequest(')
+          ..write('labRequestId: $labRequestId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('employeeUuid: $employeeUuid, ')
+          ..write('orderDate: $orderDate, ')
+          ..write('farmUuid: $farmUuid, ')
+          ..write('testType: $testType, ')
+          ..write('anamnesa: $anamnesa, ')
+          ..write('status: $status, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    labRequestId,
+    idUuid,
+    employeeUuid,
+    orderDate,
+    farmUuid,
+    testType,
+    anamnesa,
+    status,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Fms20LabRequest &&
+          other.labRequestId == this.labRequestId &&
+          other.idUuid == this.idUuid &&
+          other.employeeUuid == this.employeeUuid &&
+          other.orderDate == this.orderDate &&
+          other.farmUuid == this.farmUuid &&
+          other.testType == this.testType &&
+          other.anamnesa == this.anamnesa &&
+          other.status == this.status &&
+          other.isActive == this.isActive &&
+          other.createdBy == this.createdBy &&
+          other.createdDate == this.createdDate &&
+          other.lastUpdatedBy == this.lastUpdatedBy &&
+          other.lastUpdatedDate == this.lastUpdatedDate);
+}
+
+class Fms20LabRequestsCompanion extends UpdateCompanion<Fms20LabRequest> {
+  final Value<int> labRequestId;
+  final Value<String> idUuid;
+  final Value<String> employeeUuid;
+  final Value<DateTime> orderDate;
+  final Value<String> farmUuid;
+  final Value<String> testType;
+  final Value<String> anamnesa;
+  final Value<String> status;
+  final Value<bool> isActive;
+  final Value<String?> createdBy;
+  final Value<DateTime> createdDate;
+  final Value<String?> lastUpdatedBy;
+  final Value<DateTime?> lastUpdatedDate;
+  const Fms20LabRequestsCompanion({
+    this.labRequestId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    this.employeeUuid = const Value.absent(),
+    this.orderDate = const Value.absent(),
+    this.farmUuid = const Value.absent(),
+    this.testType = const Value.absent(),
+    this.anamnesa = const Value.absent(),
+    this.status = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  });
+  Fms20LabRequestsCompanion.insert({
+    this.labRequestId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    required String employeeUuid,
+    this.orderDate = const Value.absent(),
+    required String farmUuid,
+    required String testType,
+    required String anamnesa,
+    this.status = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  }) : employeeUuid = Value(employeeUuid),
+       farmUuid = Value(farmUuid),
+       testType = Value(testType),
+       anamnesa = Value(anamnesa);
+  static Insertable<Fms20LabRequest> custom({
+    Expression<int>? labRequestId,
+    Expression<String>? idUuid,
+    Expression<String>? employeeUuid,
+    Expression<DateTime>? orderDate,
+    Expression<String>? farmUuid,
+    Expression<String>? testType,
+    Expression<String>? anamnesa,
+    Expression<String>? status,
+    Expression<bool>? isActive,
+    Expression<String>? createdBy,
+    Expression<DateTime>? createdDate,
+    Expression<String>? lastUpdatedBy,
+    Expression<DateTime>? lastUpdatedDate,
+  }) {
+    return RawValuesInsertable({
+      if (labRequestId != null) 'lab_request_id': labRequestId,
+      if (idUuid != null) 'id_uuid': idUuid,
+      if (employeeUuid != null) 'employee_uuid': employeeUuid,
+      if (orderDate != null) 'order_date': orderDate,
+      if (farmUuid != null) 'farm_uuid': farmUuid,
+      if (testType != null) 'test_type': testType,
+      if (anamnesa != null) 'anamnesa': anamnesa,
+      if (status != null) 'status': status,
+      if (isActive != null) 'is_active': isActive,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdDate != null) 'created_date': createdDate,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
+      if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
+    });
+  }
+
+  Fms20LabRequestsCompanion copyWith({
+    Value<int>? labRequestId,
+    Value<String>? idUuid,
+    Value<String>? employeeUuid,
+    Value<DateTime>? orderDate,
+    Value<String>? farmUuid,
+    Value<String>? testType,
+    Value<String>? anamnesa,
+    Value<String>? status,
+    Value<bool>? isActive,
+    Value<String?>? createdBy,
+    Value<DateTime>? createdDate,
+    Value<String?>? lastUpdatedBy,
+    Value<DateTime?>? lastUpdatedDate,
+  }) {
+    return Fms20LabRequestsCompanion(
+      labRequestId: labRequestId ?? this.labRequestId,
+      idUuid: idUuid ?? this.idUuid,
+      employeeUuid: employeeUuid ?? this.employeeUuid,
+      orderDate: orderDate ?? this.orderDate,
+      farmUuid: farmUuid ?? this.farmUuid,
+      testType: testType ?? this.testType,
+      anamnesa: anamnesa ?? this.anamnesa,
+      status: status ?? this.status,
+      isActive: isActive ?? this.isActive,
+      createdBy: createdBy ?? this.createdBy,
+      createdDate: createdDate ?? this.createdDate,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
+      lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (labRequestId.present) {
+      map['lab_request_id'] = Variable<int>(labRequestId.value);
+    }
+    if (idUuid.present) {
+      map['id_uuid'] = Variable<String>(idUuid.value);
+    }
+    if (employeeUuid.present) {
+      map['employee_uuid'] = Variable<String>(employeeUuid.value);
+    }
+    if (orderDate.present) {
+      map['order_date'] = Variable<DateTime>(orderDate.value);
+    }
+    if (farmUuid.present) {
+      map['farm_uuid'] = Variable<String>(farmUuid.value);
+    }
+    if (testType.present) {
+      map['test_type'] = Variable<String>(testType.value);
+    }
+    if (anamnesa.present) {
+      map['anamnesa'] = Variable<String>(anamnesa.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<String>(lastUpdatedBy.value);
+    }
+    if (lastUpdatedDate.present) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms20LabRequestsCompanion(')
+          ..write('labRequestId: $labRequestId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('employeeUuid: $employeeUuid, ')
+          ..write('orderDate: $orderDate, ')
+          ..write('farmUuid: $farmUuid, ')
+          ..write('testType: $testType, ')
+          ..write('anamnesa: $anamnesa, ')
+          ..write('status: $status, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $Fms29LabRequestDetailsTable extends Fms29LabRequestDetails
+    with TableInfo<$Fms29LabRequestDetailsTable, Fms29LabRequestDetail> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $Fms29LabRequestDetailsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _labRequestDetailIdMeta =
+      const VerificationMeta('labRequestDetailId');
+  @override
+  late final GeneratedColumn<int> labRequestDetailId = GeneratedColumn<int>(
+    'lab_request_detail_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _idUuidMeta = const VerificationMeta('idUuid');
+  @override
+  late final GeneratedColumn<String> idUuid = GeneratedColumn<String>(
+    'id_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
+  );
+  static const VerificationMeta _labRequestUuidMeta = const VerificationMeta(
+    'labRequestUuid',
+  );
+  @override
+  late final GeneratedColumn<String> labRequestUuid = GeneratedColumn<String>(
+    'lab_request_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_20_lab_request (id_uuid)',
+    ),
+  );
+  static const VerificationMeta _sampleCodeMeta = const VerificationMeta(
+    'sampleCode',
+  );
+  @override
+  late final GeneratedColumn<String> sampleCode = GeneratedColumn<String>(
+    'sample_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pondUuidMeta = const VerificationMeta(
+    'pondUuid',
+  );
+  @override
+  late final GeneratedColumn<String> pondUuid = GeneratedColumn<String>(
+    'pond_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sampleLabTypeUuidMeta = const VerificationMeta(
+    'sampleLabTypeUuid',
+  );
+  @override
+  late final GeneratedColumn<String> sampleLabTypeUuid =
+      GeneratedColumn<String>(
+        'sample_lab_type_uuid',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _docMeta = const VerificationMeta('doc');
+  @override
+  late final GeneratedColumn<int> doc = GeneratedColumn<int>(
+    'doc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testTypeDetailsMeta = const VerificationMeta(
+    'testTypeDetails',
+  );
+  @override
+  late final GeneratedColumn<String> testTypeDetails = GeneratedColumn<String>(
+    'test_type_details',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastUpdatedByMeta = const VerificationMeta(
+    'lastUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastUpdatedBy = GeneratedColumn<String>(
+    'last_updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastUpdatedDateMeta = const VerificationMeta(
+    'lastUpdatedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedDate =
+      GeneratedColumn<DateTime>(
+        'last_updated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    labRequestDetailId,
+    idUuid,
+    labRequestUuid,
+    sampleCode,
+    pondUuid,
+    sampleLabTypeUuid,
+    doc,
+    testTypeDetails,
+    notes,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_29_lab_request_detail';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Fms29LabRequestDetail> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('lab_request_detail_id')) {
+      context.handle(
+        _labRequestDetailIdMeta,
+        labRequestDetailId.isAcceptableOrUnknown(
+          data['lab_request_detail_id']!,
+          _labRequestDetailIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id_uuid')) {
+      context.handle(
+        _idUuidMeta,
+        idUuid.isAcceptableOrUnknown(data['id_uuid']!, _idUuidMeta),
+      );
+    }
+    if (data.containsKey('lab_request_uuid')) {
+      context.handle(
+        _labRequestUuidMeta,
+        labRequestUuid.isAcceptableOrUnknown(
+          data['lab_request_uuid']!,
+          _labRequestUuidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_labRequestUuidMeta);
+    }
+    if (data.containsKey('sample_code')) {
+      context.handle(
+        _sampleCodeMeta,
+        sampleCode.isAcceptableOrUnknown(data['sample_code']!, _sampleCodeMeta),
+      );
+    }
+    if (data.containsKey('pond_uuid')) {
+      context.handle(
+        _pondUuidMeta,
+        pondUuid.isAcceptableOrUnknown(data['pond_uuid']!, _pondUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pondUuidMeta);
+    }
+    if (data.containsKey('sample_lab_type_uuid')) {
+      context.handle(
+        _sampleLabTypeUuidMeta,
+        sampleLabTypeUuid.isAcceptableOrUnknown(
+          data['sample_lab_type_uuid']!,
+          _sampleLabTypeUuidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sampleLabTypeUuidMeta);
+    }
+    if (data.containsKey('doc')) {
+      context.handle(
+        _docMeta,
+        doc.isAcceptableOrUnknown(data['doc']!, _docMeta),
+      );
+    }
+    if (data.containsKey('test_type_details')) {
+      context.handle(
+        _testTypeDetailsMeta,
+        testTypeDetails.isAcceptableOrUnknown(
+          data['test_type_details']!,
+          _testTypeDetailsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_by')) {
+      context.handle(
+        _lastUpdatedByMeta,
+        lastUpdatedBy.isAcceptableOrUnknown(
+          data['last_updated_by']!,
+          _lastUpdatedByMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_updated_date')) {
+      context.handle(
+        _lastUpdatedDateMeta,
+        lastUpdatedDate.isAcceptableOrUnknown(
+          data['last_updated_date']!,
+          _lastUpdatedDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {labRequestDetailId};
+  @override
+  Fms29LabRequestDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Fms29LabRequestDetail(
+      labRequestDetailId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}lab_request_detail_id'],
+      )!,
+      idUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id_uuid'],
+      )!,
+      labRequestUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lab_request_uuid'],
+      )!,
+      sampleCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sample_code'],
+      ),
+      pondUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pond_uuid'],
+      )!,
+      sampleLabTypeUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sample_lab_type_uuid'],
+      )!,
+      doc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}doc'],
+      ),
+      testTypeDetails: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_type_details'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      ),
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+      lastUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_updated_by'],
+      ),
+      lastUpdatedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_date'],
+      ),
+    );
+  }
+
+  @override
+  $Fms29LabRequestDetailsTable createAlias(String alias) {
+    return $Fms29LabRequestDetailsTable(attachedDatabase, alias);
+  }
+}
+
+class Fms29LabRequestDetail extends DataClass
+    implements Insertable<Fms29LabRequestDetail> {
+  final int labRequestDetailId;
+  final String idUuid;
+  final String labRequestUuid;
+  final String? sampleCode;
+  final String pondUuid;
+  final String sampleLabTypeUuid;
+  final int? doc;
+  final String? testTypeDetails;
+  final String? notes;
+  final bool isActive;
+  final String? createdBy;
+  final DateTime createdDate;
+  final String? lastUpdatedBy;
+  final DateTime? lastUpdatedDate;
+  const Fms29LabRequestDetail({
+    required this.labRequestDetailId,
+    required this.idUuid,
+    required this.labRequestUuid,
+    this.sampleCode,
+    required this.pondUuid,
+    required this.sampleLabTypeUuid,
+    this.doc,
+    this.testTypeDetails,
+    this.notes,
+    required this.isActive,
+    this.createdBy,
+    required this.createdDate,
+    this.lastUpdatedBy,
+    this.lastUpdatedDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lab_request_detail_id'] = Variable<int>(labRequestDetailId);
+    map['id_uuid'] = Variable<String>(idUuid);
+    map['lab_request_uuid'] = Variable<String>(labRequestUuid);
+    if (!nullToAbsent || sampleCode != null) {
+      map['sample_code'] = Variable<String>(sampleCode);
+    }
+    map['pond_uuid'] = Variable<String>(pondUuid);
+    map['sample_lab_type_uuid'] = Variable<String>(sampleLabTypeUuid);
+    if (!nullToAbsent || doc != null) {
+      map['doc'] = Variable<int>(doc);
+    }
+    if (!nullToAbsent || testTypeDetails != null) {
+      map['test_type_details'] = Variable<String>(testTypeDetails);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
+    map['created_date'] = Variable<DateTime>(createdDate);
+    if (!nullToAbsent || lastUpdatedBy != null) {
+      map['last_updated_by'] = Variable<String>(lastUpdatedBy);
+    }
+    if (!nullToAbsent || lastUpdatedDate != null) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate);
+    }
+    return map;
+  }
+
+  Fms29LabRequestDetailsCompanion toCompanion(bool nullToAbsent) {
+    return Fms29LabRequestDetailsCompanion(
+      labRequestDetailId: Value(labRequestDetailId),
+      idUuid: Value(idUuid),
+      labRequestUuid: Value(labRequestUuid),
+      sampleCode: sampleCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sampleCode),
+      pondUuid: Value(pondUuid),
+      sampleLabTypeUuid: Value(sampleLabTypeUuid),
+      doc: doc == null && nullToAbsent ? const Value.absent() : Value(doc),
+      testTypeDetails: testTypeDetails == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testTypeDetails),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      isActive: Value(isActive),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      createdDate: Value(createdDate),
+      lastUpdatedBy: lastUpdatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedBy),
+      lastUpdatedDate: lastUpdatedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedDate),
+    );
+  }
+
+  factory Fms29LabRequestDetail.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Fms29LabRequestDetail(
+      labRequestDetailId: serializer.fromJson<int>(json['labRequestDetailId']),
+      idUuid: serializer.fromJson<String>(json['idUuid']),
+      labRequestUuid: serializer.fromJson<String>(json['labRequestUuid']),
+      sampleCode: serializer.fromJson<String?>(json['sampleCode']),
+      pondUuid: serializer.fromJson<String>(json['pondUuid']),
+      sampleLabTypeUuid: serializer.fromJson<String>(json['sampleLabTypeUuid']),
+      doc: serializer.fromJson<int?>(json['doc']),
+      testTypeDetails: serializer.fromJson<String?>(json['testTypeDetails']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+      lastUpdatedBy: serializer.fromJson<String?>(json['lastUpdatedBy']),
+      lastUpdatedDate: serializer.fromJson<DateTime?>(json['lastUpdatedDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'labRequestDetailId': serializer.toJson<int>(labRequestDetailId),
+      'idUuid': serializer.toJson<String>(idUuid),
+      'labRequestUuid': serializer.toJson<String>(labRequestUuid),
+      'sampleCode': serializer.toJson<String?>(sampleCode),
+      'pondUuid': serializer.toJson<String>(pondUuid),
+      'sampleLabTypeUuid': serializer.toJson<String>(sampleLabTypeUuid),
+      'doc': serializer.toJson<int?>(doc),
+      'testTypeDetails': serializer.toJson<String?>(testTypeDetails),
+      'notes': serializer.toJson<String?>(notes),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdBy': serializer.toJson<String?>(createdBy),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+      'lastUpdatedBy': serializer.toJson<String?>(lastUpdatedBy),
+      'lastUpdatedDate': serializer.toJson<DateTime?>(lastUpdatedDate),
+    };
+  }
+
+  Fms29LabRequestDetail copyWith({
+    int? labRequestDetailId,
+    String? idUuid,
+    String? labRequestUuid,
+    Value<String?> sampleCode = const Value.absent(),
+    String? pondUuid,
+    String? sampleLabTypeUuid,
+    Value<int?> doc = const Value.absent(),
+    Value<String?> testTypeDetails = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    bool? isActive,
+    Value<String?> createdBy = const Value.absent(),
+    DateTime? createdDate,
+    Value<String?> lastUpdatedBy = const Value.absent(),
+    Value<DateTime?> lastUpdatedDate = const Value.absent(),
+  }) => Fms29LabRequestDetail(
+    labRequestDetailId: labRequestDetailId ?? this.labRequestDetailId,
+    idUuid: idUuid ?? this.idUuid,
+    labRequestUuid: labRequestUuid ?? this.labRequestUuid,
+    sampleCode: sampleCode.present ? sampleCode.value : this.sampleCode,
+    pondUuid: pondUuid ?? this.pondUuid,
+    sampleLabTypeUuid: sampleLabTypeUuid ?? this.sampleLabTypeUuid,
+    doc: doc.present ? doc.value : this.doc,
+    testTypeDetails: testTypeDetails.present
+        ? testTypeDetails.value
+        : this.testTypeDetails,
+    notes: notes.present ? notes.value : this.notes,
+    isActive: isActive ?? this.isActive,
+    createdBy: createdBy.present ? createdBy.value : this.createdBy,
+    createdDate: createdDate ?? this.createdDate,
+    lastUpdatedBy: lastUpdatedBy.present
+        ? lastUpdatedBy.value
+        : this.lastUpdatedBy,
+    lastUpdatedDate: lastUpdatedDate.present
+        ? lastUpdatedDate.value
+        : this.lastUpdatedDate,
+  );
+  Fms29LabRequestDetail copyWithCompanion(
+    Fms29LabRequestDetailsCompanion data,
+  ) {
+    return Fms29LabRequestDetail(
+      labRequestDetailId: data.labRequestDetailId.present
+          ? data.labRequestDetailId.value
+          : this.labRequestDetailId,
+      idUuid: data.idUuid.present ? data.idUuid.value : this.idUuid,
+      labRequestUuid: data.labRequestUuid.present
+          ? data.labRequestUuid.value
+          : this.labRequestUuid,
+      sampleCode: data.sampleCode.present
+          ? data.sampleCode.value
+          : this.sampleCode,
+      pondUuid: data.pondUuid.present ? data.pondUuid.value : this.pondUuid,
+      sampleLabTypeUuid: data.sampleLabTypeUuid.present
+          ? data.sampleLabTypeUuid.value
+          : this.sampleLabTypeUuid,
+      doc: data.doc.present ? data.doc.value : this.doc,
+      testTypeDetails: data.testTypeDetails.present
+          ? data.testTypeDetails.value
+          : this.testTypeDetails,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+      lastUpdatedBy: data.lastUpdatedBy.present
+          ? data.lastUpdatedBy.value
+          : this.lastUpdatedBy,
+      lastUpdatedDate: data.lastUpdatedDate.present
+          ? data.lastUpdatedDate.value
+          : this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms29LabRequestDetail(')
+          ..write('labRequestDetailId: $labRequestDetailId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('labRequestUuid: $labRequestUuid, ')
+          ..write('sampleCode: $sampleCode, ')
+          ..write('pondUuid: $pondUuid, ')
+          ..write('sampleLabTypeUuid: $sampleLabTypeUuid, ')
+          ..write('doc: $doc, ')
+          ..write('testTypeDetails: $testTypeDetails, ')
+          ..write('notes: $notes, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    labRequestDetailId,
+    idUuid,
+    labRequestUuid,
+    sampleCode,
+    pondUuid,
+    sampleLabTypeUuid,
+    doc,
+    testTypeDetails,
+    notes,
+    isActive,
+    createdBy,
+    createdDate,
+    lastUpdatedBy,
+    lastUpdatedDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Fms29LabRequestDetail &&
+          other.labRequestDetailId == this.labRequestDetailId &&
+          other.idUuid == this.idUuid &&
+          other.labRequestUuid == this.labRequestUuid &&
+          other.sampleCode == this.sampleCode &&
+          other.pondUuid == this.pondUuid &&
+          other.sampleLabTypeUuid == this.sampleLabTypeUuid &&
+          other.doc == this.doc &&
+          other.testTypeDetails == this.testTypeDetails &&
+          other.notes == this.notes &&
+          other.isActive == this.isActive &&
+          other.createdBy == this.createdBy &&
+          other.createdDate == this.createdDate &&
+          other.lastUpdatedBy == this.lastUpdatedBy &&
+          other.lastUpdatedDate == this.lastUpdatedDate);
+}
+
+class Fms29LabRequestDetailsCompanion
+    extends UpdateCompanion<Fms29LabRequestDetail> {
+  final Value<int> labRequestDetailId;
+  final Value<String> idUuid;
+  final Value<String> labRequestUuid;
+  final Value<String?> sampleCode;
+  final Value<String> pondUuid;
+  final Value<String> sampleLabTypeUuid;
+  final Value<int?> doc;
+  final Value<String?> testTypeDetails;
+  final Value<String?> notes;
+  final Value<bool> isActive;
+  final Value<String?> createdBy;
+  final Value<DateTime> createdDate;
+  final Value<String?> lastUpdatedBy;
+  final Value<DateTime?> lastUpdatedDate;
+  const Fms29LabRequestDetailsCompanion({
+    this.labRequestDetailId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    this.labRequestUuid = const Value.absent(),
+    this.sampleCode = const Value.absent(),
+    this.pondUuid = const Value.absent(),
+    this.sampleLabTypeUuid = const Value.absent(),
+    this.doc = const Value.absent(),
+    this.testTypeDetails = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  });
+  Fms29LabRequestDetailsCompanion.insert({
+    this.labRequestDetailId = const Value.absent(),
+    this.idUuid = const Value.absent(),
+    required String labRequestUuid,
+    this.sampleCode = const Value.absent(),
+    required String pondUuid,
+    required String sampleLabTypeUuid,
+    this.doc = const Value.absent(),
+    this.testTypeDetails = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdDate = const Value.absent(),
+    this.lastUpdatedBy = const Value.absent(),
+    this.lastUpdatedDate = const Value.absent(),
+  }) : labRequestUuid = Value(labRequestUuid),
+       pondUuid = Value(pondUuid),
+       sampleLabTypeUuid = Value(sampleLabTypeUuid);
+  static Insertable<Fms29LabRequestDetail> custom({
+    Expression<int>? labRequestDetailId,
+    Expression<String>? idUuid,
+    Expression<String>? labRequestUuid,
+    Expression<String>? sampleCode,
+    Expression<String>? pondUuid,
+    Expression<String>? sampleLabTypeUuid,
+    Expression<int>? doc,
+    Expression<String>? testTypeDetails,
+    Expression<String>? notes,
+    Expression<bool>? isActive,
+    Expression<String>? createdBy,
+    Expression<DateTime>? createdDate,
+    Expression<String>? lastUpdatedBy,
+    Expression<DateTime>? lastUpdatedDate,
+  }) {
+    return RawValuesInsertable({
+      if (labRequestDetailId != null)
+        'lab_request_detail_id': labRequestDetailId,
+      if (idUuid != null) 'id_uuid': idUuid,
+      if (labRequestUuid != null) 'lab_request_uuid': labRequestUuid,
+      if (sampleCode != null) 'sample_code': sampleCode,
+      if (pondUuid != null) 'pond_uuid': pondUuid,
+      if (sampleLabTypeUuid != null) 'sample_lab_type_uuid': sampleLabTypeUuid,
+      if (doc != null) 'doc': doc,
+      if (testTypeDetails != null) 'test_type_details': testTypeDetails,
+      if (notes != null) 'notes': notes,
+      if (isActive != null) 'is_active': isActive,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdDate != null) 'created_date': createdDate,
+      if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
+      if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
+    });
+  }
+
+  Fms29LabRequestDetailsCompanion copyWith({
+    Value<int>? labRequestDetailId,
+    Value<String>? idUuid,
+    Value<String>? labRequestUuid,
+    Value<String?>? sampleCode,
+    Value<String>? pondUuid,
+    Value<String>? sampleLabTypeUuid,
+    Value<int?>? doc,
+    Value<String?>? testTypeDetails,
+    Value<String?>? notes,
+    Value<bool>? isActive,
+    Value<String?>? createdBy,
+    Value<DateTime>? createdDate,
+    Value<String?>? lastUpdatedBy,
+    Value<DateTime?>? lastUpdatedDate,
+  }) {
+    return Fms29LabRequestDetailsCompanion(
+      labRequestDetailId: labRequestDetailId ?? this.labRequestDetailId,
+      idUuid: idUuid ?? this.idUuid,
+      labRequestUuid: labRequestUuid ?? this.labRequestUuid,
+      sampleCode: sampleCode ?? this.sampleCode,
+      pondUuid: pondUuid ?? this.pondUuid,
+      sampleLabTypeUuid: sampleLabTypeUuid ?? this.sampleLabTypeUuid,
+      doc: doc ?? this.doc,
+      testTypeDetails: testTypeDetails ?? this.testTypeDetails,
+      notes: notes ?? this.notes,
+      isActive: isActive ?? this.isActive,
+      createdBy: createdBy ?? this.createdBy,
+      createdDate: createdDate ?? this.createdDate,
+      lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
+      lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (labRequestDetailId.present) {
+      map['lab_request_detail_id'] = Variable<int>(labRequestDetailId.value);
+    }
+    if (idUuid.present) {
+      map['id_uuid'] = Variable<String>(idUuid.value);
+    }
+    if (labRequestUuid.present) {
+      map['lab_request_uuid'] = Variable<String>(labRequestUuid.value);
+    }
+    if (sampleCode.present) {
+      map['sample_code'] = Variable<String>(sampleCode.value);
+    }
+    if (pondUuid.present) {
+      map['pond_uuid'] = Variable<String>(pondUuid.value);
+    }
+    if (sampleLabTypeUuid.present) {
+      map['sample_lab_type_uuid'] = Variable<String>(sampleLabTypeUuid.value);
+    }
+    if (doc.present) {
+      map['doc'] = Variable<int>(doc.value);
+    }
+    if (testTypeDetails.present) {
+      map['test_type_details'] = Variable<String>(testTypeDetails.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    if (lastUpdatedBy.present) {
+      map['last_updated_by'] = Variable<String>(lastUpdatedBy.value);
+    }
+    if (lastUpdatedDate.present) {
+      map['last_updated_date'] = Variable<DateTime>(lastUpdatedDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms29LabRequestDetailsCompanion(')
+          ..write('labRequestDetailId: $labRequestDetailId, ')
+          ..write('idUuid: $idUuid, ')
+          ..write('labRequestUuid: $labRequestUuid, ')
+          ..write('sampleCode: $sampleCode, ')
+          ..write('pondUuid: $pondUuid, ')
+          ..write('sampleLabTypeUuid: $sampleLabTypeUuid, ')
+          ..write('doc: $doc, ')
+          ..write('testTypeDetails: $testTypeDetails, ')
+          ..write('notes: $notes, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdDate: $createdDate, ')
+          ..write('lastUpdatedBy: $lastUpdatedBy, ')
+          ..write('lastUpdatedDate: $lastUpdatedDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $Fms09LabRequestHistoriesTable extends Fms09LabRequestHistories
+    with TableInfo<$Fms09LabRequestHistoriesTable, Fms09LabRequestHistory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $Fms09LabRequestHistoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _historyIdMeta = const VerificationMeta(
+    'historyId',
+  );
+  @override
+  late final GeneratedColumn<int> historyId = GeneratedColumn<int>(
+    'history_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _requestIdMeta = const VerificationMeta(
+    'requestId',
+  );
+  @override
+  late final GeneratedColumn<int> requestId = GeneratedColumn<int>(
+    'request_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _oldStatusMeta = const VerificationMeta(
+    'oldStatus',
+  );
+  @override
+  late final GeneratedColumn<String> oldStatus = GeneratedColumn<String>(
+    'old_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _newStatusMeta = const VerificationMeta(
+    'newStatus',
+  );
+  @override
+  late final GeneratedColumn<String> newStatus = GeneratedColumn<String>(
+    'new_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _changeDetailsMeta = const VerificationMeta(
+    'changeDetails',
+  );
+  @override
+  late final GeneratedColumn<String> changeDetails = GeneratedColumn<String>(
+    'change_details',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _changedFieldsMeta = const VerificationMeta(
+    'changedFields',
+  );
+  @override
+  late final GeneratedColumn<String> changedFields = GeneratedColumn<String>(
+    'changed_fields',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _changedByMeta = const VerificationMeta(
+    'changedBy',
+  );
+  @override
+  late final GeneratedColumn<String> changedBy = GeneratedColumn<String>(
+    'changed_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _employeeIdMeta = const VerificationMeta(
+    'employeeId',
+  );
+  @override
+  late final GeneratedColumn<int> employeeId = GeneratedColumn<int>(
+    'employee_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ipAddressMeta = const VerificationMeta(
+    'ipAddress',
+  );
+  @override
+  late final GeneratedColumn<String> ipAddress = GeneratedColumn<String>(
+    'ip_address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userAgentMeta = const VerificationMeta(
+    'userAgent',
+  );
+  @override
+  late final GeneratedColumn<String> userAgent = GeneratedColumn<String>(
+    'user_agent',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _actionDateTimeMeta = const VerificationMeta(
+    'actionDateTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> actionDateTime =
+      GeneratedColumn<DateTime>(
+        'action_date_time',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+        defaultValue: currentDateAndTime,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    historyId,
+    requestId,
+    action,
+    oldStatus,
+    newStatus,
+    changeDetails,
+    changedFields,
+    changedBy,
+    employeeId,
+    ipAddress,
+    userAgent,
+    actionDateTime,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_09_lab_request_histories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Fms09LabRequestHistory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('history_id')) {
+      context.handle(
+        _historyIdMeta,
+        historyId.isAcceptableOrUnknown(data['history_id']!, _historyIdMeta),
+      );
+    }
+    if (data.containsKey('request_id')) {
+      context.handle(
+        _requestIdMeta,
+        requestId.isAcceptableOrUnknown(data['request_id']!, _requestIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_requestIdMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('old_status')) {
+      context.handle(
+        _oldStatusMeta,
+        oldStatus.isAcceptableOrUnknown(data['old_status']!, _oldStatusMeta),
+      );
+    }
+    if (data.containsKey('new_status')) {
+      context.handle(
+        _newStatusMeta,
+        newStatus.isAcceptableOrUnknown(data['new_status']!, _newStatusMeta),
+      );
+    }
+    if (data.containsKey('change_details')) {
+      context.handle(
+        _changeDetailsMeta,
+        changeDetails.isAcceptableOrUnknown(
+          data['change_details']!,
+          _changeDetailsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('changed_fields')) {
+      context.handle(
+        _changedFieldsMeta,
+        changedFields.isAcceptableOrUnknown(
+          data['changed_fields']!,
+          _changedFieldsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('changed_by')) {
+      context.handle(
+        _changedByMeta,
+        changedBy.isAcceptableOrUnknown(data['changed_by']!, _changedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changedByMeta);
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+        _employeeIdMeta,
+        employeeId.isAcceptableOrUnknown(data['employee_id']!, _employeeIdMeta),
+      );
+    }
+    if (data.containsKey('ip_address')) {
+      context.handle(
+        _ipAddressMeta,
+        ipAddress.isAcceptableOrUnknown(data['ip_address']!, _ipAddressMeta),
+      );
+    }
+    if (data.containsKey('user_agent')) {
+      context.handle(
+        _userAgentMeta,
+        userAgent.isAcceptableOrUnknown(data['user_agent']!, _userAgentMeta),
+      );
+    }
+    if (data.containsKey('action_date_time')) {
+      context.handle(
+        _actionDateTimeMeta,
+        actionDateTime.isAcceptableOrUnknown(
+          data['action_date_time']!,
+          _actionDateTimeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {historyId};
+  @override
+  Fms09LabRequestHistory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Fms09LabRequestHistory(
+      historyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}history_id'],
+      )!,
+      requestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}request_id'],
+      )!,
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      oldStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}old_status'],
+      ),
+      newStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}new_status'],
+      ),
+      changeDetails: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}change_details'],
+      ),
+      changedFields: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_fields'],
+      ),
+      changedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_by'],
+      )!,
+      employeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}employee_id'],
+      ),
+      ipAddress: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ip_address'],
+      ),
+      userAgent: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_agent'],
+      ),
+      actionDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}action_date_time'],
+      )!,
+    );
+  }
+
+  @override
+  $Fms09LabRequestHistoriesTable createAlias(String alias) {
+    return $Fms09LabRequestHistoriesTable(attachedDatabase, alias);
+  }
+}
+
+class Fms09LabRequestHistory extends DataClass
+    implements Insertable<Fms09LabRequestHistory> {
+  final int historyId;
+  final int requestId;
+  final String action;
+  final String? oldStatus;
+  final String? newStatus;
+  final String? changeDetails;
+  final String? changedFields;
+  final String changedBy;
+  final int? employeeId;
+  final String? ipAddress;
+  final String? userAgent;
+  final DateTime actionDateTime;
+  const Fms09LabRequestHistory({
+    required this.historyId,
+    required this.requestId,
+    required this.action,
+    this.oldStatus,
+    this.newStatus,
+    this.changeDetails,
+    this.changedFields,
+    required this.changedBy,
+    this.employeeId,
+    this.ipAddress,
+    this.userAgent,
+    required this.actionDateTime,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['history_id'] = Variable<int>(historyId);
+    map['request_id'] = Variable<int>(requestId);
+    map['action'] = Variable<String>(action);
+    if (!nullToAbsent || oldStatus != null) {
+      map['old_status'] = Variable<String>(oldStatus);
+    }
+    if (!nullToAbsent || newStatus != null) {
+      map['new_status'] = Variable<String>(newStatus);
+    }
+    if (!nullToAbsent || changeDetails != null) {
+      map['change_details'] = Variable<String>(changeDetails);
+    }
+    if (!nullToAbsent || changedFields != null) {
+      map['changed_fields'] = Variable<String>(changedFields);
+    }
+    map['changed_by'] = Variable<String>(changedBy);
+    if (!nullToAbsent || employeeId != null) {
+      map['employee_id'] = Variable<int>(employeeId);
+    }
+    if (!nullToAbsent || ipAddress != null) {
+      map['ip_address'] = Variable<String>(ipAddress);
+    }
+    if (!nullToAbsent || userAgent != null) {
+      map['user_agent'] = Variable<String>(userAgent);
+    }
+    map['action_date_time'] = Variable<DateTime>(actionDateTime);
+    return map;
+  }
+
+  Fms09LabRequestHistoriesCompanion toCompanion(bool nullToAbsent) {
+    return Fms09LabRequestHistoriesCompanion(
+      historyId: Value(historyId),
+      requestId: Value(requestId),
+      action: Value(action),
+      oldStatus: oldStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oldStatus),
+      newStatus: newStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(newStatus),
+      changeDetails: changeDetails == null && nullToAbsent
+          ? const Value.absent()
+          : Value(changeDetails),
+      changedFields: changedFields == null && nullToAbsent
+          ? const Value.absent()
+          : Value(changedFields),
+      changedBy: Value(changedBy),
+      employeeId: employeeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(employeeId),
+      ipAddress: ipAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ipAddress),
+      userAgent: userAgent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userAgent),
+      actionDateTime: Value(actionDateTime),
+    );
+  }
+
+  factory Fms09LabRequestHistory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Fms09LabRequestHistory(
+      historyId: serializer.fromJson<int>(json['historyId']),
+      requestId: serializer.fromJson<int>(json['requestId']),
+      action: serializer.fromJson<String>(json['action']),
+      oldStatus: serializer.fromJson<String?>(json['oldStatus']),
+      newStatus: serializer.fromJson<String?>(json['newStatus']),
+      changeDetails: serializer.fromJson<String?>(json['changeDetails']),
+      changedFields: serializer.fromJson<String?>(json['changedFields']),
+      changedBy: serializer.fromJson<String>(json['changedBy']),
+      employeeId: serializer.fromJson<int?>(json['employeeId']),
+      ipAddress: serializer.fromJson<String?>(json['ipAddress']),
+      userAgent: serializer.fromJson<String?>(json['userAgent']),
+      actionDateTime: serializer.fromJson<DateTime>(json['actionDateTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'historyId': serializer.toJson<int>(historyId),
+      'requestId': serializer.toJson<int>(requestId),
+      'action': serializer.toJson<String>(action),
+      'oldStatus': serializer.toJson<String?>(oldStatus),
+      'newStatus': serializer.toJson<String?>(newStatus),
+      'changeDetails': serializer.toJson<String?>(changeDetails),
+      'changedFields': serializer.toJson<String?>(changedFields),
+      'changedBy': serializer.toJson<String>(changedBy),
+      'employeeId': serializer.toJson<int?>(employeeId),
+      'ipAddress': serializer.toJson<String?>(ipAddress),
+      'userAgent': serializer.toJson<String?>(userAgent),
+      'actionDateTime': serializer.toJson<DateTime>(actionDateTime),
+    };
+  }
+
+  Fms09LabRequestHistory copyWith({
+    int? historyId,
+    int? requestId,
+    String? action,
+    Value<String?> oldStatus = const Value.absent(),
+    Value<String?> newStatus = const Value.absent(),
+    Value<String?> changeDetails = const Value.absent(),
+    Value<String?> changedFields = const Value.absent(),
+    String? changedBy,
+    Value<int?> employeeId = const Value.absent(),
+    Value<String?> ipAddress = const Value.absent(),
+    Value<String?> userAgent = const Value.absent(),
+    DateTime? actionDateTime,
+  }) => Fms09LabRequestHistory(
+    historyId: historyId ?? this.historyId,
+    requestId: requestId ?? this.requestId,
+    action: action ?? this.action,
+    oldStatus: oldStatus.present ? oldStatus.value : this.oldStatus,
+    newStatus: newStatus.present ? newStatus.value : this.newStatus,
+    changeDetails: changeDetails.present
+        ? changeDetails.value
+        : this.changeDetails,
+    changedFields: changedFields.present
+        ? changedFields.value
+        : this.changedFields,
+    changedBy: changedBy ?? this.changedBy,
+    employeeId: employeeId.present ? employeeId.value : this.employeeId,
+    ipAddress: ipAddress.present ? ipAddress.value : this.ipAddress,
+    userAgent: userAgent.present ? userAgent.value : this.userAgent,
+    actionDateTime: actionDateTime ?? this.actionDateTime,
+  );
+  Fms09LabRequestHistory copyWithCompanion(
+    Fms09LabRequestHistoriesCompanion data,
+  ) {
+    return Fms09LabRequestHistory(
+      historyId: data.historyId.present ? data.historyId.value : this.historyId,
+      requestId: data.requestId.present ? data.requestId.value : this.requestId,
+      action: data.action.present ? data.action.value : this.action,
+      oldStatus: data.oldStatus.present ? data.oldStatus.value : this.oldStatus,
+      newStatus: data.newStatus.present ? data.newStatus.value : this.newStatus,
+      changeDetails: data.changeDetails.present
+          ? data.changeDetails.value
+          : this.changeDetails,
+      changedFields: data.changedFields.present
+          ? data.changedFields.value
+          : this.changedFields,
+      changedBy: data.changedBy.present ? data.changedBy.value : this.changedBy,
+      employeeId: data.employeeId.present
+          ? data.employeeId.value
+          : this.employeeId,
+      ipAddress: data.ipAddress.present ? data.ipAddress.value : this.ipAddress,
+      userAgent: data.userAgent.present ? data.userAgent.value : this.userAgent,
+      actionDateTime: data.actionDateTime.present
+          ? data.actionDateTime.value
+          : this.actionDateTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms09LabRequestHistory(')
+          ..write('historyId: $historyId, ')
+          ..write('requestId: $requestId, ')
+          ..write('action: $action, ')
+          ..write('oldStatus: $oldStatus, ')
+          ..write('newStatus: $newStatus, ')
+          ..write('changeDetails: $changeDetails, ')
+          ..write('changedFields: $changedFields, ')
+          ..write('changedBy: $changedBy, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('ipAddress: $ipAddress, ')
+          ..write('userAgent: $userAgent, ')
+          ..write('actionDateTime: $actionDateTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    historyId,
+    requestId,
+    action,
+    oldStatus,
+    newStatus,
+    changeDetails,
+    changedFields,
+    changedBy,
+    employeeId,
+    ipAddress,
+    userAgent,
+    actionDateTime,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Fms09LabRequestHistory &&
+          other.historyId == this.historyId &&
+          other.requestId == this.requestId &&
+          other.action == this.action &&
+          other.oldStatus == this.oldStatus &&
+          other.newStatus == this.newStatus &&
+          other.changeDetails == this.changeDetails &&
+          other.changedFields == this.changedFields &&
+          other.changedBy == this.changedBy &&
+          other.employeeId == this.employeeId &&
+          other.ipAddress == this.ipAddress &&
+          other.userAgent == this.userAgent &&
+          other.actionDateTime == this.actionDateTime);
+}
+
+class Fms09LabRequestHistoriesCompanion
+    extends UpdateCompanion<Fms09LabRequestHistory> {
+  final Value<int> historyId;
+  final Value<int> requestId;
+  final Value<String> action;
+  final Value<String?> oldStatus;
+  final Value<String?> newStatus;
+  final Value<String?> changeDetails;
+  final Value<String?> changedFields;
+  final Value<String> changedBy;
+  final Value<int?> employeeId;
+  final Value<String?> ipAddress;
+  final Value<String?> userAgent;
+  final Value<DateTime> actionDateTime;
+  const Fms09LabRequestHistoriesCompanion({
+    this.historyId = const Value.absent(),
+    this.requestId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.oldStatus = const Value.absent(),
+    this.newStatus = const Value.absent(),
+    this.changeDetails = const Value.absent(),
+    this.changedFields = const Value.absent(),
+    this.changedBy = const Value.absent(),
+    this.employeeId = const Value.absent(),
+    this.ipAddress = const Value.absent(),
+    this.userAgent = const Value.absent(),
+    this.actionDateTime = const Value.absent(),
+  });
+  Fms09LabRequestHistoriesCompanion.insert({
+    this.historyId = const Value.absent(),
+    required int requestId,
+    required String action,
+    this.oldStatus = const Value.absent(),
+    this.newStatus = const Value.absent(),
+    this.changeDetails = const Value.absent(),
+    this.changedFields = const Value.absent(),
+    required String changedBy,
+    this.employeeId = const Value.absent(),
+    this.ipAddress = const Value.absent(),
+    this.userAgent = const Value.absent(),
+    this.actionDateTime = const Value.absent(),
+  }) : requestId = Value(requestId),
+       action = Value(action),
+       changedBy = Value(changedBy);
+  static Insertable<Fms09LabRequestHistory> custom({
+    Expression<int>? historyId,
+    Expression<int>? requestId,
+    Expression<String>? action,
+    Expression<String>? oldStatus,
+    Expression<String>? newStatus,
+    Expression<String>? changeDetails,
+    Expression<String>? changedFields,
+    Expression<String>? changedBy,
+    Expression<int>? employeeId,
+    Expression<String>? ipAddress,
+    Expression<String>? userAgent,
+    Expression<DateTime>? actionDateTime,
+  }) {
+    return RawValuesInsertable({
+      if (historyId != null) 'history_id': historyId,
+      if (requestId != null) 'request_id': requestId,
+      if (action != null) 'action': action,
+      if (oldStatus != null) 'old_status': oldStatus,
+      if (newStatus != null) 'new_status': newStatus,
+      if (changeDetails != null) 'change_details': changeDetails,
+      if (changedFields != null) 'changed_fields': changedFields,
+      if (changedBy != null) 'changed_by': changedBy,
+      if (employeeId != null) 'employee_id': employeeId,
+      if (ipAddress != null) 'ip_address': ipAddress,
+      if (userAgent != null) 'user_agent': userAgent,
+      if (actionDateTime != null) 'action_date_time': actionDateTime,
+    });
+  }
+
+  Fms09LabRequestHistoriesCompanion copyWith({
+    Value<int>? historyId,
+    Value<int>? requestId,
+    Value<String>? action,
+    Value<String?>? oldStatus,
+    Value<String?>? newStatus,
+    Value<String?>? changeDetails,
+    Value<String?>? changedFields,
+    Value<String>? changedBy,
+    Value<int?>? employeeId,
+    Value<String?>? ipAddress,
+    Value<String?>? userAgent,
+    Value<DateTime>? actionDateTime,
+  }) {
+    return Fms09LabRequestHistoriesCompanion(
+      historyId: historyId ?? this.historyId,
+      requestId: requestId ?? this.requestId,
+      action: action ?? this.action,
+      oldStatus: oldStatus ?? this.oldStatus,
+      newStatus: newStatus ?? this.newStatus,
+      changeDetails: changeDetails ?? this.changeDetails,
+      changedFields: changedFields ?? this.changedFields,
+      changedBy: changedBy ?? this.changedBy,
+      employeeId: employeeId ?? this.employeeId,
+      ipAddress: ipAddress ?? this.ipAddress,
+      userAgent: userAgent ?? this.userAgent,
+      actionDateTime: actionDateTime ?? this.actionDateTime,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (historyId.present) {
+      map['history_id'] = Variable<int>(historyId.value);
+    }
+    if (requestId.present) {
+      map['request_id'] = Variable<int>(requestId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (oldStatus.present) {
+      map['old_status'] = Variable<String>(oldStatus.value);
+    }
+    if (newStatus.present) {
+      map['new_status'] = Variable<String>(newStatus.value);
+    }
+    if (changeDetails.present) {
+      map['change_details'] = Variable<String>(changeDetails.value);
+    }
+    if (changedFields.present) {
+      map['changed_fields'] = Variable<String>(changedFields.value);
+    }
+    if (changedBy.present) {
+      map['changed_by'] = Variable<String>(changedBy.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<int>(employeeId.value);
+    }
+    if (ipAddress.present) {
+      map['ip_address'] = Variable<String>(ipAddress.value);
+    }
+    if (userAgent.present) {
+      map['user_agent'] = Variable<String>(userAgent.value);
+    }
+    if (actionDateTime.present) {
+      map['action_date_time'] = Variable<DateTime>(actionDateTime.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms09LabRequestHistoriesCompanion(')
+          ..write('historyId: $historyId, ')
+          ..write('requestId: $requestId, ')
+          ..write('action: $action, ')
+          ..write('oldStatus: $oldStatus, ')
+          ..write('newStatus: $newStatus, ')
+          ..write('changeDetails: $changeDetails, ')
+          ..write('changedFields: $changedFields, ')
+          ..write('changedBy: $changedBy, ')
+          ..write('employeeId: $employeeId, ')
+          ..write('ipAddress: $ipAddress, ')
+          ..write('userAgent: $userAgent, ')
+          ..write('actionDateTime: $actionDateTime')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $Fms09LabRequestNotificationsTable extends Fms09LabRequestNotifications
+    with
+        TableInfo<
+          $Fms09LabRequestNotificationsTable,
+          Fms09LabRequestNotification
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $Fms09LabRequestNotificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _notificationIdMeta = const VerificationMeta(
+    'notificationId',
+  );
+  @override
+  late final GeneratedColumn<int> notificationId = GeneratedColumn<int>(
+    'notification_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _requestIdMeta = const VerificationMeta(
+    'requestId',
+  );
+  @override
+  late final GeneratedColumn<int> requestId = GeneratedColumn<int>(
+    'request_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notificationTypeMeta = const VerificationMeta(
+    'notificationType',
+  );
+  @override
+  late final GeneratedColumn<String> notificationType = GeneratedColumn<String>(
+    'notification_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notificationTriggerMeta =
+      const VerificationMeta('notificationTrigger');
+  @override
+  late final GeneratedColumn<String> notificationTrigger =
+      GeneratedColumn<String>(
+        'notification_trigger',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _recipientTypeMeta = const VerificationMeta(
+    'recipientType',
+  );
+  @override
+  late final GeneratedColumn<String> recipientType = GeneratedColumn<String>(
+    'recipient_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipientNameMeta = const VerificationMeta(
+    'recipientName',
+  );
+  @override
+  late final GeneratedColumn<String> recipientName = GeneratedColumn<String>(
+    'recipient_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipientContactMeta = const VerificationMeta(
+    'recipientContact',
+  );
+  @override
+  late final GeneratedColumn<String> recipientContact = GeneratedColumn<String>(
+    'recipient_contact',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messageContentMeta = const VerificationMeta(
+    'messageContent',
+  );
+  @override
+  late final GeneratedColumn<String> messageContent = GeneratedColumn<String>(
+    'message_content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messageTemplateMeta = const VerificationMeta(
+    'messageTemplate',
+  );
+  @override
+  late final GeneratedColumn<String> messageTemplate = GeneratedColumn<String>(
+    'message_template',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _templateVariablesMeta = const VerificationMeta(
+    'templateVariables',
+  );
+  @override
+  late final GeneratedColumn<String> templateVariables =
+      GeneratedColumn<String>(
+        'template_variables',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _scheduledDateTimeMeta = const VerificationMeta(
+    'scheduledDateTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> scheduledDateTime =
+      GeneratedColumn<DateTime>(
+        'scheduled_date_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sentDateTimeMeta = const VerificationMeta(
+    'sentDateTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> sentDateTime = GeneratedColumn<DateTime>(
+    'sent_date_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deliveryStatusMeta = const VerificationMeta(
+    'deliveryStatus',
+  );
+  @override
+  late final GeneratedColumn<String> deliveryStatus = GeneratedColumn<String>(
+    'delivery_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Pending'),
+  );
+  static const VerificationMeta _deliveryStatusDetailMeta =
+      const VerificationMeta('deliveryStatusDetail');
+  @override
+  late final GeneratedColumn<String> deliveryStatusDetail =
+      GeneratedColumn<String>(
+        'delivery_status_detail',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _failureReasonMeta = const VerificationMeta(
+    'failureReason',
+  );
+  @override
+  late final GeneratedColumn<String> failureReason = GeneratedColumn<String>(
+    'failure_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _maxRetriesMeta = const VerificationMeta(
+    'maxRetries',
+  );
+  @override
+  late final GeneratedColumn<int> maxRetries = GeneratedColumn<int>(
+    'max_retries',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(3),
+  );
+  static const VerificationMeta _lastRetryDateTimeMeta = const VerificationMeta(
+    'lastRetryDateTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastRetryDateTime =
+      GeneratedColumn<DateTime>(
+        'last_retry_date_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _nextRetryDateTimeMeta = const VerificationMeta(
+    'nextRetryDateTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextRetryDateTime =
+      GeneratedColumn<DateTime>(
+        'next_retry_date_time',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _messageIdMeta = const VerificationMeta(
+    'messageId',
+  );
+  @override
+  late final GeneratedColumn<String> messageId = GeneratedColumn<String>(
+    'message_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _apiResponseMeta = const VerificationMeta(
+    'apiResponse',
+  );
+  @override
+  late final GeneratedColumn<String> apiResponse = GeneratedColumn<String>(
+    'api_response',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdDateMeta = const VerificationMeta(
+    'createdDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+    'created_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    notificationId,
+    requestId,
+    notificationType,
+    notificationTrigger,
+    recipientType,
+    recipientName,
+    recipientContact,
+    messageContent,
+    messageTemplate,
+    templateVariables,
+    scheduledDateTime,
+    sentDateTime,
+    deliveryStatus,
+    deliveryStatusDetail,
+    failureReason,
+    retryCount,
+    maxRetries,
+    lastRetryDateTime,
+    nextRetryDateTime,
+    messageId,
+    apiResponse,
+    createdDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fms_09_lab_request_notifications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Fms09LabRequestNotification> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('notification_id')) {
+      context.handle(
+        _notificationIdMeta,
+        notificationId.isAcceptableOrUnknown(
+          data['notification_id']!,
+          _notificationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('request_id')) {
+      context.handle(
+        _requestIdMeta,
+        requestId.isAcceptableOrUnknown(data['request_id']!, _requestIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_requestIdMeta);
+    }
+    if (data.containsKey('notification_type')) {
+      context.handle(
+        _notificationTypeMeta,
+        notificationType.isAcceptableOrUnknown(
+          data['notification_type']!,
+          _notificationTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_notificationTypeMeta);
+    }
+    if (data.containsKey('notification_trigger')) {
+      context.handle(
+        _notificationTriggerMeta,
+        notificationTrigger.isAcceptableOrUnknown(
+          data['notification_trigger']!,
+          _notificationTriggerMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_notificationTriggerMeta);
+    }
+    if (data.containsKey('recipient_type')) {
+      context.handle(
+        _recipientTypeMeta,
+        recipientType.isAcceptableOrUnknown(
+          data['recipient_type']!,
+          _recipientTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recipientTypeMeta);
+    }
+    if (data.containsKey('recipient_name')) {
+      context.handle(
+        _recipientNameMeta,
+        recipientName.isAcceptableOrUnknown(
+          data['recipient_name']!,
+          _recipientNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recipientNameMeta);
+    }
+    if (data.containsKey('recipient_contact')) {
+      context.handle(
+        _recipientContactMeta,
+        recipientContact.isAcceptableOrUnknown(
+          data['recipient_contact']!,
+          _recipientContactMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recipientContactMeta);
+    }
+    if (data.containsKey('message_content')) {
+      context.handle(
+        _messageContentMeta,
+        messageContent.isAcceptableOrUnknown(
+          data['message_content']!,
+          _messageContentMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_messageContentMeta);
+    }
+    if (data.containsKey('message_template')) {
+      context.handle(
+        _messageTemplateMeta,
+        messageTemplate.isAcceptableOrUnknown(
+          data['message_template']!,
+          _messageTemplateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_messageTemplateMeta);
+    }
+    if (data.containsKey('template_variables')) {
+      context.handle(
+        _templateVariablesMeta,
+        templateVariables.isAcceptableOrUnknown(
+          data['template_variables']!,
+          _templateVariablesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('scheduled_date_time')) {
+      context.handle(
+        _scheduledDateTimeMeta,
+        scheduledDateTime.isAcceptableOrUnknown(
+          data['scheduled_date_time']!,
+          _scheduledDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sent_date_time')) {
+      context.handle(
+        _sentDateTimeMeta,
+        sentDateTime.isAcceptableOrUnknown(
+          data['sent_date_time']!,
+          _sentDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('delivery_status')) {
+      context.handle(
+        _deliveryStatusMeta,
+        deliveryStatus.isAcceptableOrUnknown(
+          data['delivery_status']!,
+          _deliveryStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('delivery_status_detail')) {
+      context.handle(
+        _deliveryStatusDetailMeta,
+        deliveryStatusDetail.isAcceptableOrUnknown(
+          data['delivery_status_detail']!,
+          _deliveryStatusDetailMeta,
+        ),
+      );
+    }
+    if (data.containsKey('failure_reason')) {
+      context.handle(
+        _failureReasonMeta,
+        failureReason.isAcceptableOrUnknown(
+          data['failure_reason']!,
+          _failureReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('max_retries')) {
+      context.handle(
+        _maxRetriesMeta,
+        maxRetries.isAcceptableOrUnknown(data['max_retries']!, _maxRetriesMeta),
+      );
+    }
+    if (data.containsKey('last_retry_date_time')) {
+      context.handle(
+        _lastRetryDateTimeMeta,
+        lastRetryDateTime.isAcceptableOrUnknown(
+          data['last_retry_date_time']!,
+          _lastRetryDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('next_retry_date_time')) {
+      context.handle(
+        _nextRetryDateTimeMeta,
+        nextRetryDateTime.isAcceptableOrUnknown(
+          data['next_retry_date_time']!,
+          _nextRetryDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('message_id')) {
+      context.handle(
+        _messageIdMeta,
+        messageId.isAcceptableOrUnknown(data['message_id']!, _messageIdMeta),
+      );
+    }
+    if (data.containsKey('api_response')) {
+      context.handle(
+        _apiResponseMeta,
+        apiResponse.isAcceptableOrUnknown(
+          data['api_response']!,
+          _apiResponseMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_date')) {
+      context.handle(
+        _createdDateMeta,
+        createdDate.isAcceptableOrUnknown(
+          data['created_date']!,
+          _createdDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {notificationId};
+  @override
+  Fms09LabRequestNotification map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Fms09LabRequestNotification(
+      notificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}notification_id'],
+      )!,
+      requestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}request_id'],
+      )!,
+      notificationType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notification_type'],
+      )!,
+      notificationTrigger: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notification_trigger'],
+      )!,
+      recipientType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient_type'],
+      )!,
+      recipientName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient_name'],
+      )!,
+      recipientContact: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient_contact'],
+      )!,
+      messageContent: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message_content'],
+      )!,
+      messageTemplate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message_template'],
+      )!,
+      templateVariables: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_variables'],
+      ),
+      scheduledDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}scheduled_date_time'],
+      ),
+      sentDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}sent_date_time'],
+      ),
+      deliveryStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}delivery_status'],
+      )!,
+      deliveryStatusDetail: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}delivery_status_detail'],
+      ),
+      failureReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_reason'],
+      ),
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      maxRetries: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}max_retries'],
+      )!,
+      lastRetryDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_retry_date_time'],
+      ),
+      nextRetryDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_retry_date_time'],
+      ),
+      messageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message_id'],
+      ),
+      apiResponse: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}api_response'],
+      ),
+      createdDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_date'],
+      )!,
+    );
+  }
+
+  @override
+  $Fms09LabRequestNotificationsTable createAlias(String alias) {
+    return $Fms09LabRequestNotificationsTable(attachedDatabase, alias);
+  }
+}
+
+class Fms09LabRequestNotification extends DataClass
+    implements Insertable<Fms09LabRequestNotification> {
+  final int notificationId;
+  final int requestId;
+  final String notificationType;
+  final String notificationTrigger;
+  final String recipientType;
+  final String recipientName;
+  final String recipientContact;
+  final String messageContent;
+  final String messageTemplate;
+  final String? templateVariables;
+  final DateTime? scheduledDateTime;
+  final DateTime? sentDateTime;
+  final String deliveryStatus;
+  final String? deliveryStatusDetail;
+  final String? failureReason;
+  final int retryCount;
+  final int maxRetries;
+  final DateTime? lastRetryDateTime;
+  final DateTime? nextRetryDateTime;
+  final String? messageId;
+  final String? apiResponse;
+  final DateTime createdDate;
+  const Fms09LabRequestNotification({
+    required this.notificationId,
+    required this.requestId,
+    required this.notificationType,
+    required this.notificationTrigger,
+    required this.recipientType,
+    required this.recipientName,
+    required this.recipientContact,
+    required this.messageContent,
+    required this.messageTemplate,
+    this.templateVariables,
+    this.scheduledDateTime,
+    this.sentDateTime,
+    required this.deliveryStatus,
+    this.deliveryStatusDetail,
+    this.failureReason,
+    required this.retryCount,
+    required this.maxRetries,
+    this.lastRetryDateTime,
+    this.nextRetryDateTime,
+    this.messageId,
+    this.apiResponse,
+    required this.createdDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['notification_id'] = Variable<int>(notificationId);
+    map['request_id'] = Variable<int>(requestId);
+    map['notification_type'] = Variable<String>(notificationType);
+    map['notification_trigger'] = Variable<String>(notificationTrigger);
+    map['recipient_type'] = Variable<String>(recipientType);
+    map['recipient_name'] = Variable<String>(recipientName);
+    map['recipient_contact'] = Variable<String>(recipientContact);
+    map['message_content'] = Variable<String>(messageContent);
+    map['message_template'] = Variable<String>(messageTemplate);
+    if (!nullToAbsent || templateVariables != null) {
+      map['template_variables'] = Variable<String>(templateVariables);
+    }
+    if (!nullToAbsent || scheduledDateTime != null) {
+      map['scheduled_date_time'] = Variable<DateTime>(scheduledDateTime);
+    }
+    if (!nullToAbsent || sentDateTime != null) {
+      map['sent_date_time'] = Variable<DateTime>(sentDateTime);
+    }
+    map['delivery_status'] = Variable<String>(deliveryStatus);
+    if (!nullToAbsent || deliveryStatusDetail != null) {
+      map['delivery_status_detail'] = Variable<String>(deliveryStatusDetail);
+    }
+    if (!nullToAbsent || failureReason != null) {
+      map['failure_reason'] = Variable<String>(failureReason);
+    }
+    map['retry_count'] = Variable<int>(retryCount);
+    map['max_retries'] = Variable<int>(maxRetries);
+    if (!nullToAbsent || lastRetryDateTime != null) {
+      map['last_retry_date_time'] = Variable<DateTime>(lastRetryDateTime);
+    }
+    if (!nullToAbsent || nextRetryDateTime != null) {
+      map['next_retry_date_time'] = Variable<DateTime>(nextRetryDateTime);
+    }
+    if (!nullToAbsent || messageId != null) {
+      map['message_id'] = Variable<String>(messageId);
+    }
+    if (!nullToAbsent || apiResponse != null) {
+      map['api_response'] = Variable<String>(apiResponse);
+    }
+    map['created_date'] = Variable<DateTime>(createdDate);
+    return map;
+  }
+
+  Fms09LabRequestNotificationsCompanion toCompanion(bool nullToAbsent) {
+    return Fms09LabRequestNotificationsCompanion(
+      notificationId: Value(notificationId),
+      requestId: Value(requestId),
+      notificationType: Value(notificationType),
+      notificationTrigger: Value(notificationTrigger),
+      recipientType: Value(recipientType),
+      recipientName: Value(recipientName),
+      recipientContact: Value(recipientContact),
+      messageContent: Value(messageContent),
+      messageTemplate: Value(messageTemplate),
+      templateVariables: templateVariables == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateVariables),
+      scheduledDateTime: scheduledDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scheduledDateTime),
+      sentDateTime: sentDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sentDateTime),
+      deliveryStatus: Value(deliveryStatus),
+      deliveryStatusDetail: deliveryStatusDetail == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deliveryStatusDetail),
+      failureReason: failureReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureReason),
+      retryCount: Value(retryCount),
+      maxRetries: Value(maxRetries),
+      lastRetryDateTime: lastRetryDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastRetryDateTime),
+      nextRetryDateTime: nextRetryDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextRetryDateTime),
+      messageId: messageId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(messageId),
+      apiResponse: apiResponse == null && nullToAbsent
+          ? const Value.absent()
+          : Value(apiResponse),
+      createdDate: Value(createdDate),
+    );
+  }
+
+  factory Fms09LabRequestNotification.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Fms09LabRequestNotification(
+      notificationId: serializer.fromJson<int>(json['notificationId']),
+      requestId: serializer.fromJson<int>(json['requestId']),
+      notificationType: serializer.fromJson<String>(json['notificationType']),
+      notificationTrigger: serializer.fromJson<String>(
+        json['notificationTrigger'],
+      ),
+      recipientType: serializer.fromJson<String>(json['recipientType']),
+      recipientName: serializer.fromJson<String>(json['recipientName']),
+      recipientContact: serializer.fromJson<String>(json['recipientContact']),
+      messageContent: serializer.fromJson<String>(json['messageContent']),
+      messageTemplate: serializer.fromJson<String>(json['messageTemplate']),
+      templateVariables: serializer.fromJson<String?>(
+        json['templateVariables'],
+      ),
+      scheduledDateTime: serializer.fromJson<DateTime?>(
+        json['scheduledDateTime'],
+      ),
+      sentDateTime: serializer.fromJson<DateTime?>(json['sentDateTime']),
+      deliveryStatus: serializer.fromJson<String>(json['deliveryStatus']),
+      deliveryStatusDetail: serializer.fromJson<String?>(
+        json['deliveryStatusDetail'],
+      ),
+      failureReason: serializer.fromJson<String?>(json['failureReason']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      maxRetries: serializer.fromJson<int>(json['maxRetries']),
+      lastRetryDateTime: serializer.fromJson<DateTime?>(
+        json['lastRetryDateTime'],
+      ),
+      nextRetryDateTime: serializer.fromJson<DateTime?>(
+        json['nextRetryDateTime'],
+      ),
+      messageId: serializer.fromJson<String?>(json['messageId']),
+      apiResponse: serializer.fromJson<String?>(json['apiResponse']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'notificationId': serializer.toJson<int>(notificationId),
+      'requestId': serializer.toJson<int>(requestId),
+      'notificationType': serializer.toJson<String>(notificationType),
+      'notificationTrigger': serializer.toJson<String>(notificationTrigger),
+      'recipientType': serializer.toJson<String>(recipientType),
+      'recipientName': serializer.toJson<String>(recipientName),
+      'recipientContact': serializer.toJson<String>(recipientContact),
+      'messageContent': serializer.toJson<String>(messageContent),
+      'messageTemplate': serializer.toJson<String>(messageTemplate),
+      'templateVariables': serializer.toJson<String?>(templateVariables),
+      'scheduledDateTime': serializer.toJson<DateTime?>(scheduledDateTime),
+      'sentDateTime': serializer.toJson<DateTime?>(sentDateTime),
+      'deliveryStatus': serializer.toJson<String>(deliveryStatus),
+      'deliveryStatusDetail': serializer.toJson<String?>(deliveryStatusDetail),
+      'failureReason': serializer.toJson<String?>(failureReason),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'maxRetries': serializer.toJson<int>(maxRetries),
+      'lastRetryDateTime': serializer.toJson<DateTime?>(lastRetryDateTime),
+      'nextRetryDateTime': serializer.toJson<DateTime?>(nextRetryDateTime),
+      'messageId': serializer.toJson<String?>(messageId),
+      'apiResponse': serializer.toJson<String?>(apiResponse),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
+    };
+  }
+
+  Fms09LabRequestNotification copyWith({
+    int? notificationId,
+    int? requestId,
+    String? notificationType,
+    String? notificationTrigger,
+    String? recipientType,
+    String? recipientName,
+    String? recipientContact,
+    String? messageContent,
+    String? messageTemplate,
+    Value<String?> templateVariables = const Value.absent(),
+    Value<DateTime?> scheduledDateTime = const Value.absent(),
+    Value<DateTime?> sentDateTime = const Value.absent(),
+    String? deliveryStatus,
+    Value<String?> deliveryStatusDetail = const Value.absent(),
+    Value<String?> failureReason = const Value.absent(),
+    int? retryCount,
+    int? maxRetries,
+    Value<DateTime?> lastRetryDateTime = const Value.absent(),
+    Value<DateTime?> nextRetryDateTime = const Value.absent(),
+    Value<String?> messageId = const Value.absent(),
+    Value<String?> apiResponse = const Value.absent(),
+    DateTime? createdDate,
+  }) => Fms09LabRequestNotification(
+    notificationId: notificationId ?? this.notificationId,
+    requestId: requestId ?? this.requestId,
+    notificationType: notificationType ?? this.notificationType,
+    notificationTrigger: notificationTrigger ?? this.notificationTrigger,
+    recipientType: recipientType ?? this.recipientType,
+    recipientName: recipientName ?? this.recipientName,
+    recipientContact: recipientContact ?? this.recipientContact,
+    messageContent: messageContent ?? this.messageContent,
+    messageTemplate: messageTemplate ?? this.messageTemplate,
+    templateVariables: templateVariables.present
+        ? templateVariables.value
+        : this.templateVariables,
+    scheduledDateTime: scheduledDateTime.present
+        ? scheduledDateTime.value
+        : this.scheduledDateTime,
+    sentDateTime: sentDateTime.present ? sentDateTime.value : this.sentDateTime,
+    deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+    deliveryStatusDetail: deliveryStatusDetail.present
+        ? deliveryStatusDetail.value
+        : this.deliveryStatusDetail,
+    failureReason: failureReason.present
+        ? failureReason.value
+        : this.failureReason,
+    retryCount: retryCount ?? this.retryCount,
+    maxRetries: maxRetries ?? this.maxRetries,
+    lastRetryDateTime: lastRetryDateTime.present
+        ? lastRetryDateTime.value
+        : this.lastRetryDateTime,
+    nextRetryDateTime: nextRetryDateTime.present
+        ? nextRetryDateTime.value
+        : this.nextRetryDateTime,
+    messageId: messageId.present ? messageId.value : this.messageId,
+    apiResponse: apiResponse.present ? apiResponse.value : this.apiResponse,
+    createdDate: createdDate ?? this.createdDate,
+  );
+  Fms09LabRequestNotification copyWithCompanion(
+    Fms09LabRequestNotificationsCompanion data,
+  ) {
+    return Fms09LabRequestNotification(
+      notificationId: data.notificationId.present
+          ? data.notificationId.value
+          : this.notificationId,
+      requestId: data.requestId.present ? data.requestId.value : this.requestId,
+      notificationType: data.notificationType.present
+          ? data.notificationType.value
+          : this.notificationType,
+      notificationTrigger: data.notificationTrigger.present
+          ? data.notificationTrigger.value
+          : this.notificationTrigger,
+      recipientType: data.recipientType.present
+          ? data.recipientType.value
+          : this.recipientType,
+      recipientName: data.recipientName.present
+          ? data.recipientName.value
+          : this.recipientName,
+      recipientContact: data.recipientContact.present
+          ? data.recipientContact.value
+          : this.recipientContact,
+      messageContent: data.messageContent.present
+          ? data.messageContent.value
+          : this.messageContent,
+      messageTemplate: data.messageTemplate.present
+          ? data.messageTemplate.value
+          : this.messageTemplate,
+      templateVariables: data.templateVariables.present
+          ? data.templateVariables.value
+          : this.templateVariables,
+      scheduledDateTime: data.scheduledDateTime.present
+          ? data.scheduledDateTime.value
+          : this.scheduledDateTime,
+      sentDateTime: data.sentDateTime.present
+          ? data.sentDateTime.value
+          : this.sentDateTime,
+      deliveryStatus: data.deliveryStatus.present
+          ? data.deliveryStatus.value
+          : this.deliveryStatus,
+      deliveryStatusDetail: data.deliveryStatusDetail.present
+          ? data.deliveryStatusDetail.value
+          : this.deliveryStatusDetail,
+      failureReason: data.failureReason.present
+          ? data.failureReason.value
+          : this.failureReason,
+      retryCount: data.retryCount.present
+          ? data.retryCount.value
+          : this.retryCount,
+      maxRetries: data.maxRetries.present
+          ? data.maxRetries.value
+          : this.maxRetries,
+      lastRetryDateTime: data.lastRetryDateTime.present
+          ? data.lastRetryDateTime.value
+          : this.lastRetryDateTime,
+      nextRetryDateTime: data.nextRetryDateTime.present
+          ? data.nextRetryDateTime.value
+          : this.nextRetryDateTime,
+      messageId: data.messageId.present ? data.messageId.value : this.messageId,
+      apiResponse: data.apiResponse.present
+          ? data.apiResponse.value
+          : this.apiResponse,
+      createdDate: data.createdDate.present
+          ? data.createdDate.value
+          : this.createdDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms09LabRequestNotification(')
+          ..write('notificationId: $notificationId, ')
+          ..write('requestId: $requestId, ')
+          ..write('notificationType: $notificationType, ')
+          ..write('notificationTrigger: $notificationTrigger, ')
+          ..write('recipientType: $recipientType, ')
+          ..write('recipientName: $recipientName, ')
+          ..write('recipientContact: $recipientContact, ')
+          ..write('messageContent: $messageContent, ')
+          ..write('messageTemplate: $messageTemplate, ')
+          ..write('templateVariables: $templateVariables, ')
+          ..write('scheduledDateTime: $scheduledDateTime, ')
+          ..write('sentDateTime: $sentDateTime, ')
+          ..write('deliveryStatus: $deliveryStatus, ')
+          ..write('deliveryStatusDetail: $deliveryStatusDetail, ')
+          ..write('failureReason: $failureReason, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('maxRetries: $maxRetries, ')
+          ..write('lastRetryDateTime: $lastRetryDateTime, ')
+          ..write('nextRetryDateTime: $nextRetryDateTime, ')
+          ..write('messageId: $messageId, ')
+          ..write('apiResponse: $apiResponse, ')
+          ..write('createdDate: $createdDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    notificationId,
+    requestId,
+    notificationType,
+    notificationTrigger,
+    recipientType,
+    recipientName,
+    recipientContact,
+    messageContent,
+    messageTemplate,
+    templateVariables,
+    scheduledDateTime,
+    sentDateTime,
+    deliveryStatus,
+    deliveryStatusDetail,
+    failureReason,
+    retryCount,
+    maxRetries,
+    lastRetryDateTime,
+    nextRetryDateTime,
+    messageId,
+    apiResponse,
+    createdDate,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Fms09LabRequestNotification &&
+          other.notificationId == this.notificationId &&
+          other.requestId == this.requestId &&
+          other.notificationType == this.notificationType &&
+          other.notificationTrigger == this.notificationTrigger &&
+          other.recipientType == this.recipientType &&
+          other.recipientName == this.recipientName &&
+          other.recipientContact == this.recipientContact &&
+          other.messageContent == this.messageContent &&
+          other.messageTemplate == this.messageTemplate &&
+          other.templateVariables == this.templateVariables &&
+          other.scheduledDateTime == this.scheduledDateTime &&
+          other.sentDateTime == this.sentDateTime &&
+          other.deliveryStatus == this.deliveryStatus &&
+          other.deliveryStatusDetail == this.deliveryStatusDetail &&
+          other.failureReason == this.failureReason &&
+          other.retryCount == this.retryCount &&
+          other.maxRetries == this.maxRetries &&
+          other.lastRetryDateTime == this.lastRetryDateTime &&
+          other.nextRetryDateTime == this.nextRetryDateTime &&
+          other.messageId == this.messageId &&
+          other.apiResponse == this.apiResponse &&
+          other.createdDate == this.createdDate);
+}
+
+class Fms09LabRequestNotificationsCompanion
+    extends UpdateCompanion<Fms09LabRequestNotification> {
+  final Value<int> notificationId;
+  final Value<int> requestId;
+  final Value<String> notificationType;
+  final Value<String> notificationTrigger;
+  final Value<String> recipientType;
+  final Value<String> recipientName;
+  final Value<String> recipientContact;
+  final Value<String> messageContent;
+  final Value<String> messageTemplate;
+  final Value<String?> templateVariables;
+  final Value<DateTime?> scheduledDateTime;
+  final Value<DateTime?> sentDateTime;
+  final Value<String> deliveryStatus;
+  final Value<String?> deliveryStatusDetail;
+  final Value<String?> failureReason;
+  final Value<int> retryCount;
+  final Value<int> maxRetries;
+  final Value<DateTime?> lastRetryDateTime;
+  final Value<DateTime?> nextRetryDateTime;
+  final Value<String?> messageId;
+  final Value<String?> apiResponse;
+  final Value<DateTime> createdDate;
+  const Fms09LabRequestNotificationsCompanion({
+    this.notificationId = const Value.absent(),
+    this.requestId = const Value.absent(),
+    this.notificationType = const Value.absent(),
+    this.notificationTrigger = const Value.absent(),
+    this.recipientType = const Value.absent(),
+    this.recipientName = const Value.absent(),
+    this.recipientContact = const Value.absent(),
+    this.messageContent = const Value.absent(),
+    this.messageTemplate = const Value.absent(),
+    this.templateVariables = const Value.absent(),
+    this.scheduledDateTime = const Value.absent(),
+    this.sentDateTime = const Value.absent(),
+    this.deliveryStatus = const Value.absent(),
+    this.deliveryStatusDetail = const Value.absent(),
+    this.failureReason = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.maxRetries = const Value.absent(),
+    this.lastRetryDateTime = const Value.absent(),
+    this.nextRetryDateTime = const Value.absent(),
+    this.messageId = const Value.absent(),
+    this.apiResponse = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  });
+  Fms09LabRequestNotificationsCompanion.insert({
+    this.notificationId = const Value.absent(),
+    required int requestId,
+    required String notificationType,
+    required String notificationTrigger,
+    required String recipientType,
+    required String recipientName,
+    required String recipientContact,
+    required String messageContent,
+    required String messageTemplate,
+    this.templateVariables = const Value.absent(),
+    this.scheduledDateTime = const Value.absent(),
+    this.sentDateTime = const Value.absent(),
+    this.deliveryStatus = const Value.absent(),
+    this.deliveryStatusDetail = const Value.absent(),
+    this.failureReason = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.maxRetries = const Value.absent(),
+    this.lastRetryDateTime = const Value.absent(),
+    this.nextRetryDateTime = const Value.absent(),
+    this.messageId = const Value.absent(),
+    this.apiResponse = const Value.absent(),
+    this.createdDate = const Value.absent(),
+  }) : requestId = Value(requestId),
+       notificationType = Value(notificationType),
+       notificationTrigger = Value(notificationTrigger),
+       recipientType = Value(recipientType),
+       recipientName = Value(recipientName),
+       recipientContact = Value(recipientContact),
+       messageContent = Value(messageContent),
+       messageTemplate = Value(messageTemplate);
+  static Insertable<Fms09LabRequestNotification> custom({
+    Expression<int>? notificationId,
+    Expression<int>? requestId,
+    Expression<String>? notificationType,
+    Expression<String>? notificationTrigger,
+    Expression<String>? recipientType,
+    Expression<String>? recipientName,
+    Expression<String>? recipientContact,
+    Expression<String>? messageContent,
+    Expression<String>? messageTemplate,
+    Expression<String>? templateVariables,
+    Expression<DateTime>? scheduledDateTime,
+    Expression<DateTime>? sentDateTime,
+    Expression<String>? deliveryStatus,
+    Expression<String>? deliveryStatusDetail,
+    Expression<String>? failureReason,
+    Expression<int>? retryCount,
+    Expression<int>? maxRetries,
+    Expression<DateTime>? lastRetryDateTime,
+    Expression<DateTime>? nextRetryDateTime,
+    Expression<String>? messageId,
+    Expression<String>? apiResponse,
+    Expression<DateTime>? createdDate,
+  }) {
+    return RawValuesInsertable({
+      if (notificationId != null) 'notification_id': notificationId,
+      if (requestId != null) 'request_id': requestId,
+      if (notificationType != null) 'notification_type': notificationType,
+      if (notificationTrigger != null)
+        'notification_trigger': notificationTrigger,
+      if (recipientType != null) 'recipient_type': recipientType,
+      if (recipientName != null) 'recipient_name': recipientName,
+      if (recipientContact != null) 'recipient_contact': recipientContact,
+      if (messageContent != null) 'message_content': messageContent,
+      if (messageTemplate != null) 'message_template': messageTemplate,
+      if (templateVariables != null) 'template_variables': templateVariables,
+      if (scheduledDateTime != null) 'scheduled_date_time': scheduledDateTime,
+      if (sentDateTime != null) 'sent_date_time': sentDateTime,
+      if (deliveryStatus != null) 'delivery_status': deliveryStatus,
+      if (deliveryStatusDetail != null)
+        'delivery_status_detail': deliveryStatusDetail,
+      if (failureReason != null) 'failure_reason': failureReason,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (maxRetries != null) 'max_retries': maxRetries,
+      if (lastRetryDateTime != null) 'last_retry_date_time': lastRetryDateTime,
+      if (nextRetryDateTime != null) 'next_retry_date_time': nextRetryDateTime,
+      if (messageId != null) 'message_id': messageId,
+      if (apiResponse != null) 'api_response': apiResponse,
+      if (createdDate != null) 'created_date': createdDate,
+    });
+  }
+
+  Fms09LabRequestNotificationsCompanion copyWith({
+    Value<int>? notificationId,
+    Value<int>? requestId,
+    Value<String>? notificationType,
+    Value<String>? notificationTrigger,
+    Value<String>? recipientType,
+    Value<String>? recipientName,
+    Value<String>? recipientContact,
+    Value<String>? messageContent,
+    Value<String>? messageTemplate,
+    Value<String?>? templateVariables,
+    Value<DateTime?>? scheduledDateTime,
+    Value<DateTime?>? sentDateTime,
+    Value<String>? deliveryStatus,
+    Value<String?>? deliveryStatusDetail,
+    Value<String?>? failureReason,
+    Value<int>? retryCount,
+    Value<int>? maxRetries,
+    Value<DateTime?>? lastRetryDateTime,
+    Value<DateTime?>? nextRetryDateTime,
+    Value<String?>? messageId,
+    Value<String?>? apiResponse,
+    Value<DateTime>? createdDate,
+  }) {
+    return Fms09LabRequestNotificationsCompanion(
+      notificationId: notificationId ?? this.notificationId,
+      requestId: requestId ?? this.requestId,
+      notificationType: notificationType ?? this.notificationType,
+      notificationTrigger: notificationTrigger ?? this.notificationTrigger,
+      recipientType: recipientType ?? this.recipientType,
+      recipientName: recipientName ?? this.recipientName,
+      recipientContact: recipientContact ?? this.recipientContact,
+      messageContent: messageContent ?? this.messageContent,
+      messageTemplate: messageTemplate ?? this.messageTemplate,
+      templateVariables: templateVariables ?? this.templateVariables,
+      scheduledDateTime: scheduledDateTime ?? this.scheduledDateTime,
+      sentDateTime: sentDateTime ?? this.sentDateTime,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+      deliveryStatusDetail: deliveryStatusDetail ?? this.deliveryStatusDetail,
+      failureReason: failureReason ?? this.failureReason,
+      retryCount: retryCount ?? this.retryCount,
+      maxRetries: maxRetries ?? this.maxRetries,
+      lastRetryDateTime: lastRetryDateTime ?? this.lastRetryDateTime,
+      nextRetryDateTime: nextRetryDateTime ?? this.nextRetryDateTime,
+      messageId: messageId ?? this.messageId,
+      apiResponse: apiResponse ?? this.apiResponse,
+      createdDate: createdDate ?? this.createdDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (notificationId.present) {
+      map['notification_id'] = Variable<int>(notificationId.value);
+    }
+    if (requestId.present) {
+      map['request_id'] = Variable<int>(requestId.value);
+    }
+    if (notificationType.present) {
+      map['notification_type'] = Variable<String>(notificationType.value);
+    }
+    if (notificationTrigger.present) {
+      map['notification_trigger'] = Variable<String>(notificationTrigger.value);
+    }
+    if (recipientType.present) {
+      map['recipient_type'] = Variable<String>(recipientType.value);
+    }
+    if (recipientName.present) {
+      map['recipient_name'] = Variable<String>(recipientName.value);
+    }
+    if (recipientContact.present) {
+      map['recipient_contact'] = Variable<String>(recipientContact.value);
+    }
+    if (messageContent.present) {
+      map['message_content'] = Variable<String>(messageContent.value);
+    }
+    if (messageTemplate.present) {
+      map['message_template'] = Variable<String>(messageTemplate.value);
+    }
+    if (templateVariables.present) {
+      map['template_variables'] = Variable<String>(templateVariables.value);
+    }
+    if (scheduledDateTime.present) {
+      map['scheduled_date_time'] = Variable<DateTime>(scheduledDateTime.value);
+    }
+    if (sentDateTime.present) {
+      map['sent_date_time'] = Variable<DateTime>(sentDateTime.value);
+    }
+    if (deliveryStatus.present) {
+      map['delivery_status'] = Variable<String>(deliveryStatus.value);
+    }
+    if (deliveryStatusDetail.present) {
+      map['delivery_status_detail'] = Variable<String>(
+        deliveryStatusDetail.value,
+      );
+    }
+    if (failureReason.present) {
+      map['failure_reason'] = Variable<String>(failureReason.value);
+    }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (maxRetries.present) {
+      map['max_retries'] = Variable<int>(maxRetries.value);
+    }
+    if (lastRetryDateTime.present) {
+      map['last_retry_date_time'] = Variable<DateTime>(lastRetryDateTime.value);
+    }
+    if (nextRetryDateTime.present) {
+      map['next_retry_date_time'] = Variable<DateTime>(nextRetryDateTime.value);
+    }
+    if (messageId.present) {
+      map['message_id'] = Variable<String>(messageId.value);
+    }
+    if (apiResponse.present) {
+      map['api_response'] = Variable<String>(apiResponse.value);
+    }
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Fms09LabRequestNotificationsCompanion(')
+          ..write('notificationId: $notificationId, ')
+          ..write('requestId: $requestId, ')
+          ..write('notificationType: $notificationType, ')
+          ..write('notificationTrigger: $notificationTrigger, ')
+          ..write('recipientType: $recipientType, ')
+          ..write('recipientName: $recipientName, ')
+          ..write('recipientContact: $recipientContact, ')
+          ..write('messageContent: $messageContent, ')
+          ..write('messageTemplate: $messageTemplate, ')
+          ..write('templateVariables: $templateVariables, ')
+          ..write('scheduledDateTime: $scheduledDateTime, ')
+          ..write('sentDateTime: $sentDateTime, ')
+          ..write('deliveryStatus: $deliveryStatus, ')
+          ..write('deliveryStatusDetail: $deliveryStatusDetail, ')
+          ..write('failureReason: $failureReason, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('maxRetries: $maxRetries, ')
+          ..write('lastRetryDateTime: $lastRetryDateTime, ')
+          ..write('nextRetryDateTime: $nextRetryDateTime, ')
+          ..write('messageId: $messageId, ')
+          ..write('apiResponse: $apiResponse, ')
+          ..write('createdDate: $createdDate')
           ..write(')'))
         .toString();
   }
@@ -13178,8 +19505,11 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    defaultValue: const Constant(
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6)))",
+    ),
   );
   static const VerificationMeta _simulationCodeMeta = const VerificationMeta(
     'simulationCode',
@@ -13203,6 +19533,7 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _employeeIdMeta = const VerificationMeta(
     'employeeId',
@@ -13244,373 +19575,280 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
       'REFERENCES fms10_devices (device_uuid) ON DELETE SET NULL',
     ),
   );
-  static const VerificationMeta _displayCurrencyMeta = const VerificationMeta(
-    'displayCurrency',
+  static const VerificationMeta _agentTypeMeta = const VerificationMeta(
+    'agentType',
   );
   @override
-  late final GeneratedColumn<String> displayCurrency = GeneratedColumn<String>(
-    'display_currency',
+  late final GeneratedColumn<String> agentType = GeneratedColumn<String>(
+    'agent_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Loan'),
+  );
+  static const VerificationMeta _loanAmountMeta = const VerificationMeta(
+    'loanAmount',
+  );
+  @override
+  late final GeneratedColumn<double> loanAmount = GeneratedColumn<double>(
+    'loan_amount',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _loanCurrencyMeta = const VerificationMeta(
+    'loanCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> loanCurrency = GeneratedColumn<String>(
+    'loan_currency',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant('idr'),
   );
-  static const VerificationMeta _displayWeightUnitMeta = const VerificationMeta(
-    'displayWeightUnit',
+  static const VerificationMeta _interestRatePercentMeta =
+      const VerificationMeta('interestRatePercent');
+  @override
+  late final GeneratedColumn<double> interestRatePercent =
+      GeneratedColumn<double>(
+        'interest_rate_percent',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _loanTermMonthsMeta = const VerificationMeta(
+    'loanTermMonths',
   );
   @override
-  late final GeneratedColumn<String> displayWeightUnit =
+  late final GeneratedColumn<int> loanTermMonths = GeneratedColumn<int>(
+    'loan_term_months',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _guaranteePercentageMeta =
+      const VerificationMeta('guaranteePercentage');
+  @override
+  late final GeneratedColumn<double> guaranteePercentage =
+      GeneratedColumn<double>(
+        'guarantee_percentage',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _guaranteeAmountMeta = const VerificationMeta(
+    'guaranteeAmount',
+  );
+  @override
+  late final GeneratedColumn<double> guaranteeAmount = GeneratedColumn<double>(
+    'guarantee_amount',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _guaranteeCurrencyMeta = const VerificationMeta(
+    'guaranteeCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> guaranteeCurrency =
       GeneratedColumn<String>(
-        'display_weight_unit',
+        'guarantee_currency',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
-        defaultValue: const Constant('kg'),
+        defaultValue: const Constant('idr'),
       );
-  static const VerificationMeta _displayAreaUnitMeta = const VerificationMeta(
-    'displayAreaUnit',
+  static const VerificationMeta _collateralValueMeta = const VerificationMeta(
+    'collateralValue',
   );
   @override
-  late final GeneratedColumn<String> displayAreaUnit = GeneratedColumn<String>(
-    'display_area_unit',
+  late final GeneratedColumn<double> collateralValue = GeneratedColumn<double>(
+    'collateral_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _collateralCurrencyMeta =
+      const VerificationMeta('collateralCurrency');
+  @override
+  late final GeneratedColumn<String> collateralCurrency =
+      GeneratedColumn<String>(
+        'collateral_currency',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('idr'),
+      );
+  static const VerificationMeta _pondAreaMeta = const VerificationMeta(
+    'pondArea',
+  );
+  @override
+  late final GeneratedColumn<double> pondArea = GeneratedColumn<double>(
+    'pond_area',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pondAreaUnitMeta = const VerificationMeta(
+    'pondAreaUnit',
+  );
+  @override
+  late final GeneratedColumn<String> pondAreaUnit = GeneratedColumn<String>(
+    'pond_area_unit',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant('sqm'),
   );
-  static const VerificationMeta _currentDocMeta = const VerificationMeta(
-    'currentDoc',
-  );
+  static const VerificationMeta _estimatedProductionKgMeta =
+      const VerificationMeta('estimatedProductionKg');
   @override
-  late final GeneratedColumn<int> currentDoc = GeneratedColumn<int>(
-    'current_doc',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _currentBiomassMeta = const VerificationMeta(
-    'currentBiomass',
-  );
+  late final GeneratedColumn<double> estimatedProductionKg =
+      GeneratedColumn<double>(
+        'estimated_production_kg',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _estimatedProductionUnitMeta =
+      const VerificationMeta('estimatedProductionUnit');
   @override
-  late final GeneratedColumn<double> currentBiomass = GeneratedColumn<double>(
-    'current_biomass',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _currentBiomassUnitMeta =
-      const VerificationMeta('currentBiomassUnit');
-  @override
-  late final GeneratedColumn<String> currentBiomassUnit =
+  late final GeneratedColumn<String> estimatedProductionUnit =
       GeneratedColumn<String>(
-        'current_biomass_unit',
+        'estimated_production_unit',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
         defaultValue: const Constant('kg'),
       );
-  static const VerificationMeta _stockingCountMeta = const VerificationMeta(
-    'stockingCount',
+  static const VerificationMeta _estimatedRevenueMeta = const VerificationMeta(
+    'estimatedRevenue',
   );
   @override
-  late final GeneratedColumn<int> stockingCount = GeneratedColumn<int>(
-    'stocking_count',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _targetSrPercentMeta = const VerificationMeta(
-    'targetSrPercent',
-  );
-  @override
-  late final GeneratedColumn<double> targetSrPercent = GeneratedColumn<double>(
-    'target_sr_percent',
+  late final GeneratedColumn<double> estimatedRevenue = GeneratedColumn<double>(
+    'estimated_revenue',
     aliasedName,
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _targetDocMeta = const VerificationMeta(
-    'targetDoc',
-  );
+  static const VerificationMeta _estimatedRevenueCurrencyMeta =
+      const VerificationMeta('estimatedRevenueCurrency');
   @override
-  late final GeneratedColumn<int> targetDoc = GeneratedColumn<int>(
-    'target_doc',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedPaymentMeta = const VerificationMeta(
-    'feedPayment',
-  );
-  @override
-  late final GeneratedColumn<double> feedPayment = GeneratedColumn<double>(
-    'feed_payment',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedPaymentCurrencyMeta =
-      const VerificationMeta('feedPaymentCurrency');
-  @override
-  late final GeneratedColumn<String> feedPaymentCurrency =
+  late final GeneratedColumn<String> estimatedRevenueCurrency =
       GeneratedColumn<String>(
-        'feed_payment_currency',
+        'estimated_revenue_currency',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
         defaultValue: const Constant('idr'),
       );
-  static const VerificationMeta _harvestPriceMeta = const VerificationMeta(
-    'harvestPrice',
+  static const VerificationMeta _estimatedProfitMeta = const VerificationMeta(
+    'estimatedProfit',
   );
   @override
-  late final GeneratedColumn<double> harvestPrice = GeneratedColumn<double>(
-    'harvest_price',
+  late final GeneratedColumn<double> estimatedProfit = GeneratedColumn<double>(
+    'estimated_profit',
     aliasedName,
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _harvestPriceCurrencyMeta =
-      const VerificationMeta('harvestPriceCurrency');
+  static const VerificationMeta _estimatedProfitCurrencyMeta =
+      const VerificationMeta('estimatedProfitCurrency');
   @override
-  late final GeneratedColumn<String> harvestPriceCurrency =
+  late final GeneratedColumn<String> estimatedProfitCurrency =
       GeneratedColumn<String>(
-        'harvest_price_currency',
+        'estimated_profit_currency',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
         defaultValue: const Constant('idr'),
       );
-  static const VerificationMeta _estimatedHarvestMeta = const VerificationMeta(
-    'estimatedHarvest',
+  static const VerificationMeta _debtServiceCoverageRatioMeta =
+      const VerificationMeta('debtServiceCoverageRatio');
+  @override
+  late final GeneratedColumn<double> debtServiceCoverageRatio =
+      GeneratedColumn<double>(
+        'debt_service_coverage_ratio',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _loanToValueRatioMeta = const VerificationMeta(
+    'loanToValueRatio',
   );
   @override
-  late final GeneratedColumn<double> estimatedHarvest = GeneratedColumn<double>(
-    'estimated_harvest',
+  late final GeneratedColumn<double> loanToValueRatio = GeneratedColumn<double>(
+    'loan_to_value_ratio',
     aliasedName,
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _estimatedHarvestUnitMeta =
-      const VerificationMeta('estimatedHarvestUnit');
+  static const VerificationMeta _riskScoreMeta = const VerificationMeta(
+    'riskScore',
+  );
   @override
-  late final GeneratedColumn<String> estimatedHarvestUnit =
+  late final GeneratedColumn<double> riskScore = GeneratedColumn<double>(
+    'risk_score',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _riskLevelMeta = const VerificationMeta(
+    'riskLevel',
+  );
+  @override
+  late final GeneratedColumn<String> riskLevel = GeneratedColumn<String>(
+    'risk_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Medium'),
+  );
+  static const VerificationMeta _approvalRecommendationMeta =
+      const VerificationMeta('approvalRecommendation');
+  @override
+  late final GeneratedColumn<String> approvalRecommendation =
       GeneratedColumn<String>(
-        'estimated_harvest_unit',
+        'approval_recommendation',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
-        defaultValue: const Constant('kg'),
+        defaultValue: const Constant('Pending'),
       );
-  static const VerificationMeta _estimatedFcrMeta = const VerificationMeta(
-    'estimatedFcr',
+  static const VerificationMeta _simulationDataMeta = const VerificationMeta(
+    'simulationData',
   );
   @override
-  late final GeneratedColumn<double> estimatedFcr = GeneratedColumn<double>(
-    'estimated_fcr',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedPriceMeta = const VerificationMeta(
-    'feedPrice',
-  );
-  @override
-  late final GeneratedColumn<double> feedPrice = GeneratedColumn<double>(
-    'feed_price',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedPriceCurrencyMeta = const VerificationMeta(
-    'feedPriceCurrency',
-  );
-  @override
-  late final GeneratedColumn<String> feedPriceCurrency =
-      GeneratedColumn<String>(
-        'feed_price_currency',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('idr'),
-      );
-  static const VerificationMeta _harvestGuaranteeMeta = const VerificationMeta(
-    'harvestGuarantee',
-  );
-  @override
-  late final GeneratedColumn<double> harvestGuarantee = GeneratedColumn<double>(
-    'harvest_guarantee',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _harvestGuaranteeCurrencyMeta =
-      const VerificationMeta('harvestGuaranteeCurrency');
-  @override
-  late final GeneratedColumn<String> harvestGuaranteeCurrency =
-      GeneratedColumn<String>(
-        'harvest_guarantee_currency',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('idr'),
-      );
-  static const VerificationMeta _ltvRatioMeta = const VerificationMeta(
-    'ltvRatio',
-  );
-  @override
-  late final GeneratedColumn<double> ltvRatio = GeneratedColumn<double>(
-    'ltv_ratio',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _progressMeta = const VerificationMeta(
-    'progress',
-  );
-  @override
-  late final GeneratedColumn<double> progress = GeneratedColumn<double>(
-    'progress',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _currentAbwMeta = const VerificationMeta(
-    'currentAbw',
-  );
-  @override
-  late final GeneratedColumn<double> currentAbw = GeneratedColumn<double>(
-    'current_abw',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _currentAbwUnitMeta = const VerificationMeta(
-    'currentAbwUnit',
-  );
-  @override
-  late final GeneratedColumn<String> currentAbwUnit = GeneratedColumn<String>(
-    'current_abw_unit',
+  late final GeneratedColumn<String> simulationData = GeneratedColumn<String>(
+    'simulation_data',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant('gram'),
-  );
-  static const VerificationMeta _harvestAbwMeta = const VerificationMeta(
-    'harvestAbw',
-  );
-  @override
-  late final GeneratedColumn<double> harvestAbw = GeneratedColumn<double>(
-    'harvest_abw',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _harvestAbwUnitMeta = const VerificationMeta(
-    'harvestAbwUnit',
-  );
-  @override
-  late final GeneratedColumn<String> harvestAbwUnit = GeneratedColumn<String>(
-    'harvest_abw_unit',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('gram'),
-  );
-  static const VerificationMeta _feedNeedMeta = const VerificationMeta(
-    'feedNeed',
-  );
-  @override
-  late final GeneratedColumn<double> feedNeed = GeneratedColumn<double>(
-    'feed_need',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedNeedUnitMeta = const VerificationMeta(
-    'feedNeedUnit',
-  );
-  @override
-  late final GeneratedColumn<String> feedNeedUnit = GeneratedColumn<String>(
-    'feed_need_unit',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('kg'),
-  );
-  static const VerificationMeta _feedCostMeta = const VerificationMeta(
-    'feedCost',
-  );
-  @override
-  late final GeneratedColumn<double> feedCost = GeneratedColumn<double>(
-    'feed_cost',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _feedCostCurrencyMeta = const VerificationMeta(
-    'feedCostCurrency',
-  );
-  @override
-  late final GeneratedColumn<String> feedCostCurrency = GeneratedColumn<String>(
-    'feed_cost_currency',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('idr'),
-  );
-  static const VerificationMeta _maxLoanMeta = const VerificationMeta(
-    'maxLoan',
-  );
-  @override
-  late final GeneratedColumn<double> maxLoan = GeneratedColumn<double>(
-    'max_loan',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _maxLoanCurrencyMeta = const VerificationMeta(
-    'maxLoanCurrency',
-  );
-  @override
-  late final GeneratedColumn<String> maxLoanCurrency = GeneratedColumn<String>(
-    'max_loan_currency',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('idr'),
   );
   static const VerificationMeta _calculationDetailsMeta =
       const VerificationMeta('calculationDetails');
@@ -13623,18 +19861,40 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
-  static const VerificationMeta _isMaterializedMeta = const VerificationMeta(
-    'isMaterialized',
+  static const VerificationMeta _riskAssessmentMeta = const VerificationMeta(
+    'riskAssessment',
   );
   @override
-  late final GeneratedColumn<bool> isMaterialized = GeneratedColumn<bool>(
-    'is_materialized',
+  late final GeneratedColumn<String> riskAssessment = GeneratedColumn<String>(
+    'risk_assessment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _monthlyPaymentScheduleMeta =
+      const VerificationMeta('monthlyPaymentSchedule');
+  @override
+  late final GeneratedColumn<String> monthlyPaymentSchedule =
+      GeneratedColumn<String>(
+        'monthly_payment_schedule',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _isApprovedMeta = const VerificationMeta(
+    'isApproved',
+  );
+  @override
+  late final GeneratedColumn<bool> isApproved = GeneratedColumn<bool>(
+    'is_approved',
     aliasedName,
     true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_materialized" IN (0, 1))',
+      'CHECK ("is_approved" IN (0, 1))',
     ),
     defaultValue: const Constant(false),
   );
@@ -13665,6 +19925,116 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
     requiredDuringInsert: false,
     defaultValue: const Constant('Draft'),
   );
+  static const VerificationMeta _approvedByMeta = const VerificationMeta(
+    'approvedBy',
+  );
+  @override
+  late final GeneratedColumn<int> approvedBy = GeneratedColumn<int>(
+    'approved_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fms_mt_employees (employee_id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _approvedDateMeta = const VerificationMeta(
+    'approvedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> approvedDate = GeneratedColumn<DateTime>(
+    'approved_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rejectionReasonMeta = const VerificationMeta(
+    'rejectionReason',
+  );
+  @override
+  late final GeneratedColumn<String> rejectionReason = GeneratedColumn<String>(
+    'rejection_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _languagePreferenceMeta =
+      const VerificationMeta('languagePreference');
+  @override
+  late final GeneratedColumn<String> languagePreference =
+      GeneratedColumn<String>(
+        'language_preference',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('id'),
+      );
+  static const VerificationMeta _unitSystemMeta = const VerificationMeta(
+    'unitSystem',
+  );
+  @override
+  late final GeneratedColumn<String> unitSystem = GeneratedColumn<String>(
+    'unit_system',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('metric'),
+  );
+  static const VerificationMeta _displayWeightUnitMeta = const VerificationMeta(
+    'displayWeightUnit',
+  );
+  @override
+  late final GeneratedColumn<String> displayWeightUnit =
+      GeneratedColumn<String>(
+        'display_weight_unit',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('kg'),
+      );
+  static const VerificationMeta _displayAreaUnitMeta = const VerificationMeta(
+    'displayAreaUnit',
+  );
+  @override
+  late final GeneratedColumn<String> displayAreaUnit = GeneratedColumn<String>(
+    'display_area_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('sqm'),
+  );
+  static const VerificationMeta _displayCurrencyMeta = const VerificationMeta(
+    'displayCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> displayCurrency = GeneratedColumn<String>(
+    'display_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('idr'),
+  );
+  static const VerificationMeta _simulationVersionMeta = const VerificationMeta(
+    'simulationVersion',
+  );
+  @override
+  late final GeneratedColumn<String> simulationVersion =
+      GeneratedColumn<String>(
+        'simulation_version',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('v1.0'),
+      );
   static const VerificationMeta _createdDateMeta = const VerificationMeta(
     'createdDate',
   );
@@ -13701,18 +20071,6 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _materializedDateMeta = const VerificationMeta(
-    'materializedDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> materializedDate =
-      GeneratedColumn<DateTime>(
-        'materialized_date',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
   static const VerificationMeta _deletedDateMeta = const VerificationMeta(
     'deletedDate',
   );
@@ -13761,46 +20119,48 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
     employeeId,
     pondId,
     deviceUuid,
-    displayCurrency,
-    displayWeightUnit,
-    displayAreaUnit,
-    currentDoc,
-    currentBiomass,
-    currentBiomassUnit,
-    stockingCount,
-    targetSrPercent,
-    targetDoc,
-    feedPayment,
-    feedPaymentCurrency,
-    harvestPrice,
-    harvestPriceCurrency,
-    estimatedHarvest,
-    estimatedHarvestUnit,
-    estimatedFcr,
-    feedPrice,
-    feedPriceCurrency,
-    harvestGuarantee,
-    harvestGuaranteeCurrency,
-    ltvRatio,
-    progress,
-    currentAbw,
-    currentAbwUnit,
-    harvestAbw,
-    harvestAbwUnit,
-    feedNeed,
-    feedNeedUnit,
-    feedCost,
-    feedCostCurrency,
-    maxLoan,
-    maxLoanCurrency,
+    agentType,
+    loanAmount,
+    loanCurrency,
+    interestRatePercent,
+    loanTermMonths,
+    guaranteePercentage,
+    guaranteeAmount,
+    guaranteeCurrency,
+    collateralValue,
+    collateralCurrency,
+    pondArea,
+    pondAreaUnit,
+    estimatedProductionKg,
+    estimatedProductionUnit,
+    estimatedRevenue,
+    estimatedRevenueCurrency,
+    estimatedProfit,
+    estimatedProfitCurrency,
+    debtServiceCoverageRatio,
+    loanToValueRatio,
+    riskScore,
+    riskLevel,
+    approvalRecommendation,
+    simulationData,
     calculationDetails,
-    isMaterialized,
+    riskAssessment,
+    monthlyPaymentSchedule,
+    isApproved,
     isSynced,
     simulationStatus,
+    approvedBy,
+    approvedDate,
+    rejectionReason,
+    languagePreference,
+    unitSystem,
+    displayWeightUnit,
+    displayAreaUnit,
+    displayCurrency,
+    simulationVersion,
     createdDate,
     lastUpdatedDate,
     syncedDate,
-    materializedDate,
     deletedDate,
     createdBy,
     lastUpdatedBy,
@@ -13834,8 +20194,6 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
           _simulationUuidMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_simulationUuidMeta);
     }
     if (data.containsKey('simulation_code')) {
       context.handle(
@@ -13879,13 +20237,292 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
         deviceUuid.isAcceptableOrUnknown(data['device_uuid']!, _deviceUuidMeta),
       );
     }
-    if (data.containsKey('display_currency')) {
+    if (data.containsKey('agent_type')) {
       context.handle(
-        _displayCurrencyMeta,
-        displayCurrency.isAcceptableOrUnknown(
-          data['display_currency']!,
-          _displayCurrencyMeta,
+        _agentTypeMeta,
+        agentType.isAcceptableOrUnknown(data['agent_type']!, _agentTypeMeta),
+      );
+    }
+    if (data.containsKey('loan_amount')) {
+      context.handle(
+        _loanAmountMeta,
+        loanAmount.isAcceptableOrUnknown(data['loan_amount']!, _loanAmountMeta),
+      );
+    }
+    if (data.containsKey('loan_currency')) {
+      context.handle(
+        _loanCurrencyMeta,
+        loanCurrency.isAcceptableOrUnknown(
+          data['loan_currency']!,
+          _loanCurrencyMeta,
         ),
+      );
+    }
+    if (data.containsKey('interest_rate_percent')) {
+      context.handle(
+        _interestRatePercentMeta,
+        interestRatePercent.isAcceptableOrUnknown(
+          data['interest_rate_percent']!,
+          _interestRatePercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('loan_term_months')) {
+      context.handle(
+        _loanTermMonthsMeta,
+        loanTermMonths.isAcceptableOrUnknown(
+          data['loan_term_months']!,
+          _loanTermMonthsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('guarantee_percentage')) {
+      context.handle(
+        _guaranteePercentageMeta,
+        guaranteePercentage.isAcceptableOrUnknown(
+          data['guarantee_percentage']!,
+          _guaranteePercentageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('guarantee_amount')) {
+      context.handle(
+        _guaranteeAmountMeta,
+        guaranteeAmount.isAcceptableOrUnknown(
+          data['guarantee_amount']!,
+          _guaranteeAmountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('guarantee_currency')) {
+      context.handle(
+        _guaranteeCurrencyMeta,
+        guaranteeCurrency.isAcceptableOrUnknown(
+          data['guarantee_currency']!,
+          _guaranteeCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('collateral_value')) {
+      context.handle(
+        _collateralValueMeta,
+        collateralValue.isAcceptableOrUnknown(
+          data['collateral_value']!,
+          _collateralValueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('collateral_currency')) {
+      context.handle(
+        _collateralCurrencyMeta,
+        collateralCurrency.isAcceptableOrUnknown(
+          data['collateral_currency']!,
+          _collateralCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('pond_area')) {
+      context.handle(
+        _pondAreaMeta,
+        pondArea.isAcceptableOrUnknown(data['pond_area']!, _pondAreaMeta),
+      );
+    }
+    if (data.containsKey('pond_area_unit')) {
+      context.handle(
+        _pondAreaUnitMeta,
+        pondAreaUnit.isAcceptableOrUnknown(
+          data['pond_area_unit']!,
+          _pondAreaUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_production_kg')) {
+      context.handle(
+        _estimatedProductionKgMeta,
+        estimatedProductionKg.isAcceptableOrUnknown(
+          data['estimated_production_kg']!,
+          _estimatedProductionKgMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_production_unit')) {
+      context.handle(
+        _estimatedProductionUnitMeta,
+        estimatedProductionUnit.isAcceptableOrUnknown(
+          data['estimated_production_unit']!,
+          _estimatedProductionUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_revenue')) {
+      context.handle(
+        _estimatedRevenueMeta,
+        estimatedRevenue.isAcceptableOrUnknown(
+          data['estimated_revenue']!,
+          _estimatedRevenueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_revenue_currency')) {
+      context.handle(
+        _estimatedRevenueCurrencyMeta,
+        estimatedRevenueCurrency.isAcceptableOrUnknown(
+          data['estimated_revenue_currency']!,
+          _estimatedRevenueCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_profit')) {
+      context.handle(
+        _estimatedProfitMeta,
+        estimatedProfit.isAcceptableOrUnknown(
+          data['estimated_profit']!,
+          _estimatedProfitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_profit_currency')) {
+      context.handle(
+        _estimatedProfitCurrencyMeta,
+        estimatedProfitCurrency.isAcceptableOrUnknown(
+          data['estimated_profit_currency']!,
+          _estimatedProfitCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('debt_service_coverage_ratio')) {
+      context.handle(
+        _debtServiceCoverageRatioMeta,
+        debtServiceCoverageRatio.isAcceptableOrUnknown(
+          data['debt_service_coverage_ratio']!,
+          _debtServiceCoverageRatioMeta,
+        ),
+      );
+    }
+    if (data.containsKey('loan_to_value_ratio')) {
+      context.handle(
+        _loanToValueRatioMeta,
+        loanToValueRatio.isAcceptableOrUnknown(
+          data['loan_to_value_ratio']!,
+          _loanToValueRatioMeta,
+        ),
+      );
+    }
+    if (data.containsKey('risk_score')) {
+      context.handle(
+        _riskScoreMeta,
+        riskScore.isAcceptableOrUnknown(data['risk_score']!, _riskScoreMeta),
+      );
+    }
+    if (data.containsKey('risk_level')) {
+      context.handle(
+        _riskLevelMeta,
+        riskLevel.isAcceptableOrUnknown(data['risk_level']!, _riskLevelMeta),
+      );
+    }
+    if (data.containsKey('approval_recommendation')) {
+      context.handle(
+        _approvalRecommendationMeta,
+        approvalRecommendation.isAcceptableOrUnknown(
+          data['approval_recommendation']!,
+          _approvalRecommendationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('simulation_data')) {
+      context.handle(
+        _simulationDataMeta,
+        simulationData.isAcceptableOrUnknown(
+          data['simulation_data']!,
+          _simulationDataMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calculation_details')) {
+      context.handle(
+        _calculationDetailsMeta,
+        calculationDetails.isAcceptableOrUnknown(
+          data['calculation_details']!,
+          _calculationDetailsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('risk_assessment')) {
+      context.handle(
+        _riskAssessmentMeta,
+        riskAssessment.isAcceptableOrUnknown(
+          data['risk_assessment']!,
+          _riskAssessmentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('monthly_payment_schedule')) {
+      context.handle(
+        _monthlyPaymentScheduleMeta,
+        monthlyPaymentSchedule.isAcceptableOrUnknown(
+          data['monthly_payment_schedule']!,
+          _monthlyPaymentScheduleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_approved')) {
+      context.handle(
+        _isApprovedMeta,
+        isApproved.isAcceptableOrUnknown(data['is_approved']!, _isApprovedMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('simulation_status')) {
+      context.handle(
+        _simulationStatusMeta,
+        simulationStatus.isAcceptableOrUnknown(
+          data['simulation_status']!,
+          _simulationStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('approved_by')) {
+      context.handle(
+        _approvedByMeta,
+        approvedBy.isAcceptableOrUnknown(data['approved_by']!, _approvedByMeta),
+      );
+    }
+    if (data.containsKey('approved_date')) {
+      context.handle(
+        _approvedDateMeta,
+        approvedDate.isAcceptableOrUnknown(
+          data['approved_date']!,
+          _approvedDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rejection_reason')) {
+      context.handle(
+        _rejectionReasonMeta,
+        rejectionReason.isAcceptableOrUnknown(
+          data['rejection_reason']!,
+          _rejectionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('language_preference')) {
+      context.handle(
+        _languagePreferenceMeta,
+        languagePreference.isAcceptableOrUnknown(
+          data['language_preference']!,
+          _languagePreferenceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('unit_system')) {
+      context.handle(
+        _unitSystemMeta,
+        unitSystem.isAcceptableOrUnknown(data['unit_system']!, _unitSystemMeta),
       );
     }
     if (data.containsKey('display_weight_unit')) {
@@ -13906,267 +20543,21 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
         ),
       );
     }
-    if (data.containsKey('current_doc')) {
+    if (data.containsKey('display_currency')) {
       context.handle(
-        _currentDocMeta,
-        currentDoc.isAcceptableOrUnknown(data['current_doc']!, _currentDocMeta),
-      );
-    }
-    if (data.containsKey('current_biomass')) {
-      context.handle(
-        _currentBiomassMeta,
-        currentBiomass.isAcceptableOrUnknown(
-          data['current_biomass']!,
-          _currentBiomassMeta,
+        _displayCurrencyMeta,
+        displayCurrency.isAcceptableOrUnknown(
+          data['display_currency']!,
+          _displayCurrencyMeta,
         ),
       );
     }
-    if (data.containsKey('current_biomass_unit')) {
+    if (data.containsKey('simulation_version')) {
       context.handle(
-        _currentBiomassUnitMeta,
-        currentBiomassUnit.isAcceptableOrUnknown(
-          data['current_biomass_unit']!,
-          _currentBiomassUnitMeta,
-        ),
-      );
-    }
-    if (data.containsKey('stocking_count')) {
-      context.handle(
-        _stockingCountMeta,
-        stockingCount.isAcceptableOrUnknown(
-          data['stocking_count']!,
-          _stockingCountMeta,
-        ),
-      );
-    }
-    if (data.containsKey('target_sr_percent')) {
-      context.handle(
-        _targetSrPercentMeta,
-        targetSrPercent.isAcceptableOrUnknown(
-          data['target_sr_percent']!,
-          _targetSrPercentMeta,
-        ),
-      );
-    }
-    if (data.containsKey('target_doc')) {
-      context.handle(
-        _targetDocMeta,
-        targetDoc.isAcceptableOrUnknown(data['target_doc']!, _targetDocMeta),
-      );
-    }
-    if (data.containsKey('feed_payment')) {
-      context.handle(
-        _feedPaymentMeta,
-        feedPayment.isAcceptableOrUnknown(
-          data['feed_payment']!,
-          _feedPaymentMeta,
-        ),
-      );
-    }
-    if (data.containsKey('feed_payment_currency')) {
-      context.handle(
-        _feedPaymentCurrencyMeta,
-        feedPaymentCurrency.isAcceptableOrUnknown(
-          data['feed_payment_currency']!,
-          _feedPaymentCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('harvest_price')) {
-      context.handle(
-        _harvestPriceMeta,
-        harvestPrice.isAcceptableOrUnknown(
-          data['harvest_price']!,
-          _harvestPriceMeta,
-        ),
-      );
-    }
-    if (data.containsKey('harvest_price_currency')) {
-      context.handle(
-        _harvestPriceCurrencyMeta,
-        harvestPriceCurrency.isAcceptableOrUnknown(
-          data['harvest_price_currency']!,
-          _harvestPriceCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('estimated_harvest')) {
-      context.handle(
-        _estimatedHarvestMeta,
-        estimatedHarvest.isAcceptableOrUnknown(
-          data['estimated_harvest']!,
-          _estimatedHarvestMeta,
-        ),
-      );
-    }
-    if (data.containsKey('estimated_harvest_unit')) {
-      context.handle(
-        _estimatedHarvestUnitMeta,
-        estimatedHarvestUnit.isAcceptableOrUnknown(
-          data['estimated_harvest_unit']!,
-          _estimatedHarvestUnitMeta,
-        ),
-      );
-    }
-    if (data.containsKey('estimated_fcr')) {
-      context.handle(
-        _estimatedFcrMeta,
-        estimatedFcr.isAcceptableOrUnknown(
-          data['estimated_fcr']!,
-          _estimatedFcrMeta,
-        ),
-      );
-    }
-    if (data.containsKey('feed_price')) {
-      context.handle(
-        _feedPriceMeta,
-        feedPrice.isAcceptableOrUnknown(data['feed_price']!, _feedPriceMeta),
-      );
-    }
-    if (data.containsKey('feed_price_currency')) {
-      context.handle(
-        _feedPriceCurrencyMeta,
-        feedPriceCurrency.isAcceptableOrUnknown(
-          data['feed_price_currency']!,
-          _feedPriceCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('harvest_guarantee')) {
-      context.handle(
-        _harvestGuaranteeMeta,
-        harvestGuarantee.isAcceptableOrUnknown(
-          data['harvest_guarantee']!,
-          _harvestGuaranteeMeta,
-        ),
-      );
-    }
-    if (data.containsKey('harvest_guarantee_currency')) {
-      context.handle(
-        _harvestGuaranteeCurrencyMeta,
-        harvestGuaranteeCurrency.isAcceptableOrUnknown(
-          data['harvest_guarantee_currency']!,
-          _harvestGuaranteeCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('ltv_ratio')) {
-      context.handle(
-        _ltvRatioMeta,
-        ltvRatio.isAcceptableOrUnknown(data['ltv_ratio']!, _ltvRatioMeta),
-      );
-    }
-    if (data.containsKey('progress')) {
-      context.handle(
-        _progressMeta,
-        progress.isAcceptableOrUnknown(data['progress']!, _progressMeta),
-      );
-    }
-    if (data.containsKey('current_abw')) {
-      context.handle(
-        _currentAbwMeta,
-        currentAbw.isAcceptableOrUnknown(data['current_abw']!, _currentAbwMeta),
-      );
-    }
-    if (data.containsKey('current_abw_unit')) {
-      context.handle(
-        _currentAbwUnitMeta,
-        currentAbwUnit.isAcceptableOrUnknown(
-          data['current_abw_unit']!,
-          _currentAbwUnitMeta,
-        ),
-      );
-    }
-    if (data.containsKey('harvest_abw')) {
-      context.handle(
-        _harvestAbwMeta,
-        harvestAbw.isAcceptableOrUnknown(data['harvest_abw']!, _harvestAbwMeta),
-      );
-    }
-    if (data.containsKey('harvest_abw_unit')) {
-      context.handle(
-        _harvestAbwUnitMeta,
-        harvestAbwUnit.isAcceptableOrUnknown(
-          data['harvest_abw_unit']!,
-          _harvestAbwUnitMeta,
-        ),
-      );
-    }
-    if (data.containsKey('feed_need')) {
-      context.handle(
-        _feedNeedMeta,
-        feedNeed.isAcceptableOrUnknown(data['feed_need']!, _feedNeedMeta),
-      );
-    }
-    if (data.containsKey('feed_need_unit')) {
-      context.handle(
-        _feedNeedUnitMeta,
-        feedNeedUnit.isAcceptableOrUnknown(
-          data['feed_need_unit']!,
-          _feedNeedUnitMeta,
-        ),
-      );
-    }
-    if (data.containsKey('feed_cost')) {
-      context.handle(
-        _feedCostMeta,
-        feedCost.isAcceptableOrUnknown(data['feed_cost']!, _feedCostMeta),
-      );
-    }
-    if (data.containsKey('feed_cost_currency')) {
-      context.handle(
-        _feedCostCurrencyMeta,
-        feedCostCurrency.isAcceptableOrUnknown(
-          data['feed_cost_currency']!,
-          _feedCostCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('max_loan')) {
-      context.handle(
-        _maxLoanMeta,
-        maxLoan.isAcceptableOrUnknown(data['max_loan']!, _maxLoanMeta),
-      );
-    }
-    if (data.containsKey('max_loan_currency')) {
-      context.handle(
-        _maxLoanCurrencyMeta,
-        maxLoanCurrency.isAcceptableOrUnknown(
-          data['max_loan_currency']!,
-          _maxLoanCurrencyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('calculation_details')) {
-      context.handle(
-        _calculationDetailsMeta,
-        calculationDetails.isAcceptableOrUnknown(
-          data['calculation_details']!,
-          _calculationDetailsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_materialized')) {
-      context.handle(
-        _isMaterializedMeta,
-        isMaterialized.isAcceptableOrUnknown(
-          data['is_materialized']!,
-          _isMaterializedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_synced')) {
-      context.handle(
-        _isSyncedMeta,
-        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
-      );
-    }
-    if (data.containsKey('simulation_status')) {
-      context.handle(
-        _simulationStatusMeta,
-        simulationStatus.isAcceptableOrUnknown(
-          data['simulation_status']!,
-          _simulationStatusMeta,
+        _simulationVersionMeta,
+        simulationVersion.isAcceptableOrUnknown(
+          data['simulation_version']!,
+          _simulationVersionMeta,
         ),
       );
     }
@@ -14192,15 +20583,6 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
       context.handle(
         _syncedDateMeta,
         syncedDate.isAcceptableOrUnknown(data['synced_date']!, _syncedDateMeta),
-      );
-    }
-    if (data.containsKey('materialized_date')) {
-      context.handle(
-        _materializedDateMeta,
-        materializedDate.isAcceptableOrUnknown(
-          data['materialized_date']!,
-          _materializedDateMeta,
-        ),
       );
     }
     if (data.containsKey('deleted_date')) {
@@ -14264,9 +20646,145 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
         DriftSqlType.string,
         data['${effectivePrefix}device_uuid'],
       ),
-      displayCurrency: attachedDatabase.typeMapping.read(
+      agentType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}display_currency'],
+        data['${effectivePrefix}agent_type'],
+      ),
+      loanAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}loan_amount'],
+      ),
+      loanCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}loan_currency'],
+      ),
+      interestRatePercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}interest_rate_percent'],
+      ),
+      loanTermMonths: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}loan_term_months'],
+      ),
+      guaranteePercentage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}guarantee_percentage'],
+      ),
+      guaranteeAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}guarantee_amount'],
+      ),
+      guaranteeCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guarantee_currency'],
+      ),
+      collateralValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}collateral_value'],
+      ),
+      collateralCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}collateral_currency'],
+      ),
+      pondArea: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}pond_area'],
+      ),
+      pondAreaUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pond_area_unit'],
+      ),
+      estimatedProductionKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_production_kg'],
+      ),
+      estimatedProductionUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estimated_production_unit'],
+      ),
+      estimatedRevenue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_revenue'],
+      ),
+      estimatedRevenueCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estimated_revenue_currency'],
+      ),
+      estimatedProfit: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_profit'],
+      ),
+      estimatedProfitCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estimated_profit_currency'],
+      ),
+      debtServiceCoverageRatio: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}debt_service_coverage_ratio'],
+      ),
+      loanToValueRatio: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}loan_to_value_ratio'],
+      ),
+      riskScore: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}risk_score'],
+      ),
+      riskLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}risk_level'],
+      ),
+      approvalRecommendation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}approval_recommendation'],
+      ),
+      simulationData: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}simulation_data'],
+      ),
+      calculationDetails: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calculation_details'],
+      ),
+      riskAssessment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}risk_assessment'],
+      ),
+      monthlyPaymentSchedule: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}monthly_payment_schedule'],
+      ),
+      isApproved: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_approved'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      ),
+      simulationStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}simulation_status'],
+      ),
+      approvedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}approved_by'],
+      ),
+      approvedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}approved_date'],
+      ),
+      rejectionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rejection_reason'],
+      ),
+      languagePreference: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language_preference'],
+      ),
+      unitSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unit_system'],
       ),
       displayWeightUnit: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -14276,137 +20794,13 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
         DriftSqlType.string,
         data['${effectivePrefix}display_area_unit'],
       ),
-      currentDoc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}current_doc'],
-      ),
-      currentBiomass: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}current_biomass'],
-      ),
-      currentBiomassUnit: attachedDatabase.typeMapping.read(
+      displayCurrency: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}current_biomass_unit'],
+        data['${effectivePrefix}display_currency'],
       ),
-      stockingCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}stocking_count'],
-      ),
-      targetSrPercent: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}target_sr_percent'],
-      ),
-      targetDoc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}target_doc'],
-      ),
-      feedPayment: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}feed_payment'],
-      ),
-      feedPaymentCurrency: attachedDatabase.typeMapping.read(
+      simulationVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}feed_payment_currency'],
-      ),
-      harvestPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}harvest_price'],
-      ),
-      harvestPriceCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}harvest_price_currency'],
-      ),
-      estimatedHarvest: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}estimated_harvest'],
-      ),
-      estimatedHarvestUnit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}estimated_harvest_unit'],
-      ),
-      estimatedFcr: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}estimated_fcr'],
-      ),
-      feedPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}feed_price'],
-      ),
-      feedPriceCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}feed_price_currency'],
-      ),
-      harvestGuarantee: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}harvest_guarantee'],
-      ),
-      harvestGuaranteeCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}harvest_guarantee_currency'],
-      ),
-      ltvRatio: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}ltv_ratio'],
-      ),
-      progress: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}progress'],
-      ),
-      currentAbw: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}current_abw'],
-      ),
-      currentAbwUnit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}current_abw_unit'],
-      ),
-      harvestAbw: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}harvest_abw'],
-      ),
-      harvestAbwUnit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}harvest_abw_unit'],
-      ),
-      feedNeed: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}feed_need'],
-      ),
-      feedNeedUnit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}feed_need_unit'],
-      ),
-      feedCost: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}feed_cost'],
-      ),
-      feedCostCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}feed_cost_currency'],
-      ),
-      maxLoan: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}max_loan'],
-      ),
-      maxLoanCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}max_loan_currency'],
-      ),
-      calculationDetails: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}calculation_details'],
-      ),
-      isMaterialized: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_materialized'],
-      ),
-      isSynced: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_synced'],
-      ),
-      simulationStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}simulation_status'],
+        data['${effectivePrefix}simulation_version'],
       ),
       createdDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -14419,10 +20813,6 @@ class $Fms10AgentSimulationsTable extends Fms10AgentSimulations
       syncedDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_date'],
-      ),
-      materializedDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}materialized_date'],
       ),
       deletedDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -14454,46 +20844,48 @@ class Fms10AgentSimulation extends DataClass
   final int employeeId;
   final int? pondId;
   final String? deviceUuid;
-  final String? displayCurrency;
-  final String? displayWeightUnit;
-  final String? displayAreaUnit;
-  final int? currentDoc;
-  final double? currentBiomass;
-  final String? currentBiomassUnit;
-  final int? stockingCount;
-  final double? targetSrPercent;
-  final int? targetDoc;
-  final double? feedPayment;
-  final String? feedPaymentCurrency;
-  final double? harvestPrice;
-  final String? harvestPriceCurrency;
-  final double? estimatedHarvest;
-  final String? estimatedHarvestUnit;
-  final double? estimatedFcr;
-  final double? feedPrice;
-  final String? feedPriceCurrency;
-  final double? harvestGuarantee;
-  final String? harvestGuaranteeCurrency;
-  final double? ltvRatio;
-  final double? progress;
-  final double? currentAbw;
-  final String? currentAbwUnit;
-  final double? harvestAbw;
-  final String? harvestAbwUnit;
-  final double? feedNeed;
-  final String? feedNeedUnit;
-  final double? feedCost;
-  final String? feedCostCurrency;
-  final double? maxLoan;
-  final String? maxLoanCurrency;
+  final String? agentType;
+  final double? loanAmount;
+  final String? loanCurrency;
+  final double? interestRatePercent;
+  final int? loanTermMonths;
+  final double? guaranteePercentage;
+  final double? guaranteeAmount;
+  final String? guaranteeCurrency;
+  final double? collateralValue;
+  final String? collateralCurrency;
+  final double? pondArea;
+  final String? pondAreaUnit;
+  final double? estimatedProductionKg;
+  final String? estimatedProductionUnit;
+  final double? estimatedRevenue;
+  final String? estimatedRevenueCurrency;
+  final double? estimatedProfit;
+  final String? estimatedProfitCurrency;
+  final double? debtServiceCoverageRatio;
+  final double? loanToValueRatio;
+  final double? riskScore;
+  final String? riskLevel;
+  final String? approvalRecommendation;
+  final String? simulationData;
   final String? calculationDetails;
-  final bool? isMaterialized;
+  final String? riskAssessment;
+  final String? monthlyPaymentSchedule;
+  final bool? isApproved;
   final bool? isSynced;
   final String? simulationStatus;
+  final int? approvedBy;
+  final DateTime? approvedDate;
+  final String? rejectionReason;
+  final String? languagePreference;
+  final String? unitSystem;
+  final String? displayWeightUnit;
+  final String? displayAreaUnit;
+  final String? displayCurrency;
+  final String? simulationVersion;
   final DateTime? createdDate;
   final DateTime? lastUpdatedDate;
   final DateTime? syncedDate;
-  final DateTime? materializedDate;
   final DateTime? deletedDate;
   final int? createdBy;
   final int? lastUpdatedBy;
@@ -14505,46 +20897,48 @@ class Fms10AgentSimulation extends DataClass
     required this.employeeId,
     this.pondId,
     this.deviceUuid,
-    this.displayCurrency,
-    this.displayWeightUnit,
-    this.displayAreaUnit,
-    this.currentDoc,
-    this.currentBiomass,
-    this.currentBiomassUnit,
-    this.stockingCount,
-    this.targetSrPercent,
-    this.targetDoc,
-    this.feedPayment,
-    this.feedPaymentCurrency,
-    this.harvestPrice,
-    this.harvestPriceCurrency,
-    this.estimatedHarvest,
-    this.estimatedHarvestUnit,
-    this.estimatedFcr,
-    this.feedPrice,
-    this.feedPriceCurrency,
-    this.harvestGuarantee,
-    this.harvestGuaranteeCurrency,
-    this.ltvRatio,
-    this.progress,
-    this.currentAbw,
-    this.currentAbwUnit,
-    this.harvestAbw,
-    this.harvestAbwUnit,
-    this.feedNeed,
-    this.feedNeedUnit,
-    this.feedCost,
-    this.feedCostCurrency,
-    this.maxLoan,
-    this.maxLoanCurrency,
+    this.agentType,
+    this.loanAmount,
+    this.loanCurrency,
+    this.interestRatePercent,
+    this.loanTermMonths,
+    this.guaranteePercentage,
+    this.guaranteeAmount,
+    this.guaranteeCurrency,
+    this.collateralValue,
+    this.collateralCurrency,
+    this.pondArea,
+    this.pondAreaUnit,
+    this.estimatedProductionKg,
+    this.estimatedProductionUnit,
+    this.estimatedRevenue,
+    this.estimatedRevenueCurrency,
+    this.estimatedProfit,
+    this.estimatedProfitCurrency,
+    this.debtServiceCoverageRatio,
+    this.loanToValueRatio,
+    this.riskScore,
+    this.riskLevel,
+    this.approvalRecommendation,
+    this.simulationData,
     this.calculationDetails,
-    this.isMaterialized,
+    this.riskAssessment,
+    this.monthlyPaymentSchedule,
+    this.isApproved,
     this.isSynced,
     this.simulationStatus,
+    this.approvedBy,
+    this.approvedDate,
+    this.rejectionReason,
+    this.languagePreference,
+    this.unitSystem,
+    this.displayWeightUnit,
+    this.displayAreaUnit,
+    this.displayCurrency,
+    this.simulationVersion,
     this.createdDate,
     this.lastUpdatedDate,
     this.syncedDate,
-    this.materializedDate,
     this.deletedDate,
     this.createdBy,
     this.lastUpdatedBy,
@@ -14563,8 +20957,120 @@ class Fms10AgentSimulation extends DataClass
     if (!nullToAbsent || deviceUuid != null) {
       map['device_uuid'] = Variable<String>(deviceUuid);
     }
-    if (!nullToAbsent || displayCurrency != null) {
-      map['display_currency'] = Variable<String>(displayCurrency);
+    if (!nullToAbsent || agentType != null) {
+      map['agent_type'] = Variable<String>(agentType);
+    }
+    if (!nullToAbsent || loanAmount != null) {
+      map['loan_amount'] = Variable<double>(loanAmount);
+    }
+    if (!nullToAbsent || loanCurrency != null) {
+      map['loan_currency'] = Variable<String>(loanCurrency);
+    }
+    if (!nullToAbsent || interestRatePercent != null) {
+      map['interest_rate_percent'] = Variable<double>(interestRatePercent);
+    }
+    if (!nullToAbsent || loanTermMonths != null) {
+      map['loan_term_months'] = Variable<int>(loanTermMonths);
+    }
+    if (!nullToAbsent || guaranteePercentage != null) {
+      map['guarantee_percentage'] = Variable<double>(guaranteePercentage);
+    }
+    if (!nullToAbsent || guaranteeAmount != null) {
+      map['guarantee_amount'] = Variable<double>(guaranteeAmount);
+    }
+    if (!nullToAbsent || guaranteeCurrency != null) {
+      map['guarantee_currency'] = Variable<String>(guaranteeCurrency);
+    }
+    if (!nullToAbsent || collateralValue != null) {
+      map['collateral_value'] = Variable<double>(collateralValue);
+    }
+    if (!nullToAbsent || collateralCurrency != null) {
+      map['collateral_currency'] = Variable<String>(collateralCurrency);
+    }
+    if (!nullToAbsent || pondArea != null) {
+      map['pond_area'] = Variable<double>(pondArea);
+    }
+    if (!nullToAbsent || pondAreaUnit != null) {
+      map['pond_area_unit'] = Variable<String>(pondAreaUnit);
+    }
+    if (!nullToAbsent || estimatedProductionKg != null) {
+      map['estimated_production_kg'] = Variable<double>(estimatedProductionKg);
+    }
+    if (!nullToAbsent || estimatedProductionUnit != null) {
+      map['estimated_production_unit'] = Variable<String>(
+        estimatedProductionUnit,
+      );
+    }
+    if (!nullToAbsent || estimatedRevenue != null) {
+      map['estimated_revenue'] = Variable<double>(estimatedRevenue);
+    }
+    if (!nullToAbsent || estimatedRevenueCurrency != null) {
+      map['estimated_revenue_currency'] = Variable<String>(
+        estimatedRevenueCurrency,
+      );
+    }
+    if (!nullToAbsent || estimatedProfit != null) {
+      map['estimated_profit'] = Variable<double>(estimatedProfit);
+    }
+    if (!nullToAbsent || estimatedProfitCurrency != null) {
+      map['estimated_profit_currency'] = Variable<String>(
+        estimatedProfitCurrency,
+      );
+    }
+    if (!nullToAbsent || debtServiceCoverageRatio != null) {
+      map['debt_service_coverage_ratio'] = Variable<double>(
+        debtServiceCoverageRatio,
+      );
+    }
+    if (!nullToAbsent || loanToValueRatio != null) {
+      map['loan_to_value_ratio'] = Variable<double>(loanToValueRatio);
+    }
+    if (!nullToAbsent || riskScore != null) {
+      map['risk_score'] = Variable<double>(riskScore);
+    }
+    if (!nullToAbsent || riskLevel != null) {
+      map['risk_level'] = Variable<String>(riskLevel);
+    }
+    if (!nullToAbsent || approvalRecommendation != null) {
+      map['approval_recommendation'] = Variable<String>(approvalRecommendation);
+    }
+    if (!nullToAbsent || simulationData != null) {
+      map['simulation_data'] = Variable<String>(simulationData);
+    }
+    if (!nullToAbsent || calculationDetails != null) {
+      map['calculation_details'] = Variable<String>(calculationDetails);
+    }
+    if (!nullToAbsent || riskAssessment != null) {
+      map['risk_assessment'] = Variable<String>(riskAssessment);
+    }
+    if (!nullToAbsent || monthlyPaymentSchedule != null) {
+      map['monthly_payment_schedule'] = Variable<String>(
+        monthlyPaymentSchedule,
+      );
+    }
+    if (!nullToAbsent || isApproved != null) {
+      map['is_approved'] = Variable<bool>(isApproved);
+    }
+    if (!nullToAbsent || isSynced != null) {
+      map['is_synced'] = Variable<bool>(isSynced);
+    }
+    if (!nullToAbsent || simulationStatus != null) {
+      map['simulation_status'] = Variable<String>(simulationStatus);
+    }
+    if (!nullToAbsent || approvedBy != null) {
+      map['approved_by'] = Variable<int>(approvedBy);
+    }
+    if (!nullToAbsent || approvedDate != null) {
+      map['approved_date'] = Variable<DateTime>(approvedDate);
+    }
+    if (!nullToAbsent || rejectionReason != null) {
+      map['rejection_reason'] = Variable<String>(rejectionReason);
+    }
+    if (!nullToAbsent || languagePreference != null) {
+      map['language_preference'] = Variable<String>(languagePreference);
+    }
+    if (!nullToAbsent || unitSystem != null) {
+      map['unit_system'] = Variable<String>(unitSystem);
     }
     if (!nullToAbsent || displayWeightUnit != null) {
       map['display_weight_unit'] = Variable<String>(displayWeightUnit);
@@ -14572,106 +21078,11 @@ class Fms10AgentSimulation extends DataClass
     if (!nullToAbsent || displayAreaUnit != null) {
       map['display_area_unit'] = Variable<String>(displayAreaUnit);
     }
-    if (!nullToAbsent || currentDoc != null) {
-      map['current_doc'] = Variable<int>(currentDoc);
+    if (!nullToAbsent || displayCurrency != null) {
+      map['display_currency'] = Variable<String>(displayCurrency);
     }
-    if (!nullToAbsent || currentBiomass != null) {
-      map['current_biomass'] = Variable<double>(currentBiomass);
-    }
-    if (!nullToAbsent || currentBiomassUnit != null) {
-      map['current_biomass_unit'] = Variable<String>(currentBiomassUnit);
-    }
-    if (!nullToAbsent || stockingCount != null) {
-      map['stocking_count'] = Variable<int>(stockingCount);
-    }
-    if (!nullToAbsent || targetSrPercent != null) {
-      map['target_sr_percent'] = Variable<double>(targetSrPercent);
-    }
-    if (!nullToAbsent || targetDoc != null) {
-      map['target_doc'] = Variable<int>(targetDoc);
-    }
-    if (!nullToAbsent || feedPayment != null) {
-      map['feed_payment'] = Variable<double>(feedPayment);
-    }
-    if (!nullToAbsent || feedPaymentCurrency != null) {
-      map['feed_payment_currency'] = Variable<String>(feedPaymentCurrency);
-    }
-    if (!nullToAbsent || harvestPrice != null) {
-      map['harvest_price'] = Variable<double>(harvestPrice);
-    }
-    if (!nullToAbsent || harvestPriceCurrency != null) {
-      map['harvest_price_currency'] = Variable<String>(harvestPriceCurrency);
-    }
-    if (!nullToAbsent || estimatedHarvest != null) {
-      map['estimated_harvest'] = Variable<double>(estimatedHarvest);
-    }
-    if (!nullToAbsent || estimatedHarvestUnit != null) {
-      map['estimated_harvest_unit'] = Variable<String>(estimatedHarvestUnit);
-    }
-    if (!nullToAbsent || estimatedFcr != null) {
-      map['estimated_fcr'] = Variable<double>(estimatedFcr);
-    }
-    if (!nullToAbsent || feedPrice != null) {
-      map['feed_price'] = Variable<double>(feedPrice);
-    }
-    if (!nullToAbsent || feedPriceCurrency != null) {
-      map['feed_price_currency'] = Variable<String>(feedPriceCurrency);
-    }
-    if (!nullToAbsent || harvestGuarantee != null) {
-      map['harvest_guarantee'] = Variable<double>(harvestGuarantee);
-    }
-    if (!nullToAbsent || harvestGuaranteeCurrency != null) {
-      map['harvest_guarantee_currency'] = Variable<String>(
-        harvestGuaranteeCurrency,
-      );
-    }
-    if (!nullToAbsent || ltvRatio != null) {
-      map['ltv_ratio'] = Variable<double>(ltvRatio);
-    }
-    if (!nullToAbsent || progress != null) {
-      map['progress'] = Variable<double>(progress);
-    }
-    if (!nullToAbsent || currentAbw != null) {
-      map['current_abw'] = Variable<double>(currentAbw);
-    }
-    if (!nullToAbsent || currentAbwUnit != null) {
-      map['current_abw_unit'] = Variable<String>(currentAbwUnit);
-    }
-    if (!nullToAbsent || harvestAbw != null) {
-      map['harvest_abw'] = Variable<double>(harvestAbw);
-    }
-    if (!nullToAbsent || harvestAbwUnit != null) {
-      map['harvest_abw_unit'] = Variable<String>(harvestAbwUnit);
-    }
-    if (!nullToAbsent || feedNeed != null) {
-      map['feed_need'] = Variable<double>(feedNeed);
-    }
-    if (!nullToAbsent || feedNeedUnit != null) {
-      map['feed_need_unit'] = Variable<String>(feedNeedUnit);
-    }
-    if (!nullToAbsent || feedCost != null) {
-      map['feed_cost'] = Variable<double>(feedCost);
-    }
-    if (!nullToAbsent || feedCostCurrency != null) {
-      map['feed_cost_currency'] = Variable<String>(feedCostCurrency);
-    }
-    if (!nullToAbsent || maxLoan != null) {
-      map['max_loan'] = Variable<double>(maxLoan);
-    }
-    if (!nullToAbsent || maxLoanCurrency != null) {
-      map['max_loan_currency'] = Variable<String>(maxLoanCurrency);
-    }
-    if (!nullToAbsent || calculationDetails != null) {
-      map['calculation_details'] = Variable<String>(calculationDetails);
-    }
-    if (!nullToAbsent || isMaterialized != null) {
-      map['is_materialized'] = Variable<bool>(isMaterialized);
-    }
-    if (!nullToAbsent || isSynced != null) {
-      map['is_synced'] = Variable<bool>(isSynced);
-    }
-    if (!nullToAbsent || simulationStatus != null) {
-      map['simulation_status'] = Variable<String>(simulationStatus);
+    if (!nullToAbsent || simulationVersion != null) {
+      map['simulation_version'] = Variable<String>(simulationVersion);
     }
     if (!nullToAbsent || createdDate != null) {
       map['created_date'] = Variable<DateTime>(createdDate);
@@ -14681,9 +21092,6 @@ class Fms10AgentSimulation extends DataClass
     }
     if (!nullToAbsent || syncedDate != null) {
       map['synced_date'] = Variable<DateTime>(syncedDate);
-    }
-    if (!nullToAbsent || materializedDate != null) {
-      map['materialized_date'] = Variable<DateTime>(materializedDate);
     }
     if (!nullToAbsent || deletedDate != null) {
       map['deleted_date'] = Variable<DateTime>(deletedDate);
@@ -14710,114 +21118,123 @@ class Fms10AgentSimulation extends DataClass
       deviceUuid: deviceUuid == null && nullToAbsent
           ? const Value.absent()
           : Value(deviceUuid),
-      displayCurrency: displayCurrency == null && nullToAbsent
+      agentType: agentType == null && nullToAbsent
           ? const Value.absent()
-          : Value(displayCurrency),
-      displayWeightUnit: displayWeightUnit == null && nullToAbsent
+          : Value(agentType),
+      loanAmount: loanAmount == null && nullToAbsent
           ? const Value.absent()
-          : Value(displayWeightUnit),
-      displayAreaUnit: displayAreaUnit == null && nullToAbsent
+          : Value(loanAmount),
+      loanCurrency: loanCurrency == null && nullToAbsent
           ? const Value.absent()
-          : Value(displayAreaUnit),
-      currentDoc: currentDoc == null && nullToAbsent
+          : Value(loanCurrency),
+      interestRatePercent: interestRatePercent == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentDoc),
-      currentBiomass: currentBiomass == null && nullToAbsent
+          : Value(interestRatePercent),
+      loanTermMonths: loanTermMonths == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentBiomass),
-      currentBiomassUnit: currentBiomassUnit == null && nullToAbsent
+          : Value(loanTermMonths),
+      guaranteePercentage: guaranteePercentage == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentBiomassUnit),
-      stockingCount: stockingCount == null && nullToAbsent
+          : Value(guaranteePercentage),
+      guaranteeAmount: guaranteeAmount == null && nullToAbsent
           ? const Value.absent()
-          : Value(stockingCount),
-      targetSrPercent: targetSrPercent == null && nullToAbsent
+          : Value(guaranteeAmount),
+      guaranteeCurrency: guaranteeCurrency == null && nullToAbsent
           ? const Value.absent()
-          : Value(targetSrPercent),
-      targetDoc: targetDoc == null && nullToAbsent
+          : Value(guaranteeCurrency),
+      collateralValue: collateralValue == null && nullToAbsent
           ? const Value.absent()
-          : Value(targetDoc),
-      feedPayment: feedPayment == null && nullToAbsent
+          : Value(collateralValue),
+      collateralCurrency: collateralCurrency == null && nullToAbsent
           ? const Value.absent()
-          : Value(feedPayment),
-      feedPaymentCurrency: feedPaymentCurrency == null && nullToAbsent
+          : Value(collateralCurrency),
+      pondArea: pondArea == null && nullToAbsent
           ? const Value.absent()
-          : Value(feedPaymentCurrency),
-      harvestPrice: harvestPrice == null && nullToAbsent
+          : Value(pondArea),
+      pondAreaUnit: pondAreaUnit == null && nullToAbsent
           ? const Value.absent()
-          : Value(harvestPrice),
-      harvestPriceCurrency: harvestPriceCurrency == null && nullToAbsent
+          : Value(pondAreaUnit),
+      estimatedProductionKg: estimatedProductionKg == null && nullToAbsent
           ? const Value.absent()
-          : Value(harvestPriceCurrency),
-      estimatedHarvest: estimatedHarvest == null && nullToAbsent
+          : Value(estimatedProductionKg),
+      estimatedProductionUnit: estimatedProductionUnit == null && nullToAbsent
           ? const Value.absent()
-          : Value(estimatedHarvest),
-      estimatedHarvestUnit: estimatedHarvestUnit == null && nullToAbsent
+          : Value(estimatedProductionUnit),
+      estimatedRevenue: estimatedRevenue == null && nullToAbsent
           ? const Value.absent()
-          : Value(estimatedHarvestUnit),
-      estimatedFcr: estimatedFcr == null && nullToAbsent
+          : Value(estimatedRevenue),
+      estimatedRevenueCurrency: estimatedRevenueCurrency == null && nullToAbsent
           ? const Value.absent()
-          : Value(estimatedFcr),
-      feedPrice: feedPrice == null && nullToAbsent
+          : Value(estimatedRevenueCurrency),
+      estimatedProfit: estimatedProfit == null && nullToAbsent
           ? const Value.absent()
-          : Value(feedPrice),
-      feedPriceCurrency: feedPriceCurrency == null && nullToAbsent
+          : Value(estimatedProfit),
+      estimatedProfitCurrency: estimatedProfitCurrency == null && nullToAbsent
           ? const Value.absent()
-          : Value(feedPriceCurrency),
-      harvestGuarantee: harvestGuarantee == null && nullToAbsent
+          : Value(estimatedProfitCurrency),
+      debtServiceCoverageRatio: debtServiceCoverageRatio == null && nullToAbsent
           ? const Value.absent()
-          : Value(harvestGuarantee),
-      harvestGuaranteeCurrency: harvestGuaranteeCurrency == null && nullToAbsent
+          : Value(debtServiceCoverageRatio),
+      loanToValueRatio: loanToValueRatio == null && nullToAbsent
           ? const Value.absent()
-          : Value(harvestGuaranteeCurrency),
-      ltvRatio: ltvRatio == null && nullToAbsent
+          : Value(loanToValueRatio),
+      riskScore: riskScore == null && nullToAbsent
           ? const Value.absent()
-          : Value(ltvRatio),
-      progress: progress == null && nullToAbsent
+          : Value(riskScore),
+      riskLevel: riskLevel == null && nullToAbsent
           ? const Value.absent()
-          : Value(progress),
-      currentAbw: currentAbw == null && nullToAbsent
+          : Value(riskLevel),
+      approvalRecommendation: approvalRecommendation == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentAbw),
-      currentAbwUnit: currentAbwUnit == null && nullToAbsent
+          : Value(approvalRecommendation),
+      simulationData: simulationData == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentAbwUnit),
-      harvestAbw: harvestAbw == null && nullToAbsent
-          ? const Value.absent()
-          : Value(harvestAbw),
-      harvestAbwUnit: harvestAbwUnit == null && nullToAbsent
-          ? const Value.absent()
-          : Value(harvestAbwUnit),
-      feedNeed: feedNeed == null && nullToAbsent
-          ? const Value.absent()
-          : Value(feedNeed),
-      feedNeedUnit: feedNeedUnit == null && nullToAbsent
-          ? const Value.absent()
-          : Value(feedNeedUnit),
-      feedCost: feedCost == null && nullToAbsent
-          ? const Value.absent()
-          : Value(feedCost),
-      feedCostCurrency: feedCostCurrency == null && nullToAbsent
-          ? const Value.absent()
-          : Value(feedCostCurrency),
-      maxLoan: maxLoan == null && nullToAbsent
-          ? const Value.absent()
-          : Value(maxLoan),
-      maxLoanCurrency: maxLoanCurrency == null && nullToAbsent
-          ? const Value.absent()
-          : Value(maxLoanCurrency),
+          : Value(simulationData),
       calculationDetails: calculationDetails == null && nullToAbsent
           ? const Value.absent()
           : Value(calculationDetails),
-      isMaterialized: isMaterialized == null && nullToAbsent
+      riskAssessment: riskAssessment == null && nullToAbsent
           ? const Value.absent()
-          : Value(isMaterialized),
+          : Value(riskAssessment),
+      monthlyPaymentSchedule: monthlyPaymentSchedule == null && nullToAbsent
+          ? const Value.absent()
+          : Value(monthlyPaymentSchedule),
+      isApproved: isApproved == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isApproved),
       isSynced: isSynced == null && nullToAbsent
           ? const Value.absent()
           : Value(isSynced),
       simulationStatus: simulationStatus == null && nullToAbsent
           ? const Value.absent()
           : Value(simulationStatus),
+      approvedBy: approvedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedBy),
+      approvedDate: approvedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedDate),
+      rejectionReason: rejectionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rejectionReason),
+      languagePreference: languagePreference == null && nullToAbsent
+          ? const Value.absent()
+          : Value(languagePreference),
+      unitSystem: unitSystem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(unitSystem),
+      displayWeightUnit: displayWeightUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(displayWeightUnit),
+      displayAreaUnit: displayAreaUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(displayAreaUnit),
+      displayCurrency: displayCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(displayCurrency),
+      simulationVersion: simulationVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(simulationVersion),
       createdDate: createdDate == null && nullToAbsent
           ? const Value.absent()
           : Value(createdDate),
@@ -14827,9 +21244,6 @@ class Fms10AgentSimulation extends DataClass
       syncedDate: syncedDate == null && nullToAbsent
           ? const Value.absent()
           : Value(syncedDate),
-      materializedDate: materializedDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(materializedDate),
       deletedDate: deletedDate == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedDate),
@@ -14855,64 +21269,78 @@ class Fms10AgentSimulation extends DataClass
       employeeId: serializer.fromJson<int>(json['employeeId']),
       pondId: serializer.fromJson<int?>(json['pondId']),
       deviceUuid: serializer.fromJson<String?>(json['deviceUuid']),
-      displayCurrency: serializer.fromJson<String?>(json['displayCurrency']),
+      agentType: serializer.fromJson<String?>(json['agentType']),
+      loanAmount: serializer.fromJson<double?>(json['loanAmount']),
+      loanCurrency: serializer.fromJson<String?>(json['loanCurrency']),
+      interestRatePercent: serializer.fromJson<double?>(
+        json['interestRatePercent'],
+      ),
+      loanTermMonths: serializer.fromJson<int?>(json['loanTermMonths']),
+      guaranteePercentage: serializer.fromJson<double?>(
+        json['guaranteePercentage'],
+      ),
+      guaranteeAmount: serializer.fromJson<double?>(json['guaranteeAmount']),
+      guaranteeCurrency: serializer.fromJson<String?>(
+        json['guaranteeCurrency'],
+      ),
+      collateralValue: serializer.fromJson<double?>(json['collateralValue']),
+      collateralCurrency: serializer.fromJson<String?>(
+        json['collateralCurrency'],
+      ),
+      pondArea: serializer.fromJson<double?>(json['pondArea']),
+      pondAreaUnit: serializer.fromJson<String?>(json['pondAreaUnit']),
+      estimatedProductionKg: serializer.fromJson<double?>(
+        json['estimatedProductionKg'],
+      ),
+      estimatedProductionUnit: serializer.fromJson<String?>(
+        json['estimatedProductionUnit'],
+      ),
+      estimatedRevenue: serializer.fromJson<double?>(json['estimatedRevenue']),
+      estimatedRevenueCurrency: serializer.fromJson<String?>(
+        json['estimatedRevenueCurrency'],
+      ),
+      estimatedProfit: serializer.fromJson<double?>(json['estimatedProfit']),
+      estimatedProfitCurrency: serializer.fromJson<String?>(
+        json['estimatedProfitCurrency'],
+      ),
+      debtServiceCoverageRatio: serializer.fromJson<double?>(
+        json['debtServiceCoverageRatio'],
+      ),
+      loanToValueRatio: serializer.fromJson<double?>(json['loanToValueRatio']),
+      riskScore: serializer.fromJson<double?>(json['riskScore']),
+      riskLevel: serializer.fromJson<String?>(json['riskLevel']),
+      approvalRecommendation: serializer.fromJson<String?>(
+        json['approvalRecommendation'],
+      ),
+      simulationData: serializer.fromJson<String?>(json['simulationData']),
+      calculationDetails: serializer.fromJson<String?>(
+        json['calculationDetails'],
+      ),
+      riskAssessment: serializer.fromJson<String?>(json['riskAssessment']),
+      monthlyPaymentSchedule: serializer.fromJson<String?>(
+        json['monthlyPaymentSchedule'],
+      ),
+      isApproved: serializer.fromJson<bool?>(json['isApproved']),
+      isSynced: serializer.fromJson<bool?>(json['isSynced']),
+      simulationStatus: serializer.fromJson<String?>(json['simulationStatus']),
+      approvedBy: serializer.fromJson<int?>(json['approvedBy']),
+      approvedDate: serializer.fromJson<DateTime?>(json['approvedDate']),
+      rejectionReason: serializer.fromJson<String?>(json['rejectionReason']),
+      languagePreference: serializer.fromJson<String?>(
+        json['languagePreference'],
+      ),
+      unitSystem: serializer.fromJson<String?>(json['unitSystem']),
       displayWeightUnit: serializer.fromJson<String?>(
         json['displayWeightUnit'],
       ),
       displayAreaUnit: serializer.fromJson<String?>(json['displayAreaUnit']),
-      currentDoc: serializer.fromJson<int?>(json['currentDoc']),
-      currentBiomass: serializer.fromJson<double?>(json['currentBiomass']),
-      currentBiomassUnit: serializer.fromJson<String?>(
-        json['currentBiomassUnit'],
+      displayCurrency: serializer.fromJson<String?>(json['displayCurrency']),
+      simulationVersion: serializer.fromJson<String?>(
+        json['simulationVersion'],
       ),
-      stockingCount: serializer.fromJson<int?>(json['stockingCount']),
-      targetSrPercent: serializer.fromJson<double?>(json['targetSrPercent']),
-      targetDoc: serializer.fromJson<int?>(json['targetDoc']),
-      feedPayment: serializer.fromJson<double?>(json['feedPayment']),
-      feedPaymentCurrency: serializer.fromJson<String?>(
-        json['feedPaymentCurrency'],
-      ),
-      harvestPrice: serializer.fromJson<double?>(json['harvestPrice']),
-      harvestPriceCurrency: serializer.fromJson<String?>(
-        json['harvestPriceCurrency'],
-      ),
-      estimatedHarvest: serializer.fromJson<double?>(json['estimatedHarvest']),
-      estimatedHarvestUnit: serializer.fromJson<String?>(
-        json['estimatedHarvestUnit'],
-      ),
-      estimatedFcr: serializer.fromJson<double?>(json['estimatedFcr']),
-      feedPrice: serializer.fromJson<double?>(json['feedPrice']),
-      feedPriceCurrency: serializer.fromJson<String?>(
-        json['feedPriceCurrency'],
-      ),
-      harvestGuarantee: serializer.fromJson<double?>(json['harvestGuarantee']),
-      harvestGuaranteeCurrency: serializer.fromJson<String?>(
-        json['harvestGuaranteeCurrency'],
-      ),
-      ltvRatio: serializer.fromJson<double?>(json['ltvRatio']),
-      progress: serializer.fromJson<double?>(json['progress']),
-      currentAbw: serializer.fromJson<double?>(json['currentAbw']),
-      currentAbwUnit: serializer.fromJson<String?>(json['currentAbwUnit']),
-      harvestAbw: serializer.fromJson<double?>(json['harvestAbw']),
-      harvestAbwUnit: serializer.fromJson<String?>(json['harvestAbwUnit']),
-      feedNeed: serializer.fromJson<double?>(json['feedNeed']),
-      feedNeedUnit: serializer.fromJson<String?>(json['feedNeedUnit']),
-      feedCost: serializer.fromJson<double?>(json['feedCost']),
-      feedCostCurrency: serializer.fromJson<String?>(json['feedCostCurrency']),
-      maxLoan: serializer.fromJson<double?>(json['maxLoan']),
-      maxLoanCurrency: serializer.fromJson<String?>(json['maxLoanCurrency']),
-      calculationDetails: serializer.fromJson<String?>(
-        json['calculationDetails'],
-      ),
-      isMaterialized: serializer.fromJson<bool?>(json['isMaterialized']),
-      isSynced: serializer.fromJson<bool?>(json['isSynced']),
-      simulationStatus: serializer.fromJson<String?>(json['simulationStatus']),
       createdDate: serializer.fromJson<DateTime?>(json['createdDate']),
       lastUpdatedDate: serializer.fromJson<DateTime?>(json['lastUpdatedDate']),
       syncedDate: serializer.fromJson<DateTime?>(json['syncedDate']),
-      materializedDate: serializer.fromJson<DateTime?>(
-        json['materializedDate'],
-      ),
       deletedDate: serializer.fromJson<DateTime?>(json['deletedDate']),
       createdBy: serializer.fromJson<int?>(json['createdBy']),
       lastUpdatedBy: serializer.fromJson<int?>(json['lastUpdatedBy']),
@@ -14929,48 +21357,62 @@ class Fms10AgentSimulation extends DataClass
       'employeeId': serializer.toJson<int>(employeeId),
       'pondId': serializer.toJson<int?>(pondId),
       'deviceUuid': serializer.toJson<String?>(deviceUuid),
-      'displayCurrency': serializer.toJson<String?>(displayCurrency),
-      'displayWeightUnit': serializer.toJson<String?>(displayWeightUnit),
-      'displayAreaUnit': serializer.toJson<String?>(displayAreaUnit),
-      'currentDoc': serializer.toJson<int?>(currentDoc),
-      'currentBiomass': serializer.toJson<double?>(currentBiomass),
-      'currentBiomassUnit': serializer.toJson<String?>(currentBiomassUnit),
-      'stockingCount': serializer.toJson<int?>(stockingCount),
-      'targetSrPercent': serializer.toJson<double?>(targetSrPercent),
-      'targetDoc': serializer.toJson<int?>(targetDoc),
-      'feedPayment': serializer.toJson<double?>(feedPayment),
-      'feedPaymentCurrency': serializer.toJson<String?>(feedPaymentCurrency),
-      'harvestPrice': serializer.toJson<double?>(harvestPrice),
-      'harvestPriceCurrency': serializer.toJson<String?>(harvestPriceCurrency),
-      'estimatedHarvest': serializer.toJson<double?>(estimatedHarvest),
-      'estimatedHarvestUnit': serializer.toJson<String?>(estimatedHarvestUnit),
-      'estimatedFcr': serializer.toJson<double?>(estimatedFcr),
-      'feedPrice': serializer.toJson<double?>(feedPrice),
-      'feedPriceCurrency': serializer.toJson<String?>(feedPriceCurrency),
-      'harvestGuarantee': serializer.toJson<double?>(harvestGuarantee),
-      'harvestGuaranteeCurrency': serializer.toJson<String?>(
-        harvestGuaranteeCurrency,
+      'agentType': serializer.toJson<String?>(agentType),
+      'loanAmount': serializer.toJson<double?>(loanAmount),
+      'loanCurrency': serializer.toJson<String?>(loanCurrency),
+      'interestRatePercent': serializer.toJson<double?>(interestRatePercent),
+      'loanTermMonths': serializer.toJson<int?>(loanTermMonths),
+      'guaranteePercentage': serializer.toJson<double?>(guaranteePercentage),
+      'guaranteeAmount': serializer.toJson<double?>(guaranteeAmount),
+      'guaranteeCurrency': serializer.toJson<String?>(guaranteeCurrency),
+      'collateralValue': serializer.toJson<double?>(collateralValue),
+      'collateralCurrency': serializer.toJson<String?>(collateralCurrency),
+      'pondArea': serializer.toJson<double?>(pondArea),
+      'pondAreaUnit': serializer.toJson<String?>(pondAreaUnit),
+      'estimatedProductionKg': serializer.toJson<double?>(
+        estimatedProductionKg,
       ),
-      'ltvRatio': serializer.toJson<double?>(ltvRatio),
-      'progress': serializer.toJson<double?>(progress),
-      'currentAbw': serializer.toJson<double?>(currentAbw),
-      'currentAbwUnit': serializer.toJson<String?>(currentAbwUnit),
-      'harvestAbw': serializer.toJson<double?>(harvestAbw),
-      'harvestAbwUnit': serializer.toJson<String?>(harvestAbwUnit),
-      'feedNeed': serializer.toJson<double?>(feedNeed),
-      'feedNeedUnit': serializer.toJson<String?>(feedNeedUnit),
-      'feedCost': serializer.toJson<double?>(feedCost),
-      'feedCostCurrency': serializer.toJson<String?>(feedCostCurrency),
-      'maxLoan': serializer.toJson<double?>(maxLoan),
-      'maxLoanCurrency': serializer.toJson<String?>(maxLoanCurrency),
+      'estimatedProductionUnit': serializer.toJson<String?>(
+        estimatedProductionUnit,
+      ),
+      'estimatedRevenue': serializer.toJson<double?>(estimatedRevenue),
+      'estimatedRevenueCurrency': serializer.toJson<String?>(
+        estimatedRevenueCurrency,
+      ),
+      'estimatedProfit': serializer.toJson<double?>(estimatedProfit),
+      'estimatedProfitCurrency': serializer.toJson<String?>(
+        estimatedProfitCurrency,
+      ),
+      'debtServiceCoverageRatio': serializer.toJson<double?>(
+        debtServiceCoverageRatio,
+      ),
+      'loanToValueRatio': serializer.toJson<double?>(loanToValueRatio),
+      'riskScore': serializer.toJson<double?>(riskScore),
+      'riskLevel': serializer.toJson<String?>(riskLevel),
+      'approvalRecommendation': serializer.toJson<String?>(
+        approvalRecommendation,
+      ),
+      'simulationData': serializer.toJson<String?>(simulationData),
       'calculationDetails': serializer.toJson<String?>(calculationDetails),
-      'isMaterialized': serializer.toJson<bool?>(isMaterialized),
+      'riskAssessment': serializer.toJson<String?>(riskAssessment),
+      'monthlyPaymentSchedule': serializer.toJson<String?>(
+        monthlyPaymentSchedule,
+      ),
+      'isApproved': serializer.toJson<bool?>(isApproved),
       'isSynced': serializer.toJson<bool?>(isSynced),
       'simulationStatus': serializer.toJson<String?>(simulationStatus),
+      'approvedBy': serializer.toJson<int?>(approvedBy),
+      'approvedDate': serializer.toJson<DateTime?>(approvedDate),
+      'rejectionReason': serializer.toJson<String?>(rejectionReason),
+      'languagePreference': serializer.toJson<String?>(languagePreference),
+      'unitSystem': serializer.toJson<String?>(unitSystem),
+      'displayWeightUnit': serializer.toJson<String?>(displayWeightUnit),
+      'displayAreaUnit': serializer.toJson<String?>(displayAreaUnit),
+      'displayCurrency': serializer.toJson<String?>(displayCurrency),
+      'simulationVersion': serializer.toJson<String?>(simulationVersion),
       'createdDate': serializer.toJson<DateTime?>(createdDate),
       'lastUpdatedDate': serializer.toJson<DateTime?>(lastUpdatedDate),
       'syncedDate': serializer.toJson<DateTime?>(syncedDate),
-      'materializedDate': serializer.toJson<DateTime?>(materializedDate),
       'deletedDate': serializer.toJson<DateTime?>(deletedDate),
       'createdBy': serializer.toJson<int?>(createdBy),
       'lastUpdatedBy': serializer.toJson<int?>(lastUpdatedBy),
@@ -14985,46 +21427,48 @@ class Fms10AgentSimulation extends DataClass
     int? employeeId,
     Value<int?> pondId = const Value.absent(),
     Value<String?> deviceUuid = const Value.absent(),
-    Value<String?> displayCurrency = const Value.absent(),
-    Value<String?> displayWeightUnit = const Value.absent(),
-    Value<String?> displayAreaUnit = const Value.absent(),
-    Value<int?> currentDoc = const Value.absent(),
-    Value<double?> currentBiomass = const Value.absent(),
-    Value<String?> currentBiomassUnit = const Value.absent(),
-    Value<int?> stockingCount = const Value.absent(),
-    Value<double?> targetSrPercent = const Value.absent(),
-    Value<int?> targetDoc = const Value.absent(),
-    Value<double?> feedPayment = const Value.absent(),
-    Value<String?> feedPaymentCurrency = const Value.absent(),
-    Value<double?> harvestPrice = const Value.absent(),
-    Value<String?> harvestPriceCurrency = const Value.absent(),
-    Value<double?> estimatedHarvest = const Value.absent(),
-    Value<String?> estimatedHarvestUnit = const Value.absent(),
-    Value<double?> estimatedFcr = const Value.absent(),
-    Value<double?> feedPrice = const Value.absent(),
-    Value<String?> feedPriceCurrency = const Value.absent(),
-    Value<double?> harvestGuarantee = const Value.absent(),
-    Value<String?> harvestGuaranteeCurrency = const Value.absent(),
-    Value<double?> ltvRatio = const Value.absent(),
-    Value<double?> progress = const Value.absent(),
-    Value<double?> currentAbw = const Value.absent(),
-    Value<String?> currentAbwUnit = const Value.absent(),
-    Value<double?> harvestAbw = const Value.absent(),
-    Value<String?> harvestAbwUnit = const Value.absent(),
-    Value<double?> feedNeed = const Value.absent(),
-    Value<String?> feedNeedUnit = const Value.absent(),
-    Value<double?> feedCost = const Value.absent(),
-    Value<String?> feedCostCurrency = const Value.absent(),
-    Value<double?> maxLoan = const Value.absent(),
-    Value<String?> maxLoanCurrency = const Value.absent(),
+    Value<String?> agentType = const Value.absent(),
+    Value<double?> loanAmount = const Value.absent(),
+    Value<String?> loanCurrency = const Value.absent(),
+    Value<double?> interestRatePercent = const Value.absent(),
+    Value<int?> loanTermMonths = const Value.absent(),
+    Value<double?> guaranteePercentage = const Value.absent(),
+    Value<double?> guaranteeAmount = const Value.absent(),
+    Value<String?> guaranteeCurrency = const Value.absent(),
+    Value<double?> collateralValue = const Value.absent(),
+    Value<String?> collateralCurrency = const Value.absent(),
+    Value<double?> pondArea = const Value.absent(),
+    Value<String?> pondAreaUnit = const Value.absent(),
+    Value<double?> estimatedProductionKg = const Value.absent(),
+    Value<String?> estimatedProductionUnit = const Value.absent(),
+    Value<double?> estimatedRevenue = const Value.absent(),
+    Value<String?> estimatedRevenueCurrency = const Value.absent(),
+    Value<double?> estimatedProfit = const Value.absent(),
+    Value<String?> estimatedProfitCurrency = const Value.absent(),
+    Value<double?> debtServiceCoverageRatio = const Value.absent(),
+    Value<double?> loanToValueRatio = const Value.absent(),
+    Value<double?> riskScore = const Value.absent(),
+    Value<String?> riskLevel = const Value.absent(),
+    Value<String?> approvalRecommendation = const Value.absent(),
+    Value<String?> simulationData = const Value.absent(),
     Value<String?> calculationDetails = const Value.absent(),
-    Value<bool?> isMaterialized = const Value.absent(),
+    Value<String?> riskAssessment = const Value.absent(),
+    Value<String?> monthlyPaymentSchedule = const Value.absent(),
+    Value<bool?> isApproved = const Value.absent(),
     Value<bool?> isSynced = const Value.absent(),
     Value<String?> simulationStatus = const Value.absent(),
+    Value<int?> approvedBy = const Value.absent(),
+    Value<DateTime?> approvedDate = const Value.absent(),
+    Value<String?> rejectionReason = const Value.absent(),
+    Value<String?> languagePreference = const Value.absent(),
+    Value<String?> unitSystem = const Value.absent(),
+    Value<String?> displayWeightUnit = const Value.absent(),
+    Value<String?> displayAreaUnit = const Value.absent(),
+    Value<String?> displayCurrency = const Value.absent(),
+    Value<String?> simulationVersion = const Value.absent(),
     Value<DateTime?> createdDate = const Value.absent(),
     Value<DateTime?> lastUpdatedDate = const Value.absent(),
     Value<DateTime?> syncedDate = const Value.absent(),
-    Value<DateTime?> materializedDate = const Value.absent(),
     Value<DateTime?> deletedDate = const Value.absent(),
     Value<int?> createdBy = const Value.absent(),
     Value<int?> lastUpdatedBy = const Value.absent(),
@@ -15036,92 +21480,104 @@ class Fms10AgentSimulation extends DataClass
     employeeId: employeeId ?? this.employeeId,
     pondId: pondId.present ? pondId.value : this.pondId,
     deviceUuid: deviceUuid.present ? deviceUuid.value : this.deviceUuid,
-    displayCurrency: displayCurrency.present
-        ? displayCurrency.value
-        : this.displayCurrency,
+    agentType: agentType.present ? agentType.value : this.agentType,
+    loanAmount: loanAmount.present ? loanAmount.value : this.loanAmount,
+    loanCurrency: loanCurrency.present ? loanCurrency.value : this.loanCurrency,
+    interestRatePercent: interestRatePercent.present
+        ? interestRatePercent.value
+        : this.interestRatePercent,
+    loanTermMonths: loanTermMonths.present
+        ? loanTermMonths.value
+        : this.loanTermMonths,
+    guaranteePercentage: guaranteePercentage.present
+        ? guaranteePercentage.value
+        : this.guaranteePercentage,
+    guaranteeAmount: guaranteeAmount.present
+        ? guaranteeAmount.value
+        : this.guaranteeAmount,
+    guaranteeCurrency: guaranteeCurrency.present
+        ? guaranteeCurrency.value
+        : this.guaranteeCurrency,
+    collateralValue: collateralValue.present
+        ? collateralValue.value
+        : this.collateralValue,
+    collateralCurrency: collateralCurrency.present
+        ? collateralCurrency.value
+        : this.collateralCurrency,
+    pondArea: pondArea.present ? pondArea.value : this.pondArea,
+    pondAreaUnit: pondAreaUnit.present ? pondAreaUnit.value : this.pondAreaUnit,
+    estimatedProductionKg: estimatedProductionKg.present
+        ? estimatedProductionKg.value
+        : this.estimatedProductionKg,
+    estimatedProductionUnit: estimatedProductionUnit.present
+        ? estimatedProductionUnit.value
+        : this.estimatedProductionUnit,
+    estimatedRevenue: estimatedRevenue.present
+        ? estimatedRevenue.value
+        : this.estimatedRevenue,
+    estimatedRevenueCurrency: estimatedRevenueCurrency.present
+        ? estimatedRevenueCurrency.value
+        : this.estimatedRevenueCurrency,
+    estimatedProfit: estimatedProfit.present
+        ? estimatedProfit.value
+        : this.estimatedProfit,
+    estimatedProfitCurrency: estimatedProfitCurrency.present
+        ? estimatedProfitCurrency.value
+        : this.estimatedProfitCurrency,
+    debtServiceCoverageRatio: debtServiceCoverageRatio.present
+        ? debtServiceCoverageRatio.value
+        : this.debtServiceCoverageRatio,
+    loanToValueRatio: loanToValueRatio.present
+        ? loanToValueRatio.value
+        : this.loanToValueRatio,
+    riskScore: riskScore.present ? riskScore.value : this.riskScore,
+    riskLevel: riskLevel.present ? riskLevel.value : this.riskLevel,
+    approvalRecommendation: approvalRecommendation.present
+        ? approvalRecommendation.value
+        : this.approvalRecommendation,
+    simulationData: simulationData.present
+        ? simulationData.value
+        : this.simulationData,
+    calculationDetails: calculationDetails.present
+        ? calculationDetails.value
+        : this.calculationDetails,
+    riskAssessment: riskAssessment.present
+        ? riskAssessment.value
+        : this.riskAssessment,
+    monthlyPaymentSchedule: monthlyPaymentSchedule.present
+        ? monthlyPaymentSchedule.value
+        : this.monthlyPaymentSchedule,
+    isApproved: isApproved.present ? isApproved.value : this.isApproved,
+    isSynced: isSynced.present ? isSynced.value : this.isSynced,
+    simulationStatus: simulationStatus.present
+        ? simulationStatus.value
+        : this.simulationStatus,
+    approvedBy: approvedBy.present ? approvedBy.value : this.approvedBy,
+    approvedDate: approvedDate.present ? approvedDate.value : this.approvedDate,
+    rejectionReason: rejectionReason.present
+        ? rejectionReason.value
+        : this.rejectionReason,
+    languagePreference: languagePreference.present
+        ? languagePreference.value
+        : this.languagePreference,
+    unitSystem: unitSystem.present ? unitSystem.value : this.unitSystem,
     displayWeightUnit: displayWeightUnit.present
         ? displayWeightUnit.value
         : this.displayWeightUnit,
     displayAreaUnit: displayAreaUnit.present
         ? displayAreaUnit.value
         : this.displayAreaUnit,
-    currentDoc: currentDoc.present ? currentDoc.value : this.currentDoc,
-    currentBiomass: currentBiomass.present
-        ? currentBiomass.value
-        : this.currentBiomass,
-    currentBiomassUnit: currentBiomassUnit.present
-        ? currentBiomassUnit.value
-        : this.currentBiomassUnit,
-    stockingCount: stockingCount.present
-        ? stockingCount.value
-        : this.stockingCount,
-    targetSrPercent: targetSrPercent.present
-        ? targetSrPercent.value
-        : this.targetSrPercent,
-    targetDoc: targetDoc.present ? targetDoc.value : this.targetDoc,
-    feedPayment: feedPayment.present ? feedPayment.value : this.feedPayment,
-    feedPaymentCurrency: feedPaymentCurrency.present
-        ? feedPaymentCurrency.value
-        : this.feedPaymentCurrency,
-    harvestPrice: harvestPrice.present ? harvestPrice.value : this.harvestPrice,
-    harvestPriceCurrency: harvestPriceCurrency.present
-        ? harvestPriceCurrency.value
-        : this.harvestPriceCurrency,
-    estimatedHarvest: estimatedHarvest.present
-        ? estimatedHarvest.value
-        : this.estimatedHarvest,
-    estimatedHarvestUnit: estimatedHarvestUnit.present
-        ? estimatedHarvestUnit.value
-        : this.estimatedHarvestUnit,
-    estimatedFcr: estimatedFcr.present ? estimatedFcr.value : this.estimatedFcr,
-    feedPrice: feedPrice.present ? feedPrice.value : this.feedPrice,
-    feedPriceCurrency: feedPriceCurrency.present
-        ? feedPriceCurrency.value
-        : this.feedPriceCurrency,
-    harvestGuarantee: harvestGuarantee.present
-        ? harvestGuarantee.value
-        : this.harvestGuarantee,
-    harvestGuaranteeCurrency: harvestGuaranteeCurrency.present
-        ? harvestGuaranteeCurrency.value
-        : this.harvestGuaranteeCurrency,
-    ltvRatio: ltvRatio.present ? ltvRatio.value : this.ltvRatio,
-    progress: progress.present ? progress.value : this.progress,
-    currentAbw: currentAbw.present ? currentAbw.value : this.currentAbw,
-    currentAbwUnit: currentAbwUnit.present
-        ? currentAbwUnit.value
-        : this.currentAbwUnit,
-    harvestAbw: harvestAbw.present ? harvestAbw.value : this.harvestAbw,
-    harvestAbwUnit: harvestAbwUnit.present
-        ? harvestAbwUnit.value
-        : this.harvestAbwUnit,
-    feedNeed: feedNeed.present ? feedNeed.value : this.feedNeed,
-    feedNeedUnit: feedNeedUnit.present ? feedNeedUnit.value : this.feedNeedUnit,
-    feedCost: feedCost.present ? feedCost.value : this.feedCost,
-    feedCostCurrency: feedCostCurrency.present
-        ? feedCostCurrency.value
-        : this.feedCostCurrency,
-    maxLoan: maxLoan.present ? maxLoan.value : this.maxLoan,
-    maxLoanCurrency: maxLoanCurrency.present
-        ? maxLoanCurrency.value
-        : this.maxLoanCurrency,
-    calculationDetails: calculationDetails.present
-        ? calculationDetails.value
-        : this.calculationDetails,
-    isMaterialized: isMaterialized.present
-        ? isMaterialized.value
-        : this.isMaterialized,
-    isSynced: isSynced.present ? isSynced.value : this.isSynced,
-    simulationStatus: simulationStatus.present
-        ? simulationStatus.value
-        : this.simulationStatus,
+    displayCurrency: displayCurrency.present
+        ? displayCurrency.value
+        : this.displayCurrency,
+    simulationVersion: simulationVersion.present
+        ? simulationVersion.value
+        : this.simulationVersion,
     createdDate: createdDate.present ? createdDate.value : this.createdDate,
     lastUpdatedDate: lastUpdatedDate.present
         ? lastUpdatedDate.value
         : this.lastUpdatedDate,
     syncedDate: syncedDate.present ? syncedDate.value : this.syncedDate,
-    materializedDate: materializedDate.present
-        ? materializedDate.value
-        : this.materializedDate,
     deletedDate: deletedDate.present ? deletedDate.value : this.deletedDate,
     createdBy: createdBy.present ? createdBy.value : this.createdBy,
     lastUpdatedBy: lastUpdatedBy.present
@@ -15149,98 +21605,113 @@ class Fms10AgentSimulation extends DataClass
       deviceUuid: data.deviceUuid.present
           ? data.deviceUuid.value
           : this.deviceUuid,
-      displayCurrency: data.displayCurrency.present
-          ? data.displayCurrency.value
-          : this.displayCurrency,
+      agentType: data.agentType.present ? data.agentType.value : this.agentType,
+      loanAmount: data.loanAmount.present
+          ? data.loanAmount.value
+          : this.loanAmount,
+      loanCurrency: data.loanCurrency.present
+          ? data.loanCurrency.value
+          : this.loanCurrency,
+      interestRatePercent: data.interestRatePercent.present
+          ? data.interestRatePercent.value
+          : this.interestRatePercent,
+      loanTermMonths: data.loanTermMonths.present
+          ? data.loanTermMonths.value
+          : this.loanTermMonths,
+      guaranteePercentage: data.guaranteePercentage.present
+          ? data.guaranteePercentage.value
+          : this.guaranteePercentage,
+      guaranteeAmount: data.guaranteeAmount.present
+          ? data.guaranteeAmount.value
+          : this.guaranteeAmount,
+      guaranteeCurrency: data.guaranteeCurrency.present
+          ? data.guaranteeCurrency.value
+          : this.guaranteeCurrency,
+      collateralValue: data.collateralValue.present
+          ? data.collateralValue.value
+          : this.collateralValue,
+      collateralCurrency: data.collateralCurrency.present
+          ? data.collateralCurrency.value
+          : this.collateralCurrency,
+      pondArea: data.pondArea.present ? data.pondArea.value : this.pondArea,
+      pondAreaUnit: data.pondAreaUnit.present
+          ? data.pondAreaUnit.value
+          : this.pondAreaUnit,
+      estimatedProductionKg: data.estimatedProductionKg.present
+          ? data.estimatedProductionKg.value
+          : this.estimatedProductionKg,
+      estimatedProductionUnit: data.estimatedProductionUnit.present
+          ? data.estimatedProductionUnit.value
+          : this.estimatedProductionUnit,
+      estimatedRevenue: data.estimatedRevenue.present
+          ? data.estimatedRevenue.value
+          : this.estimatedRevenue,
+      estimatedRevenueCurrency: data.estimatedRevenueCurrency.present
+          ? data.estimatedRevenueCurrency.value
+          : this.estimatedRevenueCurrency,
+      estimatedProfit: data.estimatedProfit.present
+          ? data.estimatedProfit.value
+          : this.estimatedProfit,
+      estimatedProfitCurrency: data.estimatedProfitCurrency.present
+          ? data.estimatedProfitCurrency.value
+          : this.estimatedProfitCurrency,
+      debtServiceCoverageRatio: data.debtServiceCoverageRatio.present
+          ? data.debtServiceCoverageRatio.value
+          : this.debtServiceCoverageRatio,
+      loanToValueRatio: data.loanToValueRatio.present
+          ? data.loanToValueRatio.value
+          : this.loanToValueRatio,
+      riskScore: data.riskScore.present ? data.riskScore.value : this.riskScore,
+      riskLevel: data.riskLevel.present ? data.riskLevel.value : this.riskLevel,
+      approvalRecommendation: data.approvalRecommendation.present
+          ? data.approvalRecommendation.value
+          : this.approvalRecommendation,
+      simulationData: data.simulationData.present
+          ? data.simulationData.value
+          : this.simulationData,
+      calculationDetails: data.calculationDetails.present
+          ? data.calculationDetails.value
+          : this.calculationDetails,
+      riskAssessment: data.riskAssessment.present
+          ? data.riskAssessment.value
+          : this.riskAssessment,
+      monthlyPaymentSchedule: data.monthlyPaymentSchedule.present
+          ? data.monthlyPaymentSchedule.value
+          : this.monthlyPaymentSchedule,
+      isApproved: data.isApproved.present
+          ? data.isApproved.value
+          : this.isApproved,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      simulationStatus: data.simulationStatus.present
+          ? data.simulationStatus.value
+          : this.simulationStatus,
+      approvedBy: data.approvedBy.present
+          ? data.approvedBy.value
+          : this.approvedBy,
+      approvedDate: data.approvedDate.present
+          ? data.approvedDate.value
+          : this.approvedDate,
+      rejectionReason: data.rejectionReason.present
+          ? data.rejectionReason.value
+          : this.rejectionReason,
+      languagePreference: data.languagePreference.present
+          ? data.languagePreference.value
+          : this.languagePreference,
+      unitSystem: data.unitSystem.present
+          ? data.unitSystem.value
+          : this.unitSystem,
       displayWeightUnit: data.displayWeightUnit.present
           ? data.displayWeightUnit.value
           : this.displayWeightUnit,
       displayAreaUnit: data.displayAreaUnit.present
           ? data.displayAreaUnit.value
           : this.displayAreaUnit,
-      currentDoc: data.currentDoc.present
-          ? data.currentDoc.value
-          : this.currentDoc,
-      currentBiomass: data.currentBiomass.present
-          ? data.currentBiomass.value
-          : this.currentBiomass,
-      currentBiomassUnit: data.currentBiomassUnit.present
-          ? data.currentBiomassUnit.value
-          : this.currentBiomassUnit,
-      stockingCount: data.stockingCount.present
-          ? data.stockingCount.value
-          : this.stockingCount,
-      targetSrPercent: data.targetSrPercent.present
-          ? data.targetSrPercent.value
-          : this.targetSrPercent,
-      targetDoc: data.targetDoc.present ? data.targetDoc.value : this.targetDoc,
-      feedPayment: data.feedPayment.present
-          ? data.feedPayment.value
-          : this.feedPayment,
-      feedPaymentCurrency: data.feedPaymentCurrency.present
-          ? data.feedPaymentCurrency.value
-          : this.feedPaymentCurrency,
-      harvestPrice: data.harvestPrice.present
-          ? data.harvestPrice.value
-          : this.harvestPrice,
-      harvestPriceCurrency: data.harvestPriceCurrency.present
-          ? data.harvestPriceCurrency.value
-          : this.harvestPriceCurrency,
-      estimatedHarvest: data.estimatedHarvest.present
-          ? data.estimatedHarvest.value
-          : this.estimatedHarvest,
-      estimatedHarvestUnit: data.estimatedHarvestUnit.present
-          ? data.estimatedHarvestUnit.value
-          : this.estimatedHarvestUnit,
-      estimatedFcr: data.estimatedFcr.present
-          ? data.estimatedFcr.value
-          : this.estimatedFcr,
-      feedPrice: data.feedPrice.present ? data.feedPrice.value : this.feedPrice,
-      feedPriceCurrency: data.feedPriceCurrency.present
-          ? data.feedPriceCurrency.value
-          : this.feedPriceCurrency,
-      harvestGuarantee: data.harvestGuarantee.present
-          ? data.harvestGuarantee.value
-          : this.harvestGuarantee,
-      harvestGuaranteeCurrency: data.harvestGuaranteeCurrency.present
-          ? data.harvestGuaranteeCurrency.value
-          : this.harvestGuaranteeCurrency,
-      ltvRatio: data.ltvRatio.present ? data.ltvRatio.value : this.ltvRatio,
-      progress: data.progress.present ? data.progress.value : this.progress,
-      currentAbw: data.currentAbw.present
-          ? data.currentAbw.value
-          : this.currentAbw,
-      currentAbwUnit: data.currentAbwUnit.present
-          ? data.currentAbwUnit.value
-          : this.currentAbwUnit,
-      harvestAbw: data.harvestAbw.present
-          ? data.harvestAbw.value
-          : this.harvestAbw,
-      harvestAbwUnit: data.harvestAbwUnit.present
-          ? data.harvestAbwUnit.value
-          : this.harvestAbwUnit,
-      feedNeed: data.feedNeed.present ? data.feedNeed.value : this.feedNeed,
-      feedNeedUnit: data.feedNeedUnit.present
-          ? data.feedNeedUnit.value
-          : this.feedNeedUnit,
-      feedCost: data.feedCost.present ? data.feedCost.value : this.feedCost,
-      feedCostCurrency: data.feedCostCurrency.present
-          ? data.feedCostCurrency.value
-          : this.feedCostCurrency,
-      maxLoan: data.maxLoan.present ? data.maxLoan.value : this.maxLoan,
-      maxLoanCurrency: data.maxLoanCurrency.present
-          ? data.maxLoanCurrency.value
-          : this.maxLoanCurrency,
-      calculationDetails: data.calculationDetails.present
-          ? data.calculationDetails.value
-          : this.calculationDetails,
-      isMaterialized: data.isMaterialized.present
-          ? data.isMaterialized.value
-          : this.isMaterialized,
-      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
-      simulationStatus: data.simulationStatus.present
-          ? data.simulationStatus.value
-          : this.simulationStatus,
+      displayCurrency: data.displayCurrency.present
+          ? data.displayCurrency.value
+          : this.displayCurrency,
+      simulationVersion: data.simulationVersion.present
+          ? data.simulationVersion.value
+          : this.simulationVersion,
       createdDate: data.createdDate.present
           ? data.createdDate.value
           : this.createdDate,
@@ -15250,9 +21721,6 @@ class Fms10AgentSimulation extends DataClass
       syncedDate: data.syncedDate.present
           ? data.syncedDate.value
           : this.syncedDate,
-      materializedDate: data.materializedDate.present
-          ? data.materializedDate.value
-          : this.materializedDate,
       deletedDate: data.deletedDate.present
           ? data.deletedDate.value
           : this.deletedDate,
@@ -15273,46 +21741,48 @@ class Fms10AgentSimulation extends DataClass
           ..write('employeeId: $employeeId, ')
           ..write('pondId: $pondId, ')
           ..write('deviceUuid: $deviceUuid, ')
-          ..write('displayCurrency: $displayCurrency, ')
-          ..write('displayWeightUnit: $displayWeightUnit, ')
-          ..write('displayAreaUnit: $displayAreaUnit, ')
-          ..write('currentDoc: $currentDoc, ')
-          ..write('currentBiomass: $currentBiomass, ')
-          ..write('currentBiomassUnit: $currentBiomassUnit, ')
-          ..write('stockingCount: $stockingCount, ')
-          ..write('targetSrPercent: $targetSrPercent, ')
-          ..write('targetDoc: $targetDoc, ')
-          ..write('feedPayment: $feedPayment, ')
-          ..write('feedPaymentCurrency: $feedPaymentCurrency, ')
-          ..write('harvestPrice: $harvestPrice, ')
-          ..write('harvestPriceCurrency: $harvestPriceCurrency, ')
-          ..write('estimatedHarvest: $estimatedHarvest, ')
-          ..write('estimatedHarvestUnit: $estimatedHarvestUnit, ')
-          ..write('estimatedFcr: $estimatedFcr, ')
-          ..write('feedPrice: $feedPrice, ')
-          ..write('feedPriceCurrency: $feedPriceCurrency, ')
-          ..write('harvestGuarantee: $harvestGuarantee, ')
-          ..write('harvestGuaranteeCurrency: $harvestGuaranteeCurrency, ')
-          ..write('ltvRatio: $ltvRatio, ')
-          ..write('progress: $progress, ')
-          ..write('currentAbw: $currentAbw, ')
-          ..write('currentAbwUnit: $currentAbwUnit, ')
-          ..write('harvestAbw: $harvestAbw, ')
-          ..write('harvestAbwUnit: $harvestAbwUnit, ')
-          ..write('feedNeed: $feedNeed, ')
-          ..write('feedNeedUnit: $feedNeedUnit, ')
-          ..write('feedCost: $feedCost, ')
-          ..write('feedCostCurrency: $feedCostCurrency, ')
-          ..write('maxLoan: $maxLoan, ')
-          ..write('maxLoanCurrency: $maxLoanCurrency, ')
+          ..write('agentType: $agentType, ')
+          ..write('loanAmount: $loanAmount, ')
+          ..write('loanCurrency: $loanCurrency, ')
+          ..write('interestRatePercent: $interestRatePercent, ')
+          ..write('loanTermMonths: $loanTermMonths, ')
+          ..write('guaranteePercentage: $guaranteePercentage, ')
+          ..write('guaranteeAmount: $guaranteeAmount, ')
+          ..write('guaranteeCurrency: $guaranteeCurrency, ')
+          ..write('collateralValue: $collateralValue, ')
+          ..write('collateralCurrency: $collateralCurrency, ')
+          ..write('pondArea: $pondArea, ')
+          ..write('pondAreaUnit: $pondAreaUnit, ')
+          ..write('estimatedProductionKg: $estimatedProductionKg, ')
+          ..write('estimatedProductionUnit: $estimatedProductionUnit, ')
+          ..write('estimatedRevenue: $estimatedRevenue, ')
+          ..write('estimatedRevenueCurrency: $estimatedRevenueCurrency, ')
+          ..write('estimatedProfit: $estimatedProfit, ')
+          ..write('estimatedProfitCurrency: $estimatedProfitCurrency, ')
+          ..write('debtServiceCoverageRatio: $debtServiceCoverageRatio, ')
+          ..write('loanToValueRatio: $loanToValueRatio, ')
+          ..write('riskScore: $riskScore, ')
+          ..write('riskLevel: $riskLevel, ')
+          ..write('approvalRecommendation: $approvalRecommendation, ')
+          ..write('simulationData: $simulationData, ')
           ..write('calculationDetails: $calculationDetails, ')
-          ..write('isMaterialized: $isMaterialized, ')
+          ..write('riskAssessment: $riskAssessment, ')
+          ..write('monthlyPaymentSchedule: $monthlyPaymentSchedule, ')
+          ..write('isApproved: $isApproved, ')
           ..write('isSynced: $isSynced, ')
           ..write('simulationStatus: $simulationStatus, ')
+          ..write('approvedBy: $approvedBy, ')
+          ..write('approvedDate: $approvedDate, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('languagePreference: $languagePreference, ')
+          ..write('unitSystem: $unitSystem, ')
+          ..write('displayWeightUnit: $displayWeightUnit, ')
+          ..write('displayAreaUnit: $displayAreaUnit, ')
+          ..write('displayCurrency: $displayCurrency, ')
+          ..write('simulationVersion: $simulationVersion, ')
           ..write('createdDate: $createdDate, ')
           ..write('lastUpdatedDate: $lastUpdatedDate, ')
           ..write('syncedDate: $syncedDate, ')
-          ..write('materializedDate: $materializedDate, ')
           ..write('deletedDate: $deletedDate, ')
           ..write('createdBy: $createdBy, ')
           ..write('lastUpdatedBy: $lastUpdatedBy')
@@ -15329,46 +21799,48 @@ class Fms10AgentSimulation extends DataClass
     employeeId,
     pondId,
     deviceUuid,
-    displayCurrency,
-    displayWeightUnit,
-    displayAreaUnit,
-    currentDoc,
-    currentBiomass,
-    currentBiomassUnit,
-    stockingCount,
-    targetSrPercent,
-    targetDoc,
-    feedPayment,
-    feedPaymentCurrency,
-    harvestPrice,
-    harvestPriceCurrency,
-    estimatedHarvest,
-    estimatedHarvestUnit,
-    estimatedFcr,
-    feedPrice,
-    feedPriceCurrency,
-    harvestGuarantee,
-    harvestGuaranteeCurrency,
-    ltvRatio,
-    progress,
-    currentAbw,
-    currentAbwUnit,
-    harvestAbw,
-    harvestAbwUnit,
-    feedNeed,
-    feedNeedUnit,
-    feedCost,
-    feedCostCurrency,
-    maxLoan,
-    maxLoanCurrency,
+    agentType,
+    loanAmount,
+    loanCurrency,
+    interestRatePercent,
+    loanTermMonths,
+    guaranteePercentage,
+    guaranteeAmount,
+    guaranteeCurrency,
+    collateralValue,
+    collateralCurrency,
+    pondArea,
+    pondAreaUnit,
+    estimatedProductionKg,
+    estimatedProductionUnit,
+    estimatedRevenue,
+    estimatedRevenueCurrency,
+    estimatedProfit,
+    estimatedProfitCurrency,
+    debtServiceCoverageRatio,
+    loanToValueRatio,
+    riskScore,
+    riskLevel,
+    approvalRecommendation,
+    simulationData,
     calculationDetails,
-    isMaterialized,
+    riskAssessment,
+    monthlyPaymentSchedule,
+    isApproved,
     isSynced,
     simulationStatus,
+    approvedBy,
+    approvedDate,
+    rejectionReason,
+    languagePreference,
+    unitSystem,
+    displayWeightUnit,
+    displayAreaUnit,
+    displayCurrency,
+    simulationVersion,
     createdDate,
     lastUpdatedDate,
     syncedDate,
-    materializedDate,
     deletedDate,
     createdBy,
     lastUpdatedBy,
@@ -15384,46 +21856,48 @@ class Fms10AgentSimulation extends DataClass
           other.employeeId == this.employeeId &&
           other.pondId == this.pondId &&
           other.deviceUuid == this.deviceUuid &&
-          other.displayCurrency == this.displayCurrency &&
-          other.displayWeightUnit == this.displayWeightUnit &&
-          other.displayAreaUnit == this.displayAreaUnit &&
-          other.currentDoc == this.currentDoc &&
-          other.currentBiomass == this.currentBiomass &&
-          other.currentBiomassUnit == this.currentBiomassUnit &&
-          other.stockingCount == this.stockingCount &&
-          other.targetSrPercent == this.targetSrPercent &&
-          other.targetDoc == this.targetDoc &&
-          other.feedPayment == this.feedPayment &&
-          other.feedPaymentCurrency == this.feedPaymentCurrency &&
-          other.harvestPrice == this.harvestPrice &&
-          other.harvestPriceCurrency == this.harvestPriceCurrency &&
-          other.estimatedHarvest == this.estimatedHarvest &&
-          other.estimatedHarvestUnit == this.estimatedHarvestUnit &&
-          other.estimatedFcr == this.estimatedFcr &&
-          other.feedPrice == this.feedPrice &&
-          other.feedPriceCurrency == this.feedPriceCurrency &&
-          other.harvestGuarantee == this.harvestGuarantee &&
-          other.harvestGuaranteeCurrency == this.harvestGuaranteeCurrency &&
-          other.ltvRatio == this.ltvRatio &&
-          other.progress == this.progress &&
-          other.currentAbw == this.currentAbw &&
-          other.currentAbwUnit == this.currentAbwUnit &&
-          other.harvestAbw == this.harvestAbw &&
-          other.harvestAbwUnit == this.harvestAbwUnit &&
-          other.feedNeed == this.feedNeed &&
-          other.feedNeedUnit == this.feedNeedUnit &&
-          other.feedCost == this.feedCost &&
-          other.feedCostCurrency == this.feedCostCurrency &&
-          other.maxLoan == this.maxLoan &&
-          other.maxLoanCurrency == this.maxLoanCurrency &&
+          other.agentType == this.agentType &&
+          other.loanAmount == this.loanAmount &&
+          other.loanCurrency == this.loanCurrency &&
+          other.interestRatePercent == this.interestRatePercent &&
+          other.loanTermMonths == this.loanTermMonths &&
+          other.guaranteePercentage == this.guaranteePercentage &&
+          other.guaranteeAmount == this.guaranteeAmount &&
+          other.guaranteeCurrency == this.guaranteeCurrency &&
+          other.collateralValue == this.collateralValue &&
+          other.collateralCurrency == this.collateralCurrency &&
+          other.pondArea == this.pondArea &&
+          other.pondAreaUnit == this.pondAreaUnit &&
+          other.estimatedProductionKg == this.estimatedProductionKg &&
+          other.estimatedProductionUnit == this.estimatedProductionUnit &&
+          other.estimatedRevenue == this.estimatedRevenue &&
+          other.estimatedRevenueCurrency == this.estimatedRevenueCurrency &&
+          other.estimatedProfit == this.estimatedProfit &&
+          other.estimatedProfitCurrency == this.estimatedProfitCurrency &&
+          other.debtServiceCoverageRatio == this.debtServiceCoverageRatio &&
+          other.loanToValueRatio == this.loanToValueRatio &&
+          other.riskScore == this.riskScore &&
+          other.riskLevel == this.riskLevel &&
+          other.approvalRecommendation == this.approvalRecommendation &&
+          other.simulationData == this.simulationData &&
           other.calculationDetails == this.calculationDetails &&
-          other.isMaterialized == this.isMaterialized &&
+          other.riskAssessment == this.riskAssessment &&
+          other.monthlyPaymentSchedule == this.monthlyPaymentSchedule &&
+          other.isApproved == this.isApproved &&
           other.isSynced == this.isSynced &&
           other.simulationStatus == this.simulationStatus &&
+          other.approvedBy == this.approvedBy &&
+          other.approvedDate == this.approvedDate &&
+          other.rejectionReason == this.rejectionReason &&
+          other.languagePreference == this.languagePreference &&
+          other.unitSystem == this.unitSystem &&
+          other.displayWeightUnit == this.displayWeightUnit &&
+          other.displayAreaUnit == this.displayAreaUnit &&
+          other.displayCurrency == this.displayCurrency &&
+          other.simulationVersion == this.simulationVersion &&
           other.createdDate == this.createdDate &&
           other.lastUpdatedDate == this.lastUpdatedDate &&
           other.syncedDate == this.syncedDate &&
-          other.materializedDate == this.materializedDate &&
           other.deletedDate == this.deletedDate &&
           other.createdBy == this.createdBy &&
           other.lastUpdatedBy == this.lastUpdatedBy);
@@ -15438,46 +21912,48 @@ class Fms10AgentSimulationsCompanion
   final Value<int> employeeId;
   final Value<int?> pondId;
   final Value<String?> deviceUuid;
-  final Value<String?> displayCurrency;
-  final Value<String?> displayWeightUnit;
-  final Value<String?> displayAreaUnit;
-  final Value<int?> currentDoc;
-  final Value<double?> currentBiomass;
-  final Value<String?> currentBiomassUnit;
-  final Value<int?> stockingCount;
-  final Value<double?> targetSrPercent;
-  final Value<int?> targetDoc;
-  final Value<double?> feedPayment;
-  final Value<String?> feedPaymentCurrency;
-  final Value<double?> harvestPrice;
-  final Value<String?> harvestPriceCurrency;
-  final Value<double?> estimatedHarvest;
-  final Value<String?> estimatedHarvestUnit;
-  final Value<double?> estimatedFcr;
-  final Value<double?> feedPrice;
-  final Value<String?> feedPriceCurrency;
-  final Value<double?> harvestGuarantee;
-  final Value<String?> harvestGuaranteeCurrency;
-  final Value<double?> ltvRatio;
-  final Value<double?> progress;
-  final Value<double?> currentAbw;
-  final Value<String?> currentAbwUnit;
-  final Value<double?> harvestAbw;
-  final Value<String?> harvestAbwUnit;
-  final Value<double?> feedNeed;
-  final Value<String?> feedNeedUnit;
-  final Value<double?> feedCost;
-  final Value<String?> feedCostCurrency;
-  final Value<double?> maxLoan;
-  final Value<String?> maxLoanCurrency;
+  final Value<String?> agentType;
+  final Value<double?> loanAmount;
+  final Value<String?> loanCurrency;
+  final Value<double?> interestRatePercent;
+  final Value<int?> loanTermMonths;
+  final Value<double?> guaranteePercentage;
+  final Value<double?> guaranteeAmount;
+  final Value<String?> guaranteeCurrency;
+  final Value<double?> collateralValue;
+  final Value<String?> collateralCurrency;
+  final Value<double?> pondArea;
+  final Value<String?> pondAreaUnit;
+  final Value<double?> estimatedProductionKg;
+  final Value<String?> estimatedProductionUnit;
+  final Value<double?> estimatedRevenue;
+  final Value<String?> estimatedRevenueCurrency;
+  final Value<double?> estimatedProfit;
+  final Value<String?> estimatedProfitCurrency;
+  final Value<double?> debtServiceCoverageRatio;
+  final Value<double?> loanToValueRatio;
+  final Value<double?> riskScore;
+  final Value<String?> riskLevel;
+  final Value<String?> approvalRecommendation;
+  final Value<String?> simulationData;
   final Value<String?> calculationDetails;
-  final Value<bool?> isMaterialized;
+  final Value<String?> riskAssessment;
+  final Value<String?> monthlyPaymentSchedule;
+  final Value<bool?> isApproved;
   final Value<bool?> isSynced;
   final Value<String?> simulationStatus;
+  final Value<int?> approvedBy;
+  final Value<DateTime?> approvedDate;
+  final Value<String?> rejectionReason;
+  final Value<String?> languagePreference;
+  final Value<String?> unitSystem;
+  final Value<String?> displayWeightUnit;
+  final Value<String?> displayAreaUnit;
+  final Value<String?> displayCurrency;
+  final Value<String?> simulationVersion;
   final Value<DateTime?> createdDate;
   final Value<DateTime?> lastUpdatedDate;
   final Value<DateTime?> syncedDate;
-  final Value<DateTime?> materializedDate;
   final Value<DateTime?> deletedDate;
   final Value<int?> createdBy;
   final Value<int?> lastUpdatedBy;
@@ -15489,103 +21965,106 @@ class Fms10AgentSimulationsCompanion
     this.employeeId = const Value.absent(),
     this.pondId = const Value.absent(),
     this.deviceUuid = const Value.absent(),
-    this.displayCurrency = const Value.absent(),
-    this.displayWeightUnit = const Value.absent(),
-    this.displayAreaUnit = const Value.absent(),
-    this.currentDoc = const Value.absent(),
-    this.currentBiomass = const Value.absent(),
-    this.currentBiomassUnit = const Value.absent(),
-    this.stockingCount = const Value.absent(),
-    this.targetSrPercent = const Value.absent(),
-    this.targetDoc = const Value.absent(),
-    this.feedPayment = const Value.absent(),
-    this.feedPaymentCurrency = const Value.absent(),
-    this.harvestPrice = const Value.absent(),
-    this.harvestPriceCurrency = const Value.absent(),
-    this.estimatedHarvest = const Value.absent(),
-    this.estimatedHarvestUnit = const Value.absent(),
-    this.estimatedFcr = const Value.absent(),
-    this.feedPrice = const Value.absent(),
-    this.feedPriceCurrency = const Value.absent(),
-    this.harvestGuarantee = const Value.absent(),
-    this.harvestGuaranteeCurrency = const Value.absent(),
-    this.ltvRatio = const Value.absent(),
-    this.progress = const Value.absent(),
-    this.currentAbw = const Value.absent(),
-    this.currentAbwUnit = const Value.absent(),
-    this.harvestAbw = const Value.absent(),
-    this.harvestAbwUnit = const Value.absent(),
-    this.feedNeed = const Value.absent(),
-    this.feedNeedUnit = const Value.absent(),
-    this.feedCost = const Value.absent(),
-    this.feedCostCurrency = const Value.absent(),
-    this.maxLoan = const Value.absent(),
-    this.maxLoanCurrency = const Value.absent(),
+    this.agentType = const Value.absent(),
+    this.loanAmount = const Value.absent(),
+    this.loanCurrency = const Value.absent(),
+    this.interestRatePercent = const Value.absent(),
+    this.loanTermMonths = const Value.absent(),
+    this.guaranteePercentage = const Value.absent(),
+    this.guaranteeAmount = const Value.absent(),
+    this.guaranteeCurrency = const Value.absent(),
+    this.collateralValue = const Value.absent(),
+    this.collateralCurrency = const Value.absent(),
+    this.pondArea = const Value.absent(),
+    this.pondAreaUnit = const Value.absent(),
+    this.estimatedProductionKg = const Value.absent(),
+    this.estimatedProductionUnit = const Value.absent(),
+    this.estimatedRevenue = const Value.absent(),
+    this.estimatedRevenueCurrency = const Value.absent(),
+    this.estimatedProfit = const Value.absent(),
+    this.estimatedProfitCurrency = const Value.absent(),
+    this.debtServiceCoverageRatio = const Value.absent(),
+    this.loanToValueRatio = const Value.absent(),
+    this.riskScore = const Value.absent(),
+    this.riskLevel = const Value.absent(),
+    this.approvalRecommendation = const Value.absent(),
+    this.simulationData = const Value.absent(),
     this.calculationDetails = const Value.absent(),
-    this.isMaterialized = const Value.absent(),
+    this.riskAssessment = const Value.absent(),
+    this.monthlyPaymentSchedule = const Value.absent(),
+    this.isApproved = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.simulationStatus = const Value.absent(),
+    this.approvedBy = const Value.absent(),
+    this.approvedDate = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.languagePreference = const Value.absent(),
+    this.unitSystem = const Value.absent(),
+    this.displayWeightUnit = const Value.absent(),
+    this.displayAreaUnit = const Value.absent(),
+    this.displayCurrency = const Value.absent(),
+    this.simulationVersion = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.lastUpdatedDate = const Value.absent(),
     this.syncedDate = const Value.absent(),
-    this.materializedDate = const Value.absent(),
     this.deletedDate = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.lastUpdatedBy = const Value.absent(),
   });
   Fms10AgentSimulationsCompanion.insert({
     this.simulationId = const Value.absent(),
-    required String simulationUuid,
+    this.simulationUuid = const Value.absent(),
     required String simulationCode,
     required String simulationName,
     required int employeeId,
     this.pondId = const Value.absent(),
     this.deviceUuid = const Value.absent(),
-    this.displayCurrency = const Value.absent(),
-    this.displayWeightUnit = const Value.absent(),
-    this.displayAreaUnit = const Value.absent(),
-    this.currentDoc = const Value.absent(),
-    this.currentBiomass = const Value.absent(),
-    this.currentBiomassUnit = const Value.absent(),
-    this.stockingCount = const Value.absent(),
-    this.targetSrPercent = const Value.absent(),
-    this.targetDoc = const Value.absent(),
-    this.feedPayment = const Value.absent(),
-    this.feedPaymentCurrency = const Value.absent(),
-    this.harvestPrice = const Value.absent(),
-    this.harvestPriceCurrency = const Value.absent(),
-    this.estimatedHarvest = const Value.absent(),
-    this.estimatedHarvestUnit = const Value.absent(),
-    this.estimatedFcr = const Value.absent(),
-    this.feedPrice = const Value.absent(),
-    this.feedPriceCurrency = const Value.absent(),
-    this.harvestGuarantee = const Value.absent(),
-    this.harvestGuaranteeCurrency = const Value.absent(),
-    this.ltvRatio = const Value.absent(),
-    this.progress = const Value.absent(),
-    this.currentAbw = const Value.absent(),
-    this.currentAbwUnit = const Value.absent(),
-    this.harvestAbw = const Value.absent(),
-    this.harvestAbwUnit = const Value.absent(),
-    this.feedNeed = const Value.absent(),
-    this.feedNeedUnit = const Value.absent(),
-    this.feedCost = const Value.absent(),
-    this.feedCostCurrency = const Value.absent(),
-    this.maxLoan = const Value.absent(),
-    this.maxLoanCurrency = const Value.absent(),
+    this.agentType = const Value.absent(),
+    this.loanAmount = const Value.absent(),
+    this.loanCurrency = const Value.absent(),
+    this.interestRatePercent = const Value.absent(),
+    this.loanTermMonths = const Value.absent(),
+    this.guaranteePercentage = const Value.absent(),
+    this.guaranteeAmount = const Value.absent(),
+    this.guaranteeCurrency = const Value.absent(),
+    this.collateralValue = const Value.absent(),
+    this.collateralCurrency = const Value.absent(),
+    this.pondArea = const Value.absent(),
+    this.pondAreaUnit = const Value.absent(),
+    this.estimatedProductionKg = const Value.absent(),
+    this.estimatedProductionUnit = const Value.absent(),
+    this.estimatedRevenue = const Value.absent(),
+    this.estimatedRevenueCurrency = const Value.absent(),
+    this.estimatedProfit = const Value.absent(),
+    this.estimatedProfitCurrency = const Value.absent(),
+    this.debtServiceCoverageRatio = const Value.absent(),
+    this.loanToValueRatio = const Value.absent(),
+    this.riskScore = const Value.absent(),
+    this.riskLevel = const Value.absent(),
+    this.approvalRecommendation = const Value.absent(),
+    this.simulationData = const Value.absent(),
     this.calculationDetails = const Value.absent(),
-    this.isMaterialized = const Value.absent(),
+    this.riskAssessment = const Value.absent(),
+    this.monthlyPaymentSchedule = const Value.absent(),
+    this.isApproved = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.simulationStatus = const Value.absent(),
+    this.approvedBy = const Value.absent(),
+    this.approvedDate = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.languagePreference = const Value.absent(),
+    this.unitSystem = const Value.absent(),
+    this.displayWeightUnit = const Value.absent(),
+    this.displayAreaUnit = const Value.absent(),
+    this.displayCurrency = const Value.absent(),
+    this.simulationVersion = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.lastUpdatedDate = const Value.absent(),
     this.syncedDate = const Value.absent(),
-    this.materializedDate = const Value.absent(),
     this.deletedDate = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.lastUpdatedBy = const Value.absent(),
-  }) : simulationUuid = Value(simulationUuid),
-       simulationCode = Value(simulationCode),
+  }) : simulationCode = Value(simulationCode),
        simulationName = Value(simulationName),
        employeeId = Value(employeeId);
   static Insertable<Fms10AgentSimulation> custom({
@@ -15596,46 +22075,48 @@ class Fms10AgentSimulationsCompanion
     Expression<int>? employeeId,
     Expression<int>? pondId,
     Expression<String>? deviceUuid,
-    Expression<String>? displayCurrency,
-    Expression<String>? displayWeightUnit,
-    Expression<String>? displayAreaUnit,
-    Expression<int>? currentDoc,
-    Expression<double>? currentBiomass,
-    Expression<String>? currentBiomassUnit,
-    Expression<int>? stockingCount,
-    Expression<double>? targetSrPercent,
-    Expression<int>? targetDoc,
-    Expression<double>? feedPayment,
-    Expression<String>? feedPaymentCurrency,
-    Expression<double>? harvestPrice,
-    Expression<String>? harvestPriceCurrency,
-    Expression<double>? estimatedHarvest,
-    Expression<String>? estimatedHarvestUnit,
-    Expression<double>? estimatedFcr,
-    Expression<double>? feedPrice,
-    Expression<String>? feedPriceCurrency,
-    Expression<double>? harvestGuarantee,
-    Expression<String>? harvestGuaranteeCurrency,
-    Expression<double>? ltvRatio,
-    Expression<double>? progress,
-    Expression<double>? currentAbw,
-    Expression<String>? currentAbwUnit,
-    Expression<double>? harvestAbw,
-    Expression<String>? harvestAbwUnit,
-    Expression<double>? feedNeed,
-    Expression<String>? feedNeedUnit,
-    Expression<double>? feedCost,
-    Expression<String>? feedCostCurrency,
-    Expression<double>? maxLoan,
-    Expression<String>? maxLoanCurrency,
+    Expression<String>? agentType,
+    Expression<double>? loanAmount,
+    Expression<String>? loanCurrency,
+    Expression<double>? interestRatePercent,
+    Expression<int>? loanTermMonths,
+    Expression<double>? guaranteePercentage,
+    Expression<double>? guaranteeAmount,
+    Expression<String>? guaranteeCurrency,
+    Expression<double>? collateralValue,
+    Expression<String>? collateralCurrency,
+    Expression<double>? pondArea,
+    Expression<String>? pondAreaUnit,
+    Expression<double>? estimatedProductionKg,
+    Expression<String>? estimatedProductionUnit,
+    Expression<double>? estimatedRevenue,
+    Expression<String>? estimatedRevenueCurrency,
+    Expression<double>? estimatedProfit,
+    Expression<String>? estimatedProfitCurrency,
+    Expression<double>? debtServiceCoverageRatio,
+    Expression<double>? loanToValueRatio,
+    Expression<double>? riskScore,
+    Expression<String>? riskLevel,
+    Expression<String>? approvalRecommendation,
+    Expression<String>? simulationData,
     Expression<String>? calculationDetails,
-    Expression<bool>? isMaterialized,
+    Expression<String>? riskAssessment,
+    Expression<String>? monthlyPaymentSchedule,
+    Expression<bool>? isApproved,
     Expression<bool>? isSynced,
     Expression<String>? simulationStatus,
+    Expression<int>? approvedBy,
+    Expression<DateTime>? approvedDate,
+    Expression<String>? rejectionReason,
+    Expression<String>? languagePreference,
+    Expression<String>? unitSystem,
+    Expression<String>? displayWeightUnit,
+    Expression<String>? displayAreaUnit,
+    Expression<String>? displayCurrency,
+    Expression<String>? simulationVersion,
     Expression<DateTime>? createdDate,
     Expression<DateTime>? lastUpdatedDate,
     Expression<DateTime>? syncedDate,
-    Expression<DateTime>? materializedDate,
     Expression<DateTime>? deletedDate,
     Expression<int>? createdBy,
     Expression<int>? lastUpdatedBy,
@@ -15648,51 +22129,57 @@ class Fms10AgentSimulationsCompanion
       if (employeeId != null) 'employee_id': employeeId,
       if (pondId != null) 'pond_id': pondId,
       if (deviceUuid != null) 'device_uuid': deviceUuid,
-      if (displayCurrency != null) 'display_currency': displayCurrency,
-      if (displayWeightUnit != null) 'display_weight_unit': displayWeightUnit,
-      if (displayAreaUnit != null) 'display_area_unit': displayAreaUnit,
-      if (currentDoc != null) 'current_doc': currentDoc,
-      if (currentBiomass != null) 'current_biomass': currentBiomass,
-      if (currentBiomassUnit != null)
-        'current_biomass_unit': currentBiomassUnit,
-      if (stockingCount != null) 'stocking_count': stockingCount,
-      if (targetSrPercent != null) 'target_sr_percent': targetSrPercent,
-      if (targetDoc != null) 'target_doc': targetDoc,
-      if (feedPayment != null) 'feed_payment': feedPayment,
-      if (feedPaymentCurrency != null)
-        'feed_payment_currency': feedPaymentCurrency,
-      if (harvestPrice != null) 'harvest_price': harvestPrice,
-      if (harvestPriceCurrency != null)
-        'harvest_price_currency': harvestPriceCurrency,
-      if (estimatedHarvest != null) 'estimated_harvest': estimatedHarvest,
-      if (estimatedHarvestUnit != null)
-        'estimated_harvest_unit': estimatedHarvestUnit,
-      if (estimatedFcr != null) 'estimated_fcr': estimatedFcr,
-      if (feedPrice != null) 'feed_price': feedPrice,
-      if (feedPriceCurrency != null) 'feed_price_currency': feedPriceCurrency,
-      if (harvestGuarantee != null) 'harvest_guarantee': harvestGuarantee,
-      if (harvestGuaranteeCurrency != null)
-        'harvest_guarantee_currency': harvestGuaranteeCurrency,
-      if (ltvRatio != null) 'ltv_ratio': ltvRatio,
-      if (progress != null) 'progress': progress,
-      if (currentAbw != null) 'current_abw': currentAbw,
-      if (currentAbwUnit != null) 'current_abw_unit': currentAbwUnit,
-      if (harvestAbw != null) 'harvest_abw': harvestAbw,
-      if (harvestAbwUnit != null) 'harvest_abw_unit': harvestAbwUnit,
-      if (feedNeed != null) 'feed_need': feedNeed,
-      if (feedNeedUnit != null) 'feed_need_unit': feedNeedUnit,
-      if (feedCost != null) 'feed_cost': feedCost,
-      if (feedCostCurrency != null) 'feed_cost_currency': feedCostCurrency,
-      if (maxLoan != null) 'max_loan': maxLoan,
-      if (maxLoanCurrency != null) 'max_loan_currency': maxLoanCurrency,
+      if (agentType != null) 'agent_type': agentType,
+      if (loanAmount != null) 'loan_amount': loanAmount,
+      if (loanCurrency != null) 'loan_currency': loanCurrency,
+      if (interestRatePercent != null)
+        'interest_rate_percent': interestRatePercent,
+      if (loanTermMonths != null) 'loan_term_months': loanTermMonths,
+      if (guaranteePercentage != null)
+        'guarantee_percentage': guaranteePercentage,
+      if (guaranteeAmount != null) 'guarantee_amount': guaranteeAmount,
+      if (guaranteeCurrency != null) 'guarantee_currency': guaranteeCurrency,
+      if (collateralValue != null) 'collateral_value': collateralValue,
+      if (collateralCurrency != null) 'collateral_currency': collateralCurrency,
+      if (pondArea != null) 'pond_area': pondArea,
+      if (pondAreaUnit != null) 'pond_area_unit': pondAreaUnit,
+      if (estimatedProductionKg != null)
+        'estimated_production_kg': estimatedProductionKg,
+      if (estimatedProductionUnit != null)
+        'estimated_production_unit': estimatedProductionUnit,
+      if (estimatedRevenue != null) 'estimated_revenue': estimatedRevenue,
+      if (estimatedRevenueCurrency != null)
+        'estimated_revenue_currency': estimatedRevenueCurrency,
+      if (estimatedProfit != null) 'estimated_profit': estimatedProfit,
+      if (estimatedProfitCurrency != null)
+        'estimated_profit_currency': estimatedProfitCurrency,
+      if (debtServiceCoverageRatio != null)
+        'debt_service_coverage_ratio': debtServiceCoverageRatio,
+      if (loanToValueRatio != null) 'loan_to_value_ratio': loanToValueRatio,
+      if (riskScore != null) 'risk_score': riskScore,
+      if (riskLevel != null) 'risk_level': riskLevel,
+      if (approvalRecommendation != null)
+        'approval_recommendation': approvalRecommendation,
+      if (simulationData != null) 'simulation_data': simulationData,
       if (calculationDetails != null) 'calculation_details': calculationDetails,
-      if (isMaterialized != null) 'is_materialized': isMaterialized,
+      if (riskAssessment != null) 'risk_assessment': riskAssessment,
+      if (monthlyPaymentSchedule != null)
+        'monthly_payment_schedule': monthlyPaymentSchedule,
+      if (isApproved != null) 'is_approved': isApproved,
       if (isSynced != null) 'is_synced': isSynced,
       if (simulationStatus != null) 'simulation_status': simulationStatus,
+      if (approvedBy != null) 'approved_by': approvedBy,
+      if (approvedDate != null) 'approved_date': approvedDate,
+      if (rejectionReason != null) 'rejection_reason': rejectionReason,
+      if (languagePreference != null) 'language_preference': languagePreference,
+      if (unitSystem != null) 'unit_system': unitSystem,
+      if (displayWeightUnit != null) 'display_weight_unit': displayWeightUnit,
+      if (displayAreaUnit != null) 'display_area_unit': displayAreaUnit,
+      if (displayCurrency != null) 'display_currency': displayCurrency,
+      if (simulationVersion != null) 'simulation_version': simulationVersion,
       if (createdDate != null) 'created_date': createdDate,
       if (lastUpdatedDate != null) 'last_updated_date': lastUpdatedDate,
       if (syncedDate != null) 'synced_date': syncedDate,
-      if (materializedDate != null) 'materialized_date': materializedDate,
       if (deletedDate != null) 'deleted_date': deletedDate,
       if (createdBy != null) 'created_by': createdBy,
       if (lastUpdatedBy != null) 'last_updated_by': lastUpdatedBy,
@@ -15707,46 +22194,48 @@ class Fms10AgentSimulationsCompanion
     Value<int>? employeeId,
     Value<int?>? pondId,
     Value<String?>? deviceUuid,
-    Value<String?>? displayCurrency,
-    Value<String?>? displayWeightUnit,
-    Value<String?>? displayAreaUnit,
-    Value<int?>? currentDoc,
-    Value<double?>? currentBiomass,
-    Value<String?>? currentBiomassUnit,
-    Value<int?>? stockingCount,
-    Value<double?>? targetSrPercent,
-    Value<int?>? targetDoc,
-    Value<double?>? feedPayment,
-    Value<String?>? feedPaymentCurrency,
-    Value<double?>? harvestPrice,
-    Value<String?>? harvestPriceCurrency,
-    Value<double?>? estimatedHarvest,
-    Value<String?>? estimatedHarvestUnit,
-    Value<double?>? estimatedFcr,
-    Value<double?>? feedPrice,
-    Value<String?>? feedPriceCurrency,
-    Value<double?>? harvestGuarantee,
-    Value<String?>? harvestGuaranteeCurrency,
-    Value<double?>? ltvRatio,
-    Value<double?>? progress,
-    Value<double?>? currentAbw,
-    Value<String?>? currentAbwUnit,
-    Value<double?>? harvestAbw,
-    Value<String?>? harvestAbwUnit,
-    Value<double?>? feedNeed,
-    Value<String?>? feedNeedUnit,
-    Value<double?>? feedCost,
-    Value<String?>? feedCostCurrency,
-    Value<double?>? maxLoan,
-    Value<String?>? maxLoanCurrency,
+    Value<String?>? agentType,
+    Value<double?>? loanAmount,
+    Value<String?>? loanCurrency,
+    Value<double?>? interestRatePercent,
+    Value<int?>? loanTermMonths,
+    Value<double?>? guaranteePercentage,
+    Value<double?>? guaranteeAmount,
+    Value<String?>? guaranteeCurrency,
+    Value<double?>? collateralValue,
+    Value<String?>? collateralCurrency,
+    Value<double?>? pondArea,
+    Value<String?>? pondAreaUnit,
+    Value<double?>? estimatedProductionKg,
+    Value<String?>? estimatedProductionUnit,
+    Value<double?>? estimatedRevenue,
+    Value<String?>? estimatedRevenueCurrency,
+    Value<double?>? estimatedProfit,
+    Value<String?>? estimatedProfitCurrency,
+    Value<double?>? debtServiceCoverageRatio,
+    Value<double?>? loanToValueRatio,
+    Value<double?>? riskScore,
+    Value<String?>? riskLevel,
+    Value<String?>? approvalRecommendation,
+    Value<String?>? simulationData,
     Value<String?>? calculationDetails,
-    Value<bool?>? isMaterialized,
+    Value<String?>? riskAssessment,
+    Value<String?>? monthlyPaymentSchedule,
+    Value<bool?>? isApproved,
     Value<bool?>? isSynced,
     Value<String?>? simulationStatus,
+    Value<int?>? approvedBy,
+    Value<DateTime?>? approvedDate,
+    Value<String?>? rejectionReason,
+    Value<String?>? languagePreference,
+    Value<String?>? unitSystem,
+    Value<String?>? displayWeightUnit,
+    Value<String?>? displayAreaUnit,
+    Value<String?>? displayCurrency,
+    Value<String?>? simulationVersion,
     Value<DateTime?>? createdDate,
     Value<DateTime?>? lastUpdatedDate,
     Value<DateTime?>? syncedDate,
-    Value<DateTime?>? materializedDate,
     Value<DateTime?>? deletedDate,
     Value<int?>? createdBy,
     Value<int?>? lastUpdatedBy,
@@ -15759,47 +22248,55 @@ class Fms10AgentSimulationsCompanion
       employeeId: employeeId ?? this.employeeId,
       pondId: pondId ?? this.pondId,
       deviceUuid: deviceUuid ?? this.deviceUuid,
-      displayCurrency: displayCurrency ?? this.displayCurrency,
-      displayWeightUnit: displayWeightUnit ?? this.displayWeightUnit,
-      displayAreaUnit: displayAreaUnit ?? this.displayAreaUnit,
-      currentDoc: currentDoc ?? this.currentDoc,
-      currentBiomass: currentBiomass ?? this.currentBiomass,
-      currentBiomassUnit: currentBiomassUnit ?? this.currentBiomassUnit,
-      stockingCount: stockingCount ?? this.stockingCount,
-      targetSrPercent: targetSrPercent ?? this.targetSrPercent,
-      targetDoc: targetDoc ?? this.targetDoc,
-      feedPayment: feedPayment ?? this.feedPayment,
-      feedPaymentCurrency: feedPaymentCurrency ?? this.feedPaymentCurrency,
-      harvestPrice: harvestPrice ?? this.harvestPrice,
-      harvestPriceCurrency: harvestPriceCurrency ?? this.harvestPriceCurrency,
-      estimatedHarvest: estimatedHarvest ?? this.estimatedHarvest,
-      estimatedHarvestUnit: estimatedHarvestUnit ?? this.estimatedHarvestUnit,
-      estimatedFcr: estimatedFcr ?? this.estimatedFcr,
-      feedPrice: feedPrice ?? this.feedPrice,
-      feedPriceCurrency: feedPriceCurrency ?? this.feedPriceCurrency,
-      harvestGuarantee: harvestGuarantee ?? this.harvestGuarantee,
-      harvestGuaranteeCurrency:
-          harvestGuaranteeCurrency ?? this.harvestGuaranteeCurrency,
-      ltvRatio: ltvRatio ?? this.ltvRatio,
-      progress: progress ?? this.progress,
-      currentAbw: currentAbw ?? this.currentAbw,
-      currentAbwUnit: currentAbwUnit ?? this.currentAbwUnit,
-      harvestAbw: harvestAbw ?? this.harvestAbw,
-      harvestAbwUnit: harvestAbwUnit ?? this.harvestAbwUnit,
-      feedNeed: feedNeed ?? this.feedNeed,
-      feedNeedUnit: feedNeedUnit ?? this.feedNeedUnit,
-      feedCost: feedCost ?? this.feedCost,
-      feedCostCurrency: feedCostCurrency ?? this.feedCostCurrency,
-      maxLoan: maxLoan ?? this.maxLoan,
-      maxLoanCurrency: maxLoanCurrency ?? this.maxLoanCurrency,
+      agentType: agentType ?? this.agentType,
+      loanAmount: loanAmount ?? this.loanAmount,
+      loanCurrency: loanCurrency ?? this.loanCurrency,
+      interestRatePercent: interestRatePercent ?? this.interestRatePercent,
+      loanTermMonths: loanTermMonths ?? this.loanTermMonths,
+      guaranteePercentage: guaranteePercentage ?? this.guaranteePercentage,
+      guaranteeAmount: guaranteeAmount ?? this.guaranteeAmount,
+      guaranteeCurrency: guaranteeCurrency ?? this.guaranteeCurrency,
+      collateralValue: collateralValue ?? this.collateralValue,
+      collateralCurrency: collateralCurrency ?? this.collateralCurrency,
+      pondArea: pondArea ?? this.pondArea,
+      pondAreaUnit: pondAreaUnit ?? this.pondAreaUnit,
+      estimatedProductionKg:
+          estimatedProductionKg ?? this.estimatedProductionKg,
+      estimatedProductionUnit:
+          estimatedProductionUnit ?? this.estimatedProductionUnit,
+      estimatedRevenue: estimatedRevenue ?? this.estimatedRevenue,
+      estimatedRevenueCurrency:
+          estimatedRevenueCurrency ?? this.estimatedRevenueCurrency,
+      estimatedProfit: estimatedProfit ?? this.estimatedProfit,
+      estimatedProfitCurrency:
+          estimatedProfitCurrency ?? this.estimatedProfitCurrency,
+      debtServiceCoverageRatio:
+          debtServiceCoverageRatio ?? this.debtServiceCoverageRatio,
+      loanToValueRatio: loanToValueRatio ?? this.loanToValueRatio,
+      riskScore: riskScore ?? this.riskScore,
+      riskLevel: riskLevel ?? this.riskLevel,
+      approvalRecommendation:
+          approvalRecommendation ?? this.approvalRecommendation,
+      simulationData: simulationData ?? this.simulationData,
       calculationDetails: calculationDetails ?? this.calculationDetails,
-      isMaterialized: isMaterialized ?? this.isMaterialized,
+      riskAssessment: riskAssessment ?? this.riskAssessment,
+      monthlyPaymentSchedule:
+          monthlyPaymentSchedule ?? this.monthlyPaymentSchedule,
+      isApproved: isApproved ?? this.isApproved,
       isSynced: isSynced ?? this.isSynced,
       simulationStatus: simulationStatus ?? this.simulationStatus,
+      approvedBy: approvedBy ?? this.approvedBy,
+      approvedDate: approvedDate ?? this.approvedDate,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      languagePreference: languagePreference ?? this.languagePreference,
+      unitSystem: unitSystem ?? this.unitSystem,
+      displayWeightUnit: displayWeightUnit ?? this.displayWeightUnit,
+      displayAreaUnit: displayAreaUnit ?? this.displayAreaUnit,
+      displayCurrency: displayCurrency ?? this.displayCurrency,
+      simulationVersion: simulationVersion ?? this.simulationVersion,
       createdDate: createdDate ?? this.createdDate,
       lastUpdatedDate: lastUpdatedDate ?? this.lastUpdatedDate,
       syncedDate: syncedDate ?? this.syncedDate,
-      materializedDate: materializedDate ?? this.materializedDate,
       deletedDate: deletedDate ?? this.deletedDate,
       createdBy: createdBy ?? this.createdBy,
       lastUpdatedBy: lastUpdatedBy ?? this.lastUpdatedBy,
@@ -15830,8 +22327,126 @@ class Fms10AgentSimulationsCompanion
     if (deviceUuid.present) {
       map['device_uuid'] = Variable<String>(deviceUuid.value);
     }
-    if (displayCurrency.present) {
-      map['display_currency'] = Variable<String>(displayCurrency.value);
+    if (agentType.present) {
+      map['agent_type'] = Variable<String>(agentType.value);
+    }
+    if (loanAmount.present) {
+      map['loan_amount'] = Variable<double>(loanAmount.value);
+    }
+    if (loanCurrency.present) {
+      map['loan_currency'] = Variable<String>(loanCurrency.value);
+    }
+    if (interestRatePercent.present) {
+      map['interest_rate_percent'] = Variable<double>(
+        interestRatePercent.value,
+      );
+    }
+    if (loanTermMonths.present) {
+      map['loan_term_months'] = Variable<int>(loanTermMonths.value);
+    }
+    if (guaranteePercentage.present) {
+      map['guarantee_percentage'] = Variable<double>(guaranteePercentage.value);
+    }
+    if (guaranteeAmount.present) {
+      map['guarantee_amount'] = Variable<double>(guaranteeAmount.value);
+    }
+    if (guaranteeCurrency.present) {
+      map['guarantee_currency'] = Variable<String>(guaranteeCurrency.value);
+    }
+    if (collateralValue.present) {
+      map['collateral_value'] = Variable<double>(collateralValue.value);
+    }
+    if (collateralCurrency.present) {
+      map['collateral_currency'] = Variable<String>(collateralCurrency.value);
+    }
+    if (pondArea.present) {
+      map['pond_area'] = Variable<double>(pondArea.value);
+    }
+    if (pondAreaUnit.present) {
+      map['pond_area_unit'] = Variable<String>(pondAreaUnit.value);
+    }
+    if (estimatedProductionKg.present) {
+      map['estimated_production_kg'] = Variable<double>(
+        estimatedProductionKg.value,
+      );
+    }
+    if (estimatedProductionUnit.present) {
+      map['estimated_production_unit'] = Variable<String>(
+        estimatedProductionUnit.value,
+      );
+    }
+    if (estimatedRevenue.present) {
+      map['estimated_revenue'] = Variable<double>(estimatedRevenue.value);
+    }
+    if (estimatedRevenueCurrency.present) {
+      map['estimated_revenue_currency'] = Variable<String>(
+        estimatedRevenueCurrency.value,
+      );
+    }
+    if (estimatedProfit.present) {
+      map['estimated_profit'] = Variable<double>(estimatedProfit.value);
+    }
+    if (estimatedProfitCurrency.present) {
+      map['estimated_profit_currency'] = Variable<String>(
+        estimatedProfitCurrency.value,
+      );
+    }
+    if (debtServiceCoverageRatio.present) {
+      map['debt_service_coverage_ratio'] = Variable<double>(
+        debtServiceCoverageRatio.value,
+      );
+    }
+    if (loanToValueRatio.present) {
+      map['loan_to_value_ratio'] = Variable<double>(loanToValueRatio.value);
+    }
+    if (riskScore.present) {
+      map['risk_score'] = Variable<double>(riskScore.value);
+    }
+    if (riskLevel.present) {
+      map['risk_level'] = Variable<String>(riskLevel.value);
+    }
+    if (approvalRecommendation.present) {
+      map['approval_recommendation'] = Variable<String>(
+        approvalRecommendation.value,
+      );
+    }
+    if (simulationData.present) {
+      map['simulation_data'] = Variable<String>(simulationData.value);
+    }
+    if (calculationDetails.present) {
+      map['calculation_details'] = Variable<String>(calculationDetails.value);
+    }
+    if (riskAssessment.present) {
+      map['risk_assessment'] = Variable<String>(riskAssessment.value);
+    }
+    if (monthlyPaymentSchedule.present) {
+      map['monthly_payment_schedule'] = Variable<String>(
+        monthlyPaymentSchedule.value,
+      );
+    }
+    if (isApproved.present) {
+      map['is_approved'] = Variable<bool>(isApproved.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (simulationStatus.present) {
+      map['simulation_status'] = Variable<String>(simulationStatus.value);
+    }
+    if (approvedBy.present) {
+      map['approved_by'] = Variable<int>(approvedBy.value);
+    }
+    if (approvedDate.present) {
+      map['approved_date'] = Variable<DateTime>(approvedDate.value);
+    }
+    if (rejectionReason.present) {
+      map['rejection_reason'] = Variable<String>(rejectionReason.value);
+    }
+    if (languagePreference.present) {
+      map['language_preference'] = Variable<String>(languagePreference.value);
+    }
+    if (unitSystem.present) {
+      map['unit_system'] = Variable<String>(unitSystem.value);
     }
     if (displayWeightUnit.present) {
       map['display_weight_unit'] = Variable<String>(displayWeightUnit.value);
@@ -15839,112 +22454,11 @@ class Fms10AgentSimulationsCompanion
     if (displayAreaUnit.present) {
       map['display_area_unit'] = Variable<String>(displayAreaUnit.value);
     }
-    if (currentDoc.present) {
-      map['current_doc'] = Variable<int>(currentDoc.value);
+    if (displayCurrency.present) {
+      map['display_currency'] = Variable<String>(displayCurrency.value);
     }
-    if (currentBiomass.present) {
-      map['current_biomass'] = Variable<double>(currentBiomass.value);
-    }
-    if (currentBiomassUnit.present) {
-      map['current_biomass_unit'] = Variable<String>(currentBiomassUnit.value);
-    }
-    if (stockingCount.present) {
-      map['stocking_count'] = Variable<int>(stockingCount.value);
-    }
-    if (targetSrPercent.present) {
-      map['target_sr_percent'] = Variable<double>(targetSrPercent.value);
-    }
-    if (targetDoc.present) {
-      map['target_doc'] = Variable<int>(targetDoc.value);
-    }
-    if (feedPayment.present) {
-      map['feed_payment'] = Variable<double>(feedPayment.value);
-    }
-    if (feedPaymentCurrency.present) {
-      map['feed_payment_currency'] = Variable<String>(
-        feedPaymentCurrency.value,
-      );
-    }
-    if (harvestPrice.present) {
-      map['harvest_price'] = Variable<double>(harvestPrice.value);
-    }
-    if (harvestPriceCurrency.present) {
-      map['harvest_price_currency'] = Variable<String>(
-        harvestPriceCurrency.value,
-      );
-    }
-    if (estimatedHarvest.present) {
-      map['estimated_harvest'] = Variable<double>(estimatedHarvest.value);
-    }
-    if (estimatedHarvestUnit.present) {
-      map['estimated_harvest_unit'] = Variable<String>(
-        estimatedHarvestUnit.value,
-      );
-    }
-    if (estimatedFcr.present) {
-      map['estimated_fcr'] = Variable<double>(estimatedFcr.value);
-    }
-    if (feedPrice.present) {
-      map['feed_price'] = Variable<double>(feedPrice.value);
-    }
-    if (feedPriceCurrency.present) {
-      map['feed_price_currency'] = Variable<String>(feedPriceCurrency.value);
-    }
-    if (harvestGuarantee.present) {
-      map['harvest_guarantee'] = Variable<double>(harvestGuarantee.value);
-    }
-    if (harvestGuaranteeCurrency.present) {
-      map['harvest_guarantee_currency'] = Variable<String>(
-        harvestGuaranteeCurrency.value,
-      );
-    }
-    if (ltvRatio.present) {
-      map['ltv_ratio'] = Variable<double>(ltvRatio.value);
-    }
-    if (progress.present) {
-      map['progress'] = Variable<double>(progress.value);
-    }
-    if (currentAbw.present) {
-      map['current_abw'] = Variable<double>(currentAbw.value);
-    }
-    if (currentAbwUnit.present) {
-      map['current_abw_unit'] = Variable<String>(currentAbwUnit.value);
-    }
-    if (harvestAbw.present) {
-      map['harvest_abw'] = Variable<double>(harvestAbw.value);
-    }
-    if (harvestAbwUnit.present) {
-      map['harvest_abw_unit'] = Variable<String>(harvestAbwUnit.value);
-    }
-    if (feedNeed.present) {
-      map['feed_need'] = Variable<double>(feedNeed.value);
-    }
-    if (feedNeedUnit.present) {
-      map['feed_need_unit'] = Variable<String>(feedNeedUnit.value);
-    }
-    if (feedCost.present) {
-      map['feed_cost'] = Variable<double>(feedCost.value);
-    }
-    if (feedCostCurrency.present) {
-      map['feed_cost_currency'] = Variable<String>(feedCostCurrency.value);
-    }
-    if (maxLoan.present) {
-      map['max_loan'] = Variable<double>(maxLoan.value);
-    }
-    if (maxLoanCurrency.present) {
-      map['max_loan_currency'] = Variable<String>(maxLoanCurrency.value);
-    }
-    if (calculationDetails.present) {
-      map['calculation_details'] = Variable<String>(calculationDetails.value);
-    }
-    if (isMaterialized.present) {
-      map['is_materialized'] = Variable<bool>(isMaterialized.value);
-    }
-    if (isSynced.present) {
-      map['is_synced'] = Variable<bool>(isSynced.value);
-    }
-    if (simulationStatus.present) {
-      map['simulation_status'] = Variable<String>(simulationStatus.value);
+    if (simulationVersion.present) {
+      map['simulation_version'] = Variable<String>(simulationVersion.value);
     }
     if (createdDate.present) {
       map['created_date'] = Variable<DateTime>(createdDate.value);
@@ -15954,9 +22468,6 @@ class Fms10AgentSimulationsCompanion
     }
     if (syncedDate.present) {
       map['synced_date'] = Variable<DateTime>(syncedDate.value);
-    }
-    if (materializedDate.present) {
-      map['materialized_date'] = Variable<DateTime>(materializedDate.value);
     }
     if (deletedDate.present) {
       map['deleted_date'] = Variable<DateTime>(deletedDate.value);
@@ -15980,46 +22491,48 @@ class Fms10AgentSimulationsCompanion
           ..write('employeeId: $employeeId, ')
           ..write('pondId: $pondId, ')
           ..write('deviceUuid: $deviceUuid, ')
-          ..write('displayCurrency: $displayCurrency, ')
-          ..write('displayWeightUnit: $displayWeightUnit, ')
-          ..write('displayAreaUnit: $displayAreaUnit, ')
-          ..write('currentDoc: $currentDoc, ')
-          ..write('currentBiomass: $currentBiomass, ')
-          ..write('currentBiomassUnit: $currentBiomassUnit, ')
-          ..write('stockingCount: $stockingCount, ')
-          ..write('targetSrPercent: $targetSrPercent, ')
-          ..write('targetDoc: $targetDoc, ')
-          ..write('feedPayment: $feedPayment, ')
-          ..write('feedPaymentCurrency: $feedPaymentCurrency, ')
-          ..write('harvestPrice: $harvestPrice, ')
-          ..write('harvestPriceCurrency: $harvestPriceCurrency, ')
-          ..write('estimatedHarvest: $estimatedHarvest, ')
-          ..write('estimatedHarvestUnit: $estimatedHarvestUnit, ')
-          ..write('estimatedFcr: $estimatedFcr, ')
-          ..write('feedPrice: $feedPrice, ')
-          ..write('feedPriceCurrency: $feedPriceCurrency, ')
-          ..write('harvestGuarantee: $harvestGuarantee, ')
-          ..write('harvestGuaranteeCurrency: $harvestGuaranteeCurrency, ')
-          ..write('ltvRatio: $ltvRatio, ')
-          ..write('progress: $progress, ')
-          ..write('currentAbw: $currentAbw, ')
-          ..write('currentAbwUnit: $currentAbwUnit, ')
-          ..write('harvestAbw: $harvestAbw, ')
-          ..write('harvestAbwUnit: $harvestAbwUnit, ')
-          ..write('feedNeed: $feedNeed, ')
-          ..write('feedNeedUnit: $feedNeedUnit, ')
-          ..write('feedCost: $feedCost, ')
-          ..write('feedCostCurrency: $feedCostCurrency, ')
-          ..write('maxLoan: $maxLoan, ')
-          ..write('maxLoanCurrency: $maxLoanCurrency, ')
+          ..write('agentType: $agentType, ')
+          ..write('loanAmount: $loanAmount, ')
+          ..write('loanCurrency: $loanCurrency, ')
+          ..write('interestRatePercent: $interestRatePercent, ')
+          ..write('loanTermMonths: $loanTermMonths, ')
+          ..write('guaranteePercentage: $guaranteePercentage, ')
+          ..write('guaranteeAmount: $guaranteeAmount, ')
+          ..write('guaranteeCurrency: $guaranteeCurrency, ')
+          ..write('collateralValue: $collateralValue, ')
+          ..write('collateralCurrency: $collateralCurrency, ')
+          ..write('pondArea: $pondArea, ')
+          ..write('pondAreaUnit: $pondAreaUnit, ')
+          ..write('estimatedProductionKg: $estimatedProductionKg, ')
+          ..write('estimatedProductionUnit: $estimatedProductionUnit, ')
+          ..write('estimatedRevenue: $estimatedRevenue, ')
+          ..write('estimatedRevenueCurrency: $estimatedRevenueCurrency, ')
+          ..write('estimatedProfit: $estimatedProfit, ')
+          ..write('estimatedProfitCurrency: $estimatedProfitCurrency, ')
+          ..write('debtServiceCoverageRatio: $debtServiceCoverageRatio, ')
+          ..write('loanToValueRatio: $loanToValueRatio, ')
+          ..write('riskScore: $riskScore, ')
+          ..write('riskLevel: $riskLevel, ')
+          ..write('approvalRecommendation: $approvalRecommendation, ')
+          ..write('simulationData: $simulationData, ')
           ..write('calculationDetails: $calculationDetails, ')
-          ..write('isMaterialized: $isMaterialized, ')
+          ..write('riskAssessment: $riskAssessment, ')
+          ..write('monthlyPaymentSchedule: $monthlyPaymentSchedule, ')
+          ..write('isApproved: $isApproved, ')
           ..write('isSynced: $isSynced, ')
           ..write('simulationStatus: $simulationStatus, ')
+          ..write('approvedBy: $approvedBy, ')
+          ..write('approvedDate: $approvedDate, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('languagePreference: $languagePreference, ')
+          ..write('unitSystem: $unitSystem, ')
+          ..write('displayWeightUnit: $displayWeightUnit, ')
+          ..write('displayAreaUnit: $displayAreaUnit, ')
+          ..write('displayCurrency: $displayCurrency, ')
+          ..write('simulationVersion: $simulationVersion, ')
           ..write('createdDate: $createdDate, ')
           ..write('lastUpdatedDate: $lastUpdatedDate, ')
           ..write('syncedDate: $syncedDate, ')
-          ..write('materializedDate: $materializedDate, ')
           ..write('deletedDate: $deletedDate, ')
           ..write('createdBy: $createdBy, ')
           ..write('lastUpdatedBy: $lastUpdatedBy')
@@ -19383,6 +25896,254 @@ class Fms10SyncConflictsCompanion extends UpdateCompanion<Fms10SyncConflict> {
   }
 }
 
+class $MigrationsTable extends Migrations
+    with TableInfo<$MigrationsTable, Migration> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MigrationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<int> timestamp = GeneratedColumn<int>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, timestamp, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'migrations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Migration> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Migration map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Migration(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $MigrationsTable createAlias(String alias) {
+    return $MigrationsTable(attachedDatabase, alias);
+  }
+}
+
+class Migration extends DataClass implements Insertable<Migration> {
+  final int id;
+  final int timestamp;
+  final String name;
+  const Migration({
+    required this.id,
+    required this.timestamp,
+    required this.name,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['timestamp'] = Variable<int>(timestamp);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  MigrationsCompanion toCompanion(bool nullToAbsent) {
+    return MigrationsCompanion(
+      id: Value(id),
+      timestamp: Value(timestamp),
+      name: Value(name),
+    );
+  }
+
+  factory Migration.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Migration(
+      id: serializer.fromJson<int>(json['id']),
+      timestamp: serializer.fromJson<int>(json['timestamp']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'timestamp': serializer.toJson<int>(timestamp),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  Migration copyWith({int? id, int? timestamp, String? name}) => Migration(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    name: name ?? this.name,
+  );
+  Migration copyWithCompanion(MigrationsCompanion data) {
+    return Migration(
+      id: data.id.present ? data.id.value : this.id,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Migration(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, timestamp, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Migration &&
+          other.id == this.id &&
+          other.timestamp == this.timestamp &&
+          other.name == this.name);
+}
+
+class MigrationsCompanion extends UpdateCompanion<Migration> {
+  final Value<int> id;
+  final Value<int> timestamp;
+  final Value<String> name;
+  const MigrationsCompanion({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  MigrationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int timestamp,
+    required String name,
+  }) : timestamp = Value(timestamp),
+       name = Value(name);
+  static Insertable<Migration> custom({
+    Expression<int>? id,
+    Expression<int>? timestamp,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (name != null) 'name': name,
+    });
+  }
+
+  MigrationsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? timestamp,
+    Value<String>? name,
+  }) {
+    return MigrationsCompanion(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<int>(timestamp.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MigrationsCompanion(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -19392,6 +26153,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FmsMtUnitsTable fmsMtUnits = $FmsMtUnitsTable(this);
   late final $FmsMtExchangeRatesTable fmsMtExchangeRates =
       $FmsMtExchangeRatesTable(this);
+  late final $FmsMtLabTestTypesTable fmsMtLabTestTypes =
+      $FmsMtLabTestTypesTable(this);
+  late final $FmsMtLabParametersTable fmsMtLabParameters =
+      $FmsMtLabParametersTable(this);
+  late final $FmsMtLabTypesTable fmsMtLabTypes = $FmsMtLabTypesTable(this);
+  late final $FmsMtSampleLabTypesTable fmsMtSampleLabTypes =
+      $FmsMtSampleLabTypesTable(this);
+  late final $Fms20LabRequestsTable fms20LabRequests = $Fms20LabRequestsTable(
+    this,
+  );
+  late final $Fms29LabRequestDetailsTable fms29LabRequestDetails =
+      $Fms29LabRequestDetailsTable(this);
+  late final $Fms09LabRequestHistoriesTable fms09LabRequestHistories =
+      $Fms09LabRequestHistoriesTable(this);
+  late final $Fms09LabRequestNotificationsTable fms09LabRequestNotifications =
+      $Fms09LabRequestNotificationsTable(this);
   late final $Fms10CapacityReferencesTable fms10CapacityReferences =
       $Fms10CapacityReferencesTable(this);
   late final $Fms10DevicesTable fms10Devices = $Fms10DevicesTable(this);
@@ -19402,6 +26179,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $Fms10SyncLogsTable fms10SyncLogs = $Fms10SyncLogsTable(this);
   late final $Fms10SyncConflictsTable fms10SyncConflicts =
       $Fms10SyncConflictsTable(this);
+  late final $MigrationsTable migrations = $MigrationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -19412,12 +26190,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     fmsMtPonds,
     fmsMtUnits,
     fmsMtExchangeRates,
+    fmsMtLabTestTypes,
+    fmsMtLabParameters,
+    fmsMtLabTypes,
+    fmsMtSampleLabTypes,
+    fms20LabRequests,
+    fms29LabRequestDetails,
+    fms09LabRequestHistories,
+    fms09LabRequestNotifications,
     fms10CapacityReferences,
     fms10Devices,
     fms10HarvestSimulations,
     fms10AgentSimulations,
     fms10SyncLogs,
     fms10SyncConflicts,
+    migrations,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -19434,6 +26221,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('fms_mt_farms', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'fms_mt_employees',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fms_mt_farms', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'fms_mt_employees',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fms_mt_ponds', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'fms_mt_employees',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fms_mt_ponds', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -19632,6 +26440,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'fms_mt_employees',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fms_10_agent_simulation', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'fms10_devices',
         limitUpdateKind: UpdateKind.delete,
       ),
@@ -19671,21 +26486,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$FmsMtEmployeesTableCreateCompanionBuilder =
     FmsMtEmployeesCompanion Function({
       Value<int> employeeId,
-      required String employeeUuid,
+      Value<String> employeeUuid,
       required String employeeCode,
       required String employeeName,
       Value<String?> username,
       Value<String?> hashedPassword,
       Value<String?> employeeRole,
       Value<String?> userAccessLevel,
-      Value<String?> employeeStatus,
+      Value<String> employeeStatus,
       Value<String?> email,
       Value<String?> phoneNumber,
       Value<String?> address,
       Value<DateTime?> hireDate,
       Value<int?> reportingTo,
       Value<String?> department,
-      Value<DateTime?> createdDate,
+      Value<DateTime> createdDate,
       Value<DateTime?> deletedDate,
     });
 typedef $$FmsMtEmployeesTableUpdateCompanionBuilder =
@@ -19698,14 +26513,14 @@ typedef $$FmsMtEmployeesTableUpdateCompanionBuilder =
       Value<String?> hashedPassword,
       Value<String?> employeeRole,
       Value<String?> userAccessLevel,
-      Value<String?> employeeStatus,
+      Value<String> employeeStatus,
       Value<String?> email,
       Value<String?> phoneNumber,
       Value<String?> address,
       Value<DateTime?> hireDate,
       Value<int?> reportingTo,
       Value<String?> department,
-      Value<DateTime?> createdDate,
+      Value<DateTime> createdDate,
       Value<DateTime?> deletedDate,
     });
 
@@ -19736,27 +26551,6 @@ final class $$FmsMtEmployeesTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$FmsMtFarmsTable, List<FmsMtFarm>>
-  _fmsMtFarmsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.fmsMtFarms,
-    aliasName: $_aliasNameGenerator(
-      db.fmsMtEmployees.employeeId,
-      db.fmsMtFarms.createdBy,
-    ),
-  );
-
-  $$FmsMtFarmsTableProcessedTableManager get fmsMtFarmsRefs {
-    final manager = $$FmsMtFarmsTableTableManager($_db, $_db.fmsMtFarms).filter(
-      (f) =>
-          f.createdBy.employeeId.sqlEquals($_itemColumn<int>('employee_id')!),
-    );
-
-    final cache = $_typedResult.readTableOrNull(_fmsMtFarmsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
@@ -19894,31 +26688,6 @@ class $$FmsMtEmployeesTableFilterComposer
           ),
     );
     return composer;
-  }
-
-  Expression<bool> fmsMtFarmsRefs(
-    Expression<bool> Function($$FmsMtFarmsTableFilterComposer f) f,
-  ) {
-    final $$FmsMtFarmsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.employeeId,
-      referencedTable: $db.fmsMtFarms,
-      getReferencedColumn: (t) => t.createdBy,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FmsMtFarmsTableFilterComposer(
-            $db: $db,
-            $table: $db.fmsMtFarms,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 
   Expression<bool> fms10SyncLogsRefs(
@@ -20164,31 +26933,6 @@ class $$FmsMtEmployeesTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> fmsMtFarmsRefs<T extends Object>(
-    Expression<T> Function($$FmsMtFarmsTableAnnotationComposer a) f,
-  ) {
-    final $$FmsMtFarmsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.employeeId,
-      referencedTable: $db.fmsMtFarms,
-      getReferencedColumn: (t) => t.createdBy,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FmsMtFarmsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.fmsMtFarms,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> fms10SyncLogsRefs<T extends Object>(
     Expression<T> Function($$Fms10SyncLogsTableAnnotationComposer a) f,
   ) {
@@ -20228,11 +26972,7 @@ class $$FmsMtEmployeesTableTableManager
           $$FmsMtEmployeesTableUpdateCompanionBuilder,
           (FmsMtEmployee, $$FmsMtEmployeesTableReferences),
           FmsMtEmployee,
-          PrefetchHooks Function({
-            bool reportingTo,
-            bool fmsMtFarmsRefs,
-            bool fms10SyncLogsRefs,
-          })
+          PrefetchHooks Function({bool reportingTo, bool fms10SyncLogsRefs})
         > {
   $$FmsMtEmployeesTableTableManager(
     _$AppDatabase db,
@@ -20257,14 +26997,14 @@ class $$FmsMtEmployeesTableTableManager
                 Value<String?> hashedPassword = const Value.absent(),
                 Value<String?> employeeRole = const Value.absent(),
                 Value<String?> userAccessLevel = const Value.absent(),
-                Value<String?> employeeStatus = const Value.absent(),
+                Value<String> employeeStatus = const Value.absent(),
                 Value<String?> email = const Value.absent(),
                 Value<String?> phoneNumber = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 Value<DateTime?> hireDate = const Value.absent(),
                 Value<int?> reportingTo = const Value.absent(),
                 Value<String?> department = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
               }) => FmsMtEmployeesCompanion(
                 employeeId: employeeId,
@@ -20288,21 +27028,21 @@ class $$FmsMtEmployeesTableTableManager
           createCompanionCallback:
               ({
                 Value<int> employeeId = const Value.absent(),
-                required String employeeUuid,
+                Value<String> employeeUuid = const Value.absent(),
                 required String employeeCode,
                 required String employeeName,
                 Value<String?> username = const Value.absent(),
                 Value<String?> hashedPassword = const Value.absent(),
                 Value<String?> employeeRole = const Value.absent(),
                 Value<String?> userAccessLevel = const Value.absent(),
-                Value<String?> employeeStatus = const Value.absent(),
+                Value<String> employeeStatus = const Value.absent(),
                 Value<String?> email = const Value.absent(),
                 Value<String?> phoneNumber = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 Value<DateTime?> hireDate = const Value.absent(),
                 Value<int?> reportingTo = const Value.absent(),
                 Value<String?> department = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
               }) => FmsMtEmployeesCompanion.insert(
                 employeeId: employeeId,
@@ -20332,15 +27072,10 @@ class $$FmsMtEmployeesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({
-                reportingTo = false,
-                fmsMtFarmsRefs = false,
-                fms10SyncLogsRefs = false,
-              }) {
+              ({reportingTo = false, fms10SyncLogsRefs = false}) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (fmsMtFarmsRefs) db.fmsMtFarms,
                     if (fms10SyncLogsRefs) db.fms10SyncLogs,
                   ],
                   addJoins:
@@ -20379,27 +27114,6 @@ class $$FmsMtEmployeesTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (fmsMtFarmsRefs)
-                        await $_getPrefetchedData<
-                          FmsMtEmployee,
-                          $FmsMtEmployeesTable,
-                          FmsMtFarm
-                        >(
-                          currentTable: table,
-                          referencedTable: $$FmsMtEmployeesTableReferences
-                              ._fmsMtFarmsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$FmsMtEmployeesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).fmsMtFarmsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.createdBy == item.employeeId,
-                              ),
-                          typedResults: items,
-                        ),
                       if (fms10SyncLogsRefs)
                         await $_getPrefetchedData<
                           FmsMtEmployee,
@@ -20441,16 +27155,12 @@ typedef $$FmsMtEmployeesTableProcessedTableManager =
       $$FmsMtEmployeesTableUpdateCompanionBuilder,
       (FmsMtEmployee, $$FmsMtEmployeesTableReferences),
       FmsMtEmployee,
-      PrefetchHooks Function({
-        bool reportingTo,
-        bool fmsMtFarmsRefs,
-        bool fms10SyncLogsRefs,
-      })
+      PrefetchHooks Function({bool reportingTo, bool fms10SyncLogsRefs})
     >;
 typedef $$FmsMtFarmsTableCreateCompanionBuilder =
     FmsMtFarmsCompanion Function({
       Value<int> farmId,
-      required String farmUuid,
+      Value<String> farmUuid,
       required String farmCode,
       required String farmName,
       Value<String?> farmLocation,
@@ -20462,9 +27172,10 @@ typedef $$FmsMtFarmsTableCreateCompanionBuilder =
       Value<String?> ownerName,
       Value<String?> contactInfo,
       Value<DateTime?> establishedDate,
-      Value<bool?> isActive,
-      Value<DateTime?> createdDate,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
       Value<int?> createdBy,
+      Value<int?> lastUpdatedBy,
     });
 typedef $$FmsMtFarmsTableUpdateCompanionBuilder =
     FmsMtFarmsCompanion Function({
@@ -20481,9 +27192,10 @@ typedef $$FmsMtFarmsTableUpdateCompanionBuilder =
       Value<String?> ownerName,
       Value<String?> contactInfo,
       Value<DateTime?> establishedDate,
-      Value<bool?> isActive,
-      Value<DateTime?> createdDate,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
       Value<int?> createdBy,
+      Value<int?> lastUpdatedBy,
     });
 
 final class $$FmsMtFarmsTableReferences
@@ -20506,6 +27218,28 @@ final class $$FmsMtFarmsTableReferences
       $_db.fmsMtEmployees,
     ).filter((f) => f.employeeId.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FmsMtEmployeesTable _lastUpdatedByTable(_$AppDatabase db) =>
+      db.fmsMtEmployees.createAlias(
+        $_aliasNameGenerator(
+          db.fmsMtFarms.lastUpdatedBy,
+          db.fmsMtEmployees.employeeId,
+        ),
+      );
+
+  $$FmsMtEmployeesTableProcessedTableManager? get lastUpdatedBy {
+    final $_column = $_itemColumn<int>('last_updated_by');
+    if ($_column == null) return null;
+    final manager = $$FmsMtEmployeesTableTableManager(
+      $_db,
+      $_db.fmsMtEmployees,
+    ).filter((f) => f.employeeId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_lastUpdatedByTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -20619,6 +27353,29 @@ class $$FmsMtFarmsTableFilterComposer
     final $$FmsMtEmployeesTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableFilterComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
       referencedTable: $db.fmsMtEmployees,
       getReferencedColumn: (t) => t.employeeId,
       builder:
@@ -20770,6 +27527,29 @@ class $$FmsMtFarmsTableOrderingComposer
     );
     return composer;
   }
+
+  $$FmsMtEmployeesTableOrderingComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableOrderingComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$FmsMtFarmsTableAnnotationComposer
@@ -20861,6 +27641,29 @@ class $$FmsMtFarmsTableAnnotationComposer
     return composer;
   }
 
+  $$FmsMtEmployeesTableAnnotationComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> fmsMtPondsRefs<T extends Object>(
     Expression<T> Function($$FmsMtPondsTableAnnotationComposer a) f,
   ) {
@@ -20900,7 +27703,11 @@ class $$FmsMtFarmsTableTableManager
           $$FmsMtFarmsTableUpdateCompanionBuilder,
           (FmsMtFarm, $$FmsMtFarmsTableReferences),
           FmsMtFarm,
-          PrefetchHooks Function({bool createdBy, bool fmsMtPondsRefs})
+          PrefetchHooks Function({
+            bool createdBy,
+            bool lastUpdatedBy,
+            bool fmsMtPondsRefs,
+          })
         > {
   $$FmsMtFarmsTableTableManager(_$AppDatabase db, $FmsMtFarmsTable table)
     : super(
@@ -20928,9 +27735,10 @@ class $$FmsMtFarmsTableTableManager
                 Value<String?> ownerName = const Value.absent(),
                 Value<String?> contactInfo = const Value.absent(),
                 Value<DateTime?> establishedDate = const Value.absent(),
-                Value<bool?> isActive = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
                 Value<int?> createdBy = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
               }) => FmsMtFarmsCompanion(
                 farmId: farmId,
                 farmUuid: farmUuid,
@@ -20948,11 +27756,12 @@ class $$FmsMtFarmsTableTableManager
                 isActive: isActive,
                 createdDate: createdDate,
                 createdBy: createdBy,
+                lastUpdatedBy: lastUpdatedBy,
               ),
           createCompanionCallback:
               ({
                 Value<int> farmId = const Value.absent(),
-                required String farmUuid,
+                Value<String> farmUuid = const Value.absent(),
                 required String farmCode,
                 required String farmName,
                 Value<String?> farmLocation = const Value.absent(),
@@ -20964,9 +27773,10 @@ class $$FmsMtFarmsTableTableManager
                 Value<String?> ownerName = const Value.absent(),
                 Value<String?> contactInfo = const Value.absent(),
                 Value<DateTime?> establishedDate = const Value.absent(),
-                Value<bool?> isActive = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
                 Value<int?> createdBy = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
               }) => FmsMtFarmsCompanion.insert(
                 farmId: farmId,
                 farmUuid: farmUuid,
@@ -20984,6 +27794,7 @@ class $$FmsMtFarmsTableTableManager
                 isActive: isActive,
                 createdDate: createdDate,
                 createdBy: createdBy,
+                lastUpdatedBy: lastUpdatedBy,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -20993,67 +27804,89 @@ class $$FmsMtFarmsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({createdBy = false, fmsMtPondsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (fmsMtPondsRefs) db.fmsMtPonds],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (createdBy) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.createdBy,
-                                referencedTable: $$FmsMtFarmsTableReferences
-                                    ._createdByTable(db),
-                                referencedColumn: $$FmsMtFarmsTableReferences
-                                    ._createdByTable(db)
-                                    .employeeId,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({
+                createdBy = false,
+                lastUpdatedBy = false,
+                fmsMtPondsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (fmsMtPondsRefs) db.fmsMtPonds],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $$FmsMtFarmsTableReferences
+                                        ._createdByTable(db),
+                                    referencedColumn:
+                                        $$FmsMtFarmsTableReferences
+                                            ._createdByTable(db)
+                                            .employeeId,
+                                  )
+                                  as T;
+                        }
+                        if (lastUpdatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.lastUpdatedBy,
+                                    referencedTable: $$FmsMtFarmsTableReferences
+                                        ._lastUpdatedByTable(db),
+                                    referencedColumn:
+                                        $$FmsMtFarmsTableReferences
+                                            ._lastUpdatedByTable(db)
+                                            .employeeId,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (fmsMtPondsRefs)
+                        await $_getPrefetchedData<
+                          FmsMtFarm,
+                          $FmsMtFarmsTable,
+                          FmsMtPond
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FmsMtFarmsTableReferences
+                              ._fmsMtPondsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FmsMtFarmsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).fmsMtPondsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.farmId == item.farmId,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (fmsMtPondsRefs)
-                    await $_getPrefetchedData<
-                      FmsMtFarm,
-                      $FmsMtFarmsTable,
-                      FmsMtPond
-                    >(
-                      currentTable: table,
-                      referencedTable: $$FmsMtFarmsTableReferences
-                          ._fmsMtPondsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$FmsMtFarmsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).fmsMtPondsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.farmId == item.farmId),
-                      typedResults: items,
-                    ),
-                ];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -21070,15 +27903,20 @@ typedef $$FmsMtFarmsTableProcessedTableManager =
       $$FmsMtFarmsTableUpdateCompanionBuilder,
       (FmsMtFarm, $$FmsMtFarmsTableReferences),
       FmsMtFarm,
-      PrefetchHooks Function({bool createdBy, bool fmsMtPondsRefs})
+      PrefetchHooks Function({
+        bool createdBy,
+        bool lastUpdatedBy,
+        bool fmsMtPondsRefs,
+      })
     >;
 typedef $$FmsMtPondsTableCreateCompanionBuilder =
     FmsMtPondsCompanion Function({
       Value<int> pondId,
-      required String pondUuid,
-      Value<int?> farmId,
+      Value<String> pondUuid,
       required String pondCode,
-      Value<String?> pondName,
+      required String pondName,
+      Value<String?> pondType,
+      Value<String?> pondShape,
       Value<double?> pondSize,
       Value<String?> pondSizeUnit,
       Value<double?> pwa,
@@ -21089,30 +27927,35 @@ typedef $$FmsMtPondsTableCreateCompanionBuilder =
       Value<String?> maxDepthUnit,
       Value<double?> volume,
       Value<String?> volumeUnit,
-      Value<String?> pondType,
-      Value<String?> pondShape,
       Value<String?> bottomType,
-      Value<bool?> hasAerator,
+      Value<bool> hasAerator,
       Value<int?> aeratorCount,
       Value<double?> aeratorTotalHp,
-      Value<bool?> hasCentralDrain,
+      Value<bool> hasCentralDrain,
       Value<String?> waterSource,
-      Value<String?> pondStatus,
+      Value<String> pondStatus,
       Value<int?> currentCycleId,
+      Value<double?> maxBiomassKgPerSqm,
+      Value<double?> recommendedStockingDensity,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+      Value<int?> createdBy,
+      Value<DateTime> lastUpdatedDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> deletedDate,
       Value<double?> maxBiomass,
       Value<String?> maxBiomassUnit,
-      Value<double?> recommendedStockingDensity,
-      Value<bool?> isActive,
-      Value<DateTime?> createdDate,
-      Value<DateTime?> deletedDate,
+      Value<int?> farmId,
+      Value<String?> farmUuid,
     });
 typedef $$FmsMtPondsTableUpdateCompanionBuilder =
     FmsMtPondsCompanion Function({
       Value<int> pondId,
       Value<String> pondUuid,
-      Value<int?> farmId,
       Value<String> pondCode,
-      Value<String?> pondName,
+      Value<String> pondName,
+      Value<String?> pondType,
+      Value<String?> pondShape,
       Value<double?> pondSize,
       Value<String?> pondSizeUnit,
       Value<double?> pwa,
@@ -21123,27 +27966,75 @@ typedef $$FmsMtPondsTableUpdateCompanionBuilder =
       Value<String?> maxDepthUnit,
       Value<double?> volume,
       Value<String?> volumeUnit,
-      Value<String?> pondType,
-      Value<String?> pondShape,
       Value<String?> bottomType,
-      Value<bool?> hasAerator,
+      Value<bool> hasAerator,
       Value<int?> aeratorCount,
       Value<double?> aeratorTotalHp,
-      Value<bool?> hasCentralDrain,
+      Value<bool> hasCentralDrain,
       Value<String?> waterSource,
-      Value<String?> pondStatus,
+      Value<String> pondStatus,
       Value<int?> currentCycleId,
+      Value<double?> maxBiomassKgPerSqm,
+      Value<double?> recommendedStockingDensity,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+      Value<int?> createdBy,
+      Value<DateTime> lastUpdatedDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> deletedDate,
       Value<double?> maxBiomass,
       Value<String?> maxBiomassUnit,
-      Value<double?> recommendedStockingDensity,
-      Value<bool?> isActive,
-      Value<DateTime?> createdDate,
-      Value<DateTime?> deletedDate,
+      Value<int?> farmId,
+      Value<String?> farmUuid,
     });
 
 final class $$FmsMtPondsTableReferences
     extends BaseReferences<_$AppDatabase, $FmsMtPondsTable, FmsMtPond> {
   $$FmsMtPondsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $FmsMtEmployeesTable _createdByTable(_$AppDatabase db) =>
+      db.fmsMtEmployees.createAlias(
+        $_aliasNameGenerator(
+          db.fmsMtPonds.createdBy,
+          db.fmsMtEmployees.employeeId,
+        ),
+      );
+
+  $$FmsMtEmployeesTableProcessedTableManager? get createdBy {
+    final $_column = $_itemColumn<int>('created_by');
+    if ($_column == null) return null;
+    final manager = $$FmsMtEmployeesTableTableManager(
+      $_db,
+      $_db.fmsMtEmployees,
+    ).filter((f) => f.employeeId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FmsMtEmployeesTable _lastUpdatedByTable(_$AppDatabase db) =>
+      db.fmsMtEmployees.createAlias(
+        $_aliasNameGenerator(
+          db.fmsMtPonds.lastUpdatedBy,
+          db.fmsMtEmployees.employeeId,
+        ),
+      );
+
+  $$FmsMtEmployeesTableProcessedTableManager? get lastUpdatedBy {
+    final $_column = $_itemColumn<int>('last_updated_by');
+    if ($_column == null) return null;
+    final manager = $$FmsMtEmployeesTableTableManager(
+      $_db,
+      $_db.fmsMtEmployees,
+    ).filter((f) => f.employeeId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_lastUpdatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static $FmsMtFarmsTable _farmIdTable(_$AppDatabase db) =>
       db.fmsMtFarms.createAlias(
@@ -21250,6 +28141,16 @@ class $$FmsMtPondsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get pondType => $composableBuilder(
+    column: $table.pondType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pondShape => $composableBuilder(
+    column: $table.pondShape,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<double> get pondSize => $composableBuilder(
     column: $table.pondSize,
     builder: (column) => ColumnFilters(column),
@@ -21300,16 +28201,6 @@ class $$FmsMtPondsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get pondType => $composableBuilder(
-    column: $table.pondType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get pondShape => $composableBuilder(
-    column: $table.pondShape,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get bottomType => $composableBuilder(
     column: $table.bottomType,
     builder: (column) => ColumnFilters(column),
@@ -21350,13 +28241,8 @@ class $$FmsMtPondsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get maxBiomass => $composableBuilder(
-    column: $table.maxBiomass,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get maxBiomassUnit => $composableBuilder(
-    column: $table.maxBiomassUnit,
+  ColumnFilters<double> get maxBiomassKgPerSqm => $composableBuilder(
+    column: $table.maxBiomassKgPerSqm,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21375,10 +28261,76 @@ class $$FmsMtPondsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get deletedDate => $composableBuilder(
     column: $table.deletedDate,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<double> get maxBiomass => $composableBuilder(
+    column: $table.maxBiomass,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get maxBiomassUnit => $composableBuilder(
+    column: $table.maxBiomassUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmUuid => $composableBuilder(
+    column: $table.farmUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$FmsMtEmployeesTableFilterComposer get createdBy {
+    final $$FmsMtEmployeesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableFilterComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   $$FmsMtFarmsTableFilterComposer get farmId {
     final $$FmsMtFarmsTableFilterComposer composer = $composerBuilder(
@@ -21485,6 +28437,16 @@ class $$FmsMtPondsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get pondType => $composableBuilder(
+    column: $table.pondType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pondShape => $composableBuilder(
+    column: $table.pondShape,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get pondSize => $composableBuilder(
     column: $table.pondSize,
     builder: (column) => ColumnOrderings(column),
@@ -21535,16 +28497,6 @@ class $$FmsMtPondsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get pondType => $composableBuilder(
-    column: $table.pondType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get pondShape => $composableBuilder(
-    column: $table.pondShape,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get bottomType => $composableBuilder(
     column: $table.bottomType,
     builder: (column) => ColumnOrderings(column),
@@ -21585,13 +28537,8 @@ class $$FmsMtPondsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get maxBiomass => $composableBuilder(
-    column: $table.maxBiomass,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get maxBiomassUnit => $composableBuilder(
-    column: $table.maxBiomassUnit,
+  ColumnOrderings<double> get maxBiomassKgPerSqm => $composableBuilder(
+    column: $table.maxBiomassKgPerSqm,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -21610,10 +28557,76 @@ class $$FmsMtPondsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deletedDate => $composableBuilder(
     column: $table.deletedDate,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get maxBiomass => $composableBuilder(
+    column: $table.maxBiomass,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get maxBiomassUnit => $composableBuilder(
+    column: $table.maxBiomassUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmUuid => $composableBuilder(
+    column: $table.farmUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$FmsMtEmployeesTableOrderingComposer get createdBy {
+    final $$FmsMtEmployeesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableOrderingComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableOrderingComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableOrderingComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   $$FmsMtFarmsTableOrderingComposer get farmId {
     final $$FmsMtFarmsTableOrderingComposer composer = $composerBuilder(
@@ -21660,6 +28673,12 @@ class $$FmsMtPondsTableAnnotationComposer
   GeneratedColumn<String> get pondName =>
       $composableBuilder(column: $table.pondName, builder: (column) => column);
 
+  GeneratedColumn<String> get pondType =>
+      $composableBuilder(column: $table.pondType, builder: (column) => column);
+
+  GeneratedColumn<String> get pondShape =>
+      $composableBuilder(column: $table.pondShape, builder: (column) => column);
+
   GeneratedColumn<double> get pondSize =>
       $composableBuilder(column: $table.pondSize, builder: (column) => column);
 
@@ -21695,12 +28714,6 @@ class $$FmsMtPondsTableAnnotationComposer
     column: $table.volumeUnit,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get pondType =>
-      $composableBuilder(column: $table.pondType, builder: (column) => column);
-
-  GeneratedColumn<String> get pondShape =>
-      $composableBuilder(column: $table.pondShape, builder: (column) => column);
 
   GeneratedColumn<String> get bottomType => $composableBuilder(
     column: $table.bottomType,
@@ -21742,13 +28755,8 @@ class $$FmsMtPondsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get maxBiomass => $composableBuilder(
-    column: $table.maxBiomass,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get maxBiomassUnit => $composableBuilder(
-    column: $table.maxBiomassUnit,
+  GeneratedColumn<double> get maxBiomassKgPerSqm => $composableBuilder(
+    column: $table.maxBiomassKgPerSqm,
     builder: (column) => column,
   );
 
@@ -21765,10 +28773,74 @@ class $$FmsMtPondsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get deletedDate => $composableBuilder(
     column: $table.deletedDate,
     builder: (column) => column,
   );
+
+  GeneratedColumn<double> get maxBiomass => $composableBuilder(
+    column: $table.maxBiomass,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get maxBiomassUnit => $composableBuilder(
+    column: $table.maxBiomassUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get farmUuid =>
+      $composableBuilder(column: $table.farmUuid, builder: (column) => column);
+
+  $$FmsMtEmployeesTableAnnotationComposer get createdBy {
+    final $$FmsMtEmployeesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableAnnotationComposer get lastUpdatedBy {
+    final $$FmsMtEmployeesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.lastUpdatedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   $$FmsMtFarmsTableAnnotationComposer get farmId {
     final $$FmsMtFarmsTableAnnotationComposer composer = $composerBuilder(
@@ -21861,6 +28933,8 @@ class $$FmsMtPondsTableTableManager
           (FmsMtPond, $$FmsMtPondsTableReferences),
           FmsMtPond,
           PrefetchHooks Function({
+            bool createdBy,
+            bool lastUpdatedBy,
             bool farmId,
             bool fms10HarvestSimulationsRefs,
             bool fms10AgentSimulationsRefs,
@@ -21881,9 +28955,10 @@ class $$FmsMtPondsTableTableManager
               ({
                 Value<int> pondId = const Value.absent(),
                 Value<String> pondUuid = const Value.absent(),
-                Value<int?> farmId = const Value.absent(),
                 Value<String> pondCode = const Value.absent(),
-                Value<String?> pondName = const Value.absent(),
+                Value<String> pondName = const Value.absent(),
+                Value<String?> pondType = const Value.absent(),
+                Value<String?> pondShape = const Value.absent(),
                 Value<double?> pondSize = const Value.absent(),
                 Value<String?> pondSizeUnit = const Value.absent(),
                 Value<double?> pwa = const Value.absent(),
@@ -21894,29 +28969,34 @@ class $$FmsMtPondsTableTableManager
                 Value<String?> maxDepthUnit = const Value.absent(),
                 Value<double?> volume = const Value.absent(),
                 Value<String?> volumeUnit = const Value.absent(),
-                Value<String?> pondType = const Value.absent(),
-                Value<String?> pondShape = const Value.absent(),
                 Value<String?> bottomType = const Value.absent(),
-                Value<bool?> hasAerator = const Value.absent(),
+                Value<bool> hasAerator = const Value.absent(),
                 Value<int?> aeratorCount = const Value.absent(),
                 Value<double?> aeratorTotalHp = const Value.absent(),
-                Value<bool?> hasCentralDrain = const Value.absent(),
+                Value<bool> hasCentralDrain = const Value.absent(),
                 Value<String?> waterSource = const Value.absent(),
-                Value<String?> pondStatus = const Value.absent(),
+                Value<String> pondStatus = const Value.absent(),
                 Value<int?> currentCycleId = const Value.absent(),
-                Value<double?> maxBiomass = const Value.absent(),
-                Value<String?> maxBiomassUnit = const Value.absent(),
+                Value<double?> maxBiomassKgPerSqm = const Value.absent(),
                 Value<double?> recommendedStockingDensity =
                     const Value.absent(),
-                Value<bool?> isActive = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> lastUpdatedDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
+                Value<double?> maxBiomass = const Value.absent(),
+                Value<String?> maxBiomassUnit = const Value.absent(),
+                Value<int?> farmId = const Value.absent(),
+                Value<String?> farmUuid = const Value.absent(),
               }) => FmsMtPondsCompanion(
                 pondId: pondId,
                 pondUuid: pondUuid,
-                farmId: farmId,
                 pondCode: pondCode,
                 pondName: pondName,
+                pondType: pondType,
+                pondShape: pondShape,
                 pondSize: pondSize,
                 pondSizeUnit: pondSizeUnit,
                 pwa: pwa,
@@ -21927,8 +29007,6 @@ class $$FmsMtPondsTableTableManager
                 maxDepthUnit: maxDepthUnit,
                 volume: volume,
                 volumeUnit: volumeUnit,
-                pondType: pondType,
-                pondShape: pondShape,
                 bottomType: bottomType,
                 hasAerator: hasAerator,
                 aeratorCount: aeratorCount,
@@ -21937,20 +29015,27 @@ class $$FmsMtPondsTableTableManager
                 waterSource: waterSource,
                 pondStatus: pondStatus,
                 currentCycleId: currentCycleId,
-                maxBiomass: maxBiomass,
-                maxBiomassUnit: maxBiomassUnit,
+                maxBiomassKgPerSqm: maxBiomassKgPerSqm,
                 recommendedStockingDensity: recommendedStockingDensity,
                 isActive: isActive,
                 createdDate: createdDate,
+                createdBy: createdBy,
+                lastUpdatedDate: lastUpdatedDate,
+                lastUpdatedBy: lastUpdatedBy,
                 deletedDate: deletedDate,
+                maxBiomass: maxBiomass,
+                maxBiomassUnit: maxBiomassUnit,
+                farmId: farmId,
+                farmUuid: farmUuid,
               ),
           createCompanionCallback:
               ({
                 Value<int> pondId = const Value.absent(),
-                required String pondUuid,
-                Value<int?> farmId = const Value.absent(),
+                Value<String> pondUuid = const Value.absent(),
                 required String pondCode,
-                Value<String?> pondName = const Value.absent(),
+                required String pondName,
+                Value<String?> pondType = const Value.absent(),
+                Value<String?> pondShape = const Value.absent(),
                 Value<double?> pondSize = const Value.absent(),
                 Value<String?> pondSizeUnit = const Value.absent(),
                 Value<double?> pwa = const Value.absent(),
@@ -21961,29 +29046,34 @@ class $$FmsMtPondsTableTableManager
                 Value<String?> maxDepthUnit = const Value.absent(),
                 Value<double?> volume = const Value.absent(),
                 Value<String?> volumeUnit = const Value.absent(),
-                Value<String?> pondType = const Value.absent(),
-                Value<String?> pondShape = const Value.absent(),
                 Value<String?> bottomType = const Value.absent(),
-                Value<bool?> hasAerator = const Value.absent(),
+                Value<bool> hasAerator = const Value.absent(),
                 Value<int?> aeratorCount = const Value.absent(),
                 Value<double?> aeratorTotalHp = const Value.absent(),
-                Value<bool?> hasCentralDrain = const Value.absent(),
+                Value<bool> hasCentralDrain = const Value.absent(),
                 Value<String?> waterSource = const Value.absent(),
-                Value<String?> pondStatus = const Value.absent(),
+                Value<String> pondStatus = const Value.absent(),
                 Value<int?> currentCycleId = const Value.absent(),
-                Value<double?> maxBiomass = const Value.absent(),
-                Value<String?> maxBiomassUnit = const Value.absent(),
+                Value<double?> maxBiomassKgPerSqm = const Value.absent(),
                 Value<double?> recommendedStockingDensity =
                     const Value.absent(),
-                Value<bool?> isActive = const Value.absent(),
-                Value<DateTime?> createdDate = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> lastUpdatedDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
+                Value<double?> maxBiomass = const Value.absent(),
+                Value<String?> maxBiomassUnit = const Value.absent(),
+                Value<int?> farmId = const Value.absent(),
+                Value<String?> farmUuid = const Value.absent(),
               }) => FmsMtPondsCompanion.insert(
                 pondId: pondId,
                 pondUuid: pondUuid,
-                farmId: farmId,
                 pondCode: pondCode,
                 pondName: pondName,
+                pondType: pondType,
+                pondShape: pondShape,
                 pondSize: pondSize,
                 pondSizeUnit: pondSizeUnit,
                 pwa: pwa,
@@ -21994,8 +29084,6 @@ class $$FmsMtPondsTableTableManager
                 maxDepthUnit: maxDepthUnit,
                 volume: volume,
                 volumeUnit: volumeUnit,
-                pondType: pondType,
-                pondShape: pondShape,
                 bottomType: bottomType,
                 hasAerator: hasAerator,
                 aeratorCount: aeratorCount,
@@ -22004,12 +29092,18 @@ class $$FmsMtPondsTableTableManager
                 waterSource: waterSource,
                 pondStatus: pondStatus,
                 currentCycleId: currentCycleId,
-                maxBiomass: maxBiomass,
-                maxBiomassUnit: maxBiomassUnit,
+                maxBiomassKgPerSqm: maxBiomassKgPerSqm,
                 recommendedStockingDensity: recommendedStockingDensity,
                 isActive: isActive,
                 createdDate: createdDate,
+                createdBy: createdBy,
+                lastUpdatedDate: lastUpdatedDate,
+                lastUpdatedBy: lastUpdatedBy,
                 deletedDate: deletedDate,
+                maxBiomass: maxBiomass,
+                maxBiomassUnit: maxBiomassUnit,
+                farmId: farmId,
+                farmUuid: farmUuid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -22021,6 +29115,8 @@ class $$FmsMtPondsTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                createdBy = false,
+                lastUpdatedBy = false,
                 farmId = false,
                 fms10HarvestSimulationsRefs = false,
                 fms10AgentSimulationsRefs = false,
@@ -22047,6 +29143,34 @@ class $$FmsMtPondsTableTableManager
                           dynamic
                         >
                       >(state) {
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $$FmsMtPondsTableReferences
+                                        ._createdByTable(db),
+                                    referencedColumn:
+                                        $$FmsMtPondsTableReferences
+                                            ._createdByTable(db)
+                                            .employeeId,
+                                  )
+                                  as T;
+                        }
+                        if (lastUpdatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.lastUpdatedBy,
+                                    referencedTable: $$FmsMtPondsTableReferences
+                                        ._lastUpdatedByTable(db),
+                                    referencedColumn:
+                                        $$FmsMtPondsTableReferences
+                                            ._lastUpdatedByTable(db)
+                                            .employeeId,
+                                  )
+                                  as T;
+                        }
                         if (farmId) {
                           state =
                               state.withJoin(
@@ -22129,6 +29253,8 @@ typedef $$FmsMtPondsTableProcessedTableManager =
       (FmsMtPond, $$FmsMtPondsTableReferences),
       FmsMtPond,
       PrefetchHooks Function({
+        bool createdBy,
+        bool lastUpdatedBy,
         bool farmId,
         bool fms10HarvestSimulationsRefs,
         bool fms10AgentSimulationsRefs,
@@ -23821,6 +30947,3358 @@ typedef $$FmsMtExchangeRatesTableProcessedTableManager =
         bool createdBy,
         bool lastUpdatedBy,
       })
+    >;
+typedef $$FmsMtLabTestTypesTableCreateCompanionBuilder =
+    FmsMtLabTestTypesCompanion Function({
+      Value<int> testTypeId,
+      Value<String> testTypeUuid,
+      required String testTypeCode,
+      required String testTypeName,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+    });
+typedef $$FmsMtLabTestTypesTableUpdateCompanionBuilder =
+    FmsMtLabTestTypesCompanion Function({
+      Value<int> testTypeId,
+      Value<String> testTypeUuid,
+      Value<String> testTypeCode,
+      Value<String> testTypeName,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+    });
+
+final class $$FmsMtLabTestTypesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $FmsMtLabTestTypesTable,
+          FmsMtLabTestType
+        > {
+  $$FmsMtLabTestTypesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$FmsMtLabParametersTable, List<FmsMtLabParameter>>
+  _fmsMtLabParametersRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.fmsMtLabParameters,
+        aliasName: $_aliasNameGenerator(
+          db.fmsMtLabTestTypes.testTypeId,
+          db.fmsMtLabParameters.testTypeId,
+        ),
+      );
+
+  $$FmsMtLabParametersTableProcessedTableManager get fmsMtLabParametersRefs {
+    final manager =
+        $$FmsMtLabParametersTableTableManager(
+          $_db,
+          $_db.fmsMtLabParameters,
+        ).filter(
+          (f) => f.testTypeId.testTypeId.sqlEquals(
+            $_itemColumn<int>('test_type_id')!,
+          ),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _fmsMtLabParametersRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$FmsMtLabTestTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTestTypesTable> {
+  $$FmsMtLabTestTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get testTypeId => $composableBuilder(
+    column: $table.testTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testTypeUuid => $composableBuilder(
+    column: $table.testTypeUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testTypeCode => $composableBuilder(
+    column: $table.testTypeCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testTypeName => $composableBuilder(
+    column: $table.testTypeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> fmsMtLabParametersRefs(
+    Expression<bool> Function($$FmsMtLabParametersTableFilterComposer f) f,
+  ) {
+    final $$FmsMtLabParametersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.testTypeId,
+      referencedTable: $db.fmsMtLabParameters,
+      getReferencedColumn: (t) => t.testTypeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtLabParametersTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtLabParameters,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$FmsMtLabTestTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTestTypesTable> {
+  $$FmsMtLabTestTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get testTypeId => $composableBuilder(
+    column: $table.testTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testTypeUuid => $composableBuilder(
+    column: $table.testTypeUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testTypeCode => $composableBuilder(
+    column: $table.testTypeCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testTypeName => $composableBuilder(
+    column: $table.testTypeName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FmsMtLabTestTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTestTypesTable> {
+  $$FmsMtLabTestTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get testTypeId => $composableBuilder(
+    column: $table.testTypeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get testTypeUuid => $composableBuilder(
+    column: $table.testTypeUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get testTypeCode => $composableBuilder(
+    column: $table.testTypeCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get testTypeName => $composableBuilder(
+    column: $table.testTypeName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  Expression<T> fmsMtLabParametersRefs<T extends Object>(
+    Expression<T> Function($$FmsMtLabParametersTableAnnotationComposer a) f,
+  ) {
+    final $$FmsMtLabParametersTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.testTypeId,
+          referencedTable: $db.fmsMtLabParameters,
+          getReferencedColumn: (t) => t.testTypeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$FmsMtLabParametersTableAnnotationComposer(
+                $db: $db,
+                $table: $db.fmsMtLabParameters,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$FmsMtLabTestTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FmsMtLabTestTypesTable,
+          FmsMtLabTestType,
+          $$FmsMtLabTestTypesTableFilterComposer,
+          $$FmsMtLabTestTypesTableOrderingComposer,
+          $$FmsMtLabTestTypesTableAnnotationComposer,
+          $$FmsMtLabTestTypesTableCreateCompanionBuilder,
+          $$FmsMtLabTestTypesTableUpdateCompanionBuilder,
+          (FmsMtLabTestType, $$FmsMtLabTestTypesTableReferences),
+          FmsMtLabTestType,
+          PrefetchHooks Function({bool fmsMtLabParametersRefs})
+        > {
+  $$FmsMtLabTestTypesTableTableManager(
+    _$AppDatabase db,
+    $FmsMtLabTestTypesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FmsMtLabTestTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FmsMtLabTestTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FmsMtLabTestTypesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> testTypeId = const Value.absent(),
+                Value<String> testTypeUuid = const Value.absent(),
+                Value<String> testTypeCode = const Value.absent(),
+                Value<String> testTypeName = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => FmsMtLabTestTypesCompanion(
+                testTypeId: testTypeId,
+                testTypeUuid: testTypeUuid,
+                testTypeCode: testTypeCode,
+                testTypeName: testTypeName,
+                isActive: isActive,
+                createdDate: createdDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> testTypeId = const Value.absent(),
+                Value<String> testTypeUuid = const Value.absent(),
+                required String testTypeCode,
+                required String testTypeName,
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => FmsMtLabTestTypesCompanion.insert(
+                testTypeId: testTypeId,
+                testTypeUuid: testTypeUuid,
+                testTypeCode: testTypeCode,
+                testTypeName: testTypeName,
+                isActive: isActive,
+                createdDate: createdDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$FmsMtLabTestTypesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({fmsMtLabParametersRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (fmsMtLabParametersRefs) db.fmsMtLabParameters,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (fmsMtLabParametersRefs)
+                    await $_getPrefetchedData<
+                      FmsMtLabTestType,
+                      $FmsMtLabTestTypesTable,
+                      FmsMtLabParameter
+                    >(
+                      currentTable: table,
+                      referencedTable: $$FmsMtLabTestTypesTableReferences
+                          ._fmsMtLabParametersRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$FmsMtLabTestTypesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).fmsMtLabParametersRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.testTypeId == item.testTypeId,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$FmsMtLabTestTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FmsMtLabTestTypesTable,
+      FmsMtLabTestType,
+      $$FmsMtLabTestTypesTableFilterComposer,
+      $$FmsMtLabTestTypesTableOrderingComposer,
+      $$FmsMtLabTestTypesTableAnnotationComposer,
+      $$FmsMtLabTestTypesTableCreateCompanionBuilder,
+      $$FmsMtLabTestTypesTableUpdateCompanionBuilder,
+      (FmsMtLabTestType, $$FmsMtLabTestTypesTableReferences),
+      FmsMtLabTestType,
+      PrefetchHooks Function({bool fmsMtLabParametersRefs})
+    >;
+typedef $$FmsMtLabParametersTableCreateCompanionBuilder =
+    FmsMtLabParametersCompanion Function({
+      Value<int> parameterId,
+      Value<String> parameterUuid,
+      required int testTypeId,
+      required String parameterCode,
+      required String parameterName,
+      Value<String?> standardOperator,
+      Value<double?> standardMin,
+      Value<double?> standardMax,
+      Value<String?> parameterUnit,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+    });
+typedef $$FmsMtLabParametersTableUpdateCompanionBuilder =
+    FmsMtLabParametersCompanion Function({
+      Value<int> parameterId,
+      Value<String> parameterUuid,
+      Value<int> testTypeId,
+      Value<String> parameterCode,
+      Value<String> parameterName,
+      Value<String?> standardOperator,
+      Value<double?> standardMin,
+      Value<double?> standardMax,
+      Value<String?> parameterUnit,
+      Value<bool> isActive,
+      Value<DateTime> createdDate,
+    });
+
+final class $$FmsMtLabParametersTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $FmsMtLabParametersTable,
+          FmsMtLabParameter
+        > {
+  $$FmsMtLabParametersTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $FmsMtLabTestTypesTable _testTypeIdTable(_$AppDatabase db) =>
+      db.fmsMtLabTestTypes.createAlias(
+        $_aliasNameGenerator(
+          db.fmsMtLabParameters.testTypeId,
+          db.fmsMtLabTestTypes.testTypeId,
+        ),
+      );
+
+  $$FmsMtLabTestTypesTableProcessedTableManager get testTypeId {
+    final $_column = $_itemColumn<int>('test_type_id')!;
+
+    final manager = $$FmsMtLabTestTypesTableTableManager(
+      $_db,
+      $_db.fmsMtLabTestTypes,
+    ).filter((f) => f.testTypeId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_testTypeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$FmsMtLabParametersTableFilterComposer
+    extends Composer<_$AppDatabase, $FmsMtLabParametersTable> {
+  $$FmsMtLabParametersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get parameterId => $composableBuilder(
+    column: $table.parameterId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parameterUuid => $composableBuilder(
+    column: $table.parameterUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parameterCode => $composableBuilder(
+    column: $table.parameterCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parameterName => $composableBuilder(
+    column: $table.parameterName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get standardOperator => $composableBuilder(
+    column: $table.standardOperator,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get standardMin => $composableBuilder(
+    column: $table.standardMin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get standardMax => $composableBuilder(
+    column: $table.standardMax,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parameterUnit => $composableBuilder(
+    column: $table.parameterUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$FmsMtLabTestTypesTableFilterComposer get testTypeId {
+    final $$FmsMtLabTestTypesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.testTypeId,
+      referencedTable: $db.fmsMtLabTestTypes,
+      getReferencedColumn: (t) => t.testTypeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtLabTestTypesTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtLabTestTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FmsMtLabParametersTableOrderingComposer
+    extends Composer<_$AppDatabase, $FmsMtLabParametersTable> {
+  $$FmsMtLabParametersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get parameterId => $composableBuilder(
+    column: $table.parameterId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parameterUuid => $composableBuilder(
+    column: $table.parameterUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parameterCode => $composableBuilder(
+    column: $table.parameterCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parameterName => $composableBuilder(
+    column: $table.parameterName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get standardOperator => $composableBuilder(
+    column: $table.standardOperator,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get standardMin => $composableBuilder(
+    column: $table.standardMin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get standardMax => $composableBuilder(
+    column: $table.standardMax,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parameterUnit => $composableBuilder(
+    column: $table.parameterUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$FmsMtLabTestTypesTableOrderingComposer get testTypeId {
+    final $$FmsMtLabTestTypesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.testTypeId,
+      referencedTable: $db.fmsMtLabTestTypes,
+      getReferencedColumn: (t) => t.testTypeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtLabTestTypesTableOrderingComposer(
+            $db: $db,
+            $table: $db.fmsMtLabTestTypes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FmsMtLabParametersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FmsMtLabParametersTable> {
+  $$FmsMtLabParametersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get parameterId => $composableBuilder(
+    column: $table.parameterId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get parameterUuid => $composableBuilder(
+    column: $table.parameterUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get parameterCode => $composableBuilder(
+    column: $table.parameterCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get parameterName => $composableBuilder(
+    column: $table.parameterName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get standardOperator => $composableBuilder(
+    column: $table.standardOperator,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get standardMin => $composableBuilder(
+    column: $table.standardMin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get standardMax => $composableBuilder(
+    column: $table.standardMax,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get parameterUnit => $composableBuilder(
+    column: $table.parameterUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  $$FmsMtLabTestTypesTableAnnotationComposer get testTypeId {
+    final $$FmsMtLabTestTypesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.testTypeId,
+          referencedTable: $db.fmsMtLabTestTypes,
+          getReferencedColumn: (t) => t.testTypeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$FmsMtLabTestTypesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.fmsMtLabTestTypes,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$FmsMtLabParametersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FmsMtLabParametersTable,
+          FmsMtLabParameter,
+          $$FmsMtLabParametersTableFilterComposer,
+          $$FmsMtLabParametersTableOrderingComposer,
+          $$FmsMtLabParametersTableAnnotationComposer,
+          $$FmsMtLabParametersTableCreateCompanionBuilder,
+          $$FmsMtLabParametersTableUpdateCompanionBuilder,
+          (FmsMtLabParameter, $$FmsMtLabParametersTableReferences),
+          FmsMtLabParameter,
+          PrefetchHooks Function({bool testTypeId})
+        > {
+  $$FmsMtLabParametersTableTableManager(
+    _$AppDatabase db,
+    $FmsMtLabParametersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FmsMtLabParametersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FmsMtLabParametersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FmsMtLabParametersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> parameterId = const Value.absent(),
+                Value<String> parameterUuid = const Value.absent(),
+                Value<int> testTypeId = const Value.absent(),
+                Value<String> parameterCode = const Value.absent(),
+                Value<String> parameterName = const Value.absent(),
+                Value<String?> standardOperator = const Value.absent(),
+                Value<double?> standardMin = const Value.absent(),
+                Value<double?> standardMax = const Value.absent(),
+                Value<String?> parameterUnit = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => FmsMtLabParametersCompanion(
+                parameterId: parameterId,
+                parameterUuid: parameterUuid,
+                testTypeId: testTypeId,
+                parameterCode: parameterCode,
+                parameterName: parameterName,
+                standardOperator: standardOperator,
+                standardMin: standardMin,
+                standardMax: standardMax,
+                parameterUnit: parameterUnit,
+                isActive: isActive,
+                createdDate: createdDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> parameterId = const Value.absent(),
+                Value<String> parameterUuid = const Value.absent(),
+                required int testTypeId,
+                required String parameterCode,
+                required String parameterName,
+                Value<String?> standardOperator = const Value.absent(),
+                Value<double?> standardMin = const Value.absent(),
+                Value<double?> standardMax = const Value.absent(),
+                Value<String?> parameterUnit = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => FmsMtLabParametersCompanion.insert(
+                parameterId: parameterId,
+                parameterUuid: parameterUuid,
+                testTypeId: testTypeId,
+                parameterCode: parameterCode,
+                parameterName: parameterName,
+                standardOperator: standardOperator,
+                standardMin: standardMin,
+                standardMax: standardMax,
+                parameterUnit: parameterUnit,
+                isActive: isActive,
+                createdDate: createdDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$FmsMtLabParametersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({testTypeId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (testTypeId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.testTypeId,
+                                referencedTable:
+                                    $$FmsMtLabParametersTableReferences
+                                        ._testTypeIdTable(db),
+                                referencedColumn:
+                                    $$FmsMtLabParametersTableReferences
+                                        ._testTypeIdTable(db)
+                                        .testTypeId,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$FmsMtLabParametersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FmsMtLabParametersTable,
+      FmsMtLabParameter,
+      $$FmsMtLabParametersTableFilterComposer,
+      $$FmsMtLabParametersTableOrderingComposer,
+      $$FmsMtLabParametersTableAnnotationComposer,
+      $$FmsMtLabParametersTableCreateCompanionBuilder,
+      $$FmsMtLabParametersTableUpdateCompanionBuilder,
+      (FmsMtLabParameter, $$FmsMtLabParametersTableReferences),
+      FmsMtLabParameter,
+      PrefetchHooks Function({bool testTypeId})
+    >;
+typedef $$FmsMtLabTypesTableCreateCompanionBuilder =
+    FmsMtLabTypesCompanion Function({
+      Value<int> labTypeId,
+      Value<String> idUuid,
+      required String labSampleTestType,
+      Value<String?> standard,
+      required String testType,
+      required String testTypeDetail,
+      Value<bool> isActive,
+      Value<int?> createdBy,
+      Value<DateTime> createdDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+typedef $$FmsMtLabTypesTableUpdateCompanionBuilder =
+    FmsMtLabTypesCompanion Function({
+      Value<int> labTypeId,
+      Value<String> idUuid,
+      Value<String> labSampleTestType,
+      Value<String?> standard,
+      Value<String> testType,
+      Value<String> testTypeDetail,
+      Value<bool> isActive,
+      Value<int?> createdBy,
+      Value<DateTime> createdDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+
+class $$FmsMtLabTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTypesTable> {
+  $$FmsMtLabTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get labTypeId => $composableBuilder(
+    column: $table.labTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get labSampleTestType => $composableBuilder(
+    column: $table.labSampleTestType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get standard => $composableBuilder(
+    column: $table.standard,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testType => $composableBuilder(
+    column: $table.testType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testTypeDetail => $composableBuilder(
+    column: $table.testTypeDetail,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FmsMtLabTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTypesTable> {
+  $$FmsMtLabTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get labTypeId => $composableBuilder(
+    column: $table.labTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get labSampleTestType => $composableBuilder(
+    column: $table.labSampleTestType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get standard => $composableBuilder(
+    column: $table.standard,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testType => $composableBuilder(
+    column: $table.testType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testTypeDetail => $composableBuilder(
+    column: $table.testTypeDetail,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FmsMtLabTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FmsMtLabTypesTable> {
+  $$FmsMtLabTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get labTypeId =>
+      $composableBuilder(column: $table.labTypeId, builder: (column) => column);
+
+  GeneratedColumn<String> get idUuid =>
+      $composableBuilder(column: $table.idUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get labSampleTestType => $composableBuilder(
+    column: $table.labSampleTestType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get standard =>
+      $composableBuilder(column: $table.standard, builder: (column) => column);
+
+  GeneratedColumn<String> get testType =>
+      $composableBuilder(column: $table.testType, builder: (column) => column);
+
+  GeneratedColumn<String> get testTypeDetail => $composableBuilder(
+    column: $table.testTypeDetail,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => column,
+  );
+}
+
+class $$FmsMtLabTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FmsMtLabTypesTable,
+          FmsMtLabType,
+          $$FmsMtLabTypesTableFilterComposer,
+          $$FmsMtLabTypesTableOrderingComposer,
+          $$FmsMtLabTypesTableAnnotationComposer,
+          $$FmsMtLabTypesTableCreateCompanionBuilder,
+          $$FmsMtLabTypesTableUpdateCompanionBuilder,
+          (
+            FmsMtLabType,
+            BaseReferences<_$AppDatabase, $FmsMtLabTypesTable, FmsMtLabType>,
+          ),
+          FmsMtLabType,
+          PrefetchHooks Function()
+        > {
+  $$FmsMtLabTypesTableTableManager(_$AppDatabase db, $FmsMtLabTypesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FmsMtLabTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FmsMtLabTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FmsMtLabTypesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> labTypeId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                Value<String> labSampleTestType = const Value.absent(),
+                Value<String?> standard = const Value.absent(),
+                Value<String> testType = const Value.absent(),
+                Value<String> testTypeDetail = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => FmsMtLabTypesCompanion(
+                labTypeId: labTypeId,
+                idUuid: idUuid,
+                labSampleTestType: labSampleTestType,
+                standard: standard,
+                testType: testType,
+                testTypeDetail: testTypeDetail,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> labTypeId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                required String labSampleTestType,
+                Value<String?> standard = const Value.absent(),
+                required String testType,
+                required String testTypeDetail,
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => FmsMtLabTypesCompanion.insert(
+                labTypeId: labTypeId,
+                idUuid: idUuid,
+                labSampleTestType: labSampleTestType,
+                standard: standard,
+                testType: testType,
+                testTypeDetail: testTypeDetail,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FmsMtLabTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FmsMtLabTypesTable,
+      FmsMtLabType,
+      $$FmsMtLabTypesTableFilterComposer,
+      $$FmsMtLabTypesTableOrderingComposer,
+      $$FmsMtLabTypesTableAnnotationComposer,
+      $$FmsMtLabTypesTableCreateCompanionBuilder,
+      $$FmsMtLabTypesTableUpdateCompanionBuilder,
+      (
+        FmsMtLabType,
+        BaseReferences<_$AppDatabase, $FmsMtLabTypesTable, FmsMtLabType>,
+      ),
+      FmsMtLabType,
+      PrefetchHooks Function()
+    >;
+typedef $$FmsMtSampleLabTypesTableCreateCompanionBuilder =
+    FmsMtSampleLabTypesCompanion Function({
+      Value<int> sampleLabTypeId,
+      Value<String> idUuid,
+      required String sampleLabType,
+      Value<bool> isActive,
+      Value<int?> createdBy,
+      Value<DateTime> createdDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+typedef $$FmsMtSampleLabTypesTableUpdateCompanionBuilder =
+    FmsMtSampleLabTypesCompanion Function({
+      Value<int> sampleLabTypeId,
+      Value<String> idUuid,
+      Value<String> sampleLabType,
+      Value<bool> isActive,
+      Value<int?> createdBy,
+      Value<DateTime> createdDate,
+      Value<int?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+
+class $$FmsMtSampleLabTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $FmsMtSampleLabTypesTable> {
+  $$FmsMtSampleLabTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get sampleLabTypeId => $composableBuilder(
+    column: $table.sampleLabTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleLabType => $composableBuilder(
+    column: $table.sampleLabType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FmsMtSampleLabTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FmsMtSampleLabTypesTable> {
+  $$FmsMtSampleLabTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get sampleLabTypeId => $composableBuilder(
+    column: $table.sampleLabTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleLabType => $composableBuilder(
+    column: $table.sampleLabType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FmsMtSampleLabTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FmsMtSampleLabTypesTable> {
+  $$FmsMtSampleLabTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get sampleLabTypeId => $composableBuilder(
+    column: $table.sampleLabTypeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get idUuid =>
+      $composableBuilder(column: $table.idUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get sampleLabType => $composableBuilder(
+    column: $table.sampleLabType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => column,
+  );
+}
+
+class $$FmsMtSampleLabTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FmsMtSampleLabTypesTable,
+          FmsMtSampleLabType,
+          $$FmsMtSampleLabTypesTableFilterComposer,
+          $$FmsMtSampleLabTypesTableOrderingComposer,
+          $$FmsMtSampleLabTypesTableAnnotationComposer,
+          $$FmsMtSampleLabTypesTableCreateCompanionBuilder,
+          $$FmsMtSampleLabTypesTableUpdateCompanionBuilder,
+          (
+            FmsMtSampleLabType,
+            BaseReferences<
+              _$AppDatabase,
+              $FmsMtSampleLabTypesTable,
+              FmsMtSampleLabType
+            >,
+          ),
+          FmsMtSampleLabType,
+          PrefetchHooks Function()
+        > {
+  $$FmsMtSampleLabTypesTableTableManager(
+    _$AppDatabase db,
+    $FmsMtSampleLabTypesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FmsMtSampleLabTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FmsMtSampleLabTypesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$FmsMtSampleLabTypesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> sampleLabTypeId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                Value<String> sampleLabType = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => FmsMtSampleLabTypesCompanion(
+                sampleLabTypeId: sampleLabTypeId,
+                idUuid: idUuid,
+                sampleLabType: sampleLabType,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> sampleLabTypeId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                required String sampleLabType,
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<int?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => FmsMtSampleLabTypesCompanion.insert(
+                sampleLabTypeId: sampleLabTypeId,
+                idUuid: idUuid,
+                sampleLabType: sampleLabType,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FmsMtSampleLabTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FmsMtSampleLabTypesTable,
+      FmsMtSampleLabType,
+      $$FmsMtSampleLabTypesTableFilterComposer,
+      $$FmsMtSampleLabTypesTableOrderingComposer,
+      $$FmsMtSampleLabTypesTableAnnotationComposer,
+      $$FmsMtSampleLabTypesTableCreateCompanionBuilder,
+      $$FmsMtSampleLabTypesTableUpdateCompanionBuilder,
+      (
+        FmsMtSampleLabType,
+        BaseReferences<
+          _$AppDatabase,
+          $FmsMtSampleLabTypesTable,
+          FmsMtSampleLabType
+        >,
+      ),
+      FmsMtSampleLabType,
+      PrefetchHooks Function()
+    >;
+typedef $$Fms20LabRequestsTableCreateCompanionBuilder =
+    Fms20LabRequestsCompanion Function({
+      Value<int> labRequestId,
+      Value<String> idUuid,
+      required String employeeUuid,
+      Value<DateTime> orderDate,
+      required String farmUuid,
+      required String testType,
+      required String anamnesa,
+      Value<String> status,
+      Value<bool> isActive,
+      Value<String?> createdBy,
+      Value<DateTime> createdDate,
+      Value<String?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+typedef $$Fms20LabRequestsTableUpdateCompanionBuilder =
+    Fms20LabRequestsCompanion Function({
+      Value<int> labRequestId,
+      Value<String> idUuid,
+      Value<String> employeeUuid,
+      Value<DateTime> orderDate,
+      Value<String> farmUuid,
+      Value<String> testType,
+      Value<String> anamnesa,
+      Value<String> status,
+      Value<bool> isActive,
+      Value<String?> createdBy,
+      Value<DateTime> createdDate,
+      Value<String?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+
+final class $$Fms20LabRequestsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $Fms20LabRequestsTable, Fms20LabRequest> {
+  $$Fms20LabRequestsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $Fms29LabRequestDetailsTable,
+    List<Fms29LabRequestDetail>
+  >
+  _fms29LabRequestDetailsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.fms29LabRequestDetails,
+        aliasName: $_aliasNameGenerator(
+          db.fms20LabRequests.idUuid,
+          db.fms29LabRequestDetails.labRequestUuid,
+        ),
+      );
+
+  $$Fms29LabRequestDetailsTableProcessedTableManager
+  get fms29LabRequestDetailsRefs {
+    final manager =
+        $$Fms29LabRequestDetailsTableTableManager(
+          $_db,
+          $_db.fms29LabRequestDetails,
+        ).filter(
+          (f) => f.labRequestUuid.idUuid.sqlEquals(
+            $_itemColumn<String>('id_uuid')!,
+          ),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _fms29LabRequestDetailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$Fms20LabRequestsTableFilterComposer
+    extends Composer<_$AppDatabase, $Fms20LabRequestsTable> {
+  $$Fms20LabRequestsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get labRequestId => $composableBuilder(
+    column: $table.labRequestId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get employeeUuid => $composableBuilder(
+    column: $table.employeeUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get orderDate => $composableBuilder(
+    column: $table.orderDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmUuid => $composableBuilder(
+    column: $table.farmUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testType => $composableBuilder(
+    column: $table.testType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get anamnesa => $composableBuilder(
+    column: $table.anamnesa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> fms29LabRequestDetailsRefs(
+    Expression<bool> Function($$Fms29LabRequestDetailsTableFilterComposer f) f,
+  ) {
+    final $$Fms29LabRequestDetailsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.idUuid,
+          referencedTable: $db.fms29LabRequestDetails,
+          getReferencedColumn: (t) => t.labRequestUuid,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$Fms29LabRequestDetailsTableFilterComposer(
+                $db: $db,
+                $table: $db.fms29LabRequestDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$Fms20LabRequestsTableOrderingComposer
+    extends Composer<_$AppDatabase, $Fms20LabRequestsTable> {
+  $$Fms20LabRequestsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get labRequestId => $composableBuilder(
+    column: $table.labRequestId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get employeeUuid => $composableBuilder(
+    column: $table.employeeUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get orderDate => $composableBuilder(
+    column: $table.orderDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmUuid => $composableBuilder(
+    column: $table.farmUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testType => $composableBuilder(
+    column: $table.testType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get anamnesa => $composableBuilder(
+    column: $table.anamnesa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$Fms20LabRequestsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $Fms20LabRequestsTable> {
+  $$Fms20LabRequestsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get labRequestId => $composableBuilder(
+    column: $table.labRequestId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get idUuid =>
+      $composableBuilder(column: $table.idUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get employeeUuid => $composableBuilder(
+    column: $table.employeeUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get orderDate =>
+      $composableBuilder(column: $table.orderDate, builder: (column) => column);
+
+  GeneratedColumn<String> get farmUuid =>
+      $composableBuilder(column: $table.farmUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get testType =>
+      $composableBuilder(column: $table.testType, builder: (column) => column);
+
+  GeneratedColumn<String> get anamnesa =>
+      $composableBuilder(column: $table.anamnesa, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => column,
+  );
+
+  Expression<T> fms29LabRequestDetailsRefs<T extends Object>(
+    Expression<T> Function($$Fms29LabRequestDetailsTableAnnotationComposer a) f,
+  ) {
+    final $$Fms29LabRequestDetailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.idUuid,
+          referencedTable: $db.fms29LabRequestDetails,
+          getReferencedColumn: (t) => t.labRequestUuid,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$Fms29LabRequestDetailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.fms29LabRequestDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$Fms20LabRequestsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $Fms20LabRequestsTable,
+          Fms20LabRequest,
+          $$Fms20LabRequestsTableFilterComposer,
+          $$Fms20LabRequestsTableOrderingComposer,
+          $$Fms20LabRequestsTableAnnotationComposer,
+          $$Fms20LabRequestsTableCreateCompanionBuilder,
+          $$Fms20LabRequestsTableUpdateCompanionBuilder,
+          (Fms20LabRequest, $$Fms20LabRequestsTableReferences),
+          Fms20LabRequest,
+          PrefetchHooks Function({bool fms29LabRequestDetailsRefs})
+        > {
+  $$Fms20LabRequestsTableTableManager(
+    _$AppDatabase db,
+    $Fms20LabRequestsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$Fms20LabRequestsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$Fms20LabRequestsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$Fms20LabRequestsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> labRequestId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                Value<String> employeeUuid = const Value.absent(),
+                Value<DateTime> orderDate = const Value.absent(),
+                Value<String> farmUuid = const Value.absent(),
+                Value<String> testType = const Value.absent(),
+                Value<String> anamnesa = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<String?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => Fms20LabRequestsCompanion(
+                labRequestId: labRequestId,
+                idUuid: idUuid,
+                employeeUuid: employeeUuid,
+                orderDate: orderDate,
+                farmUuid: farmUuid,
+                testType: testType,
+                anamnesa: anamnesa,
+                status: status,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> labRequestId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                required String employeeUuid,
+                Value<DateTime> orderDate = const Value.absent(),
+                required String farmUuid,
+                required String testType,
+                required String anamnesa,
+                Value<String> status = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<String?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => Fms20LabRequestsCompanion.insert(
+                labRequestId: labRequestId,
+                idUuid: idUuid,
+                employeeUuid: employeeUuid,
+                orderDate: orderDate,
+                farmUuid: farmUuid,
+                testType: testType,
+                anamnesa: anamnesa,
+                status: status,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$Fms20LabRequestsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({fms29LabRequestDetailsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (fms29LabRequestDetailsRefs) db.fms29LabRequestDetails,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (fms29LabRequestDetailsRefs)
+                    await $_getPrefetchedData<
+                      Fms20LabRequest,
+                      $Fms20LabRequestsTable,
+                      Fms29LabRequestDetail
+                    >(
+                      currentTable: table,
+                      referencedTable: $$Fms20LabRequestsTableReferences
+                          ._fms29LabRequestDetailsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$Fms20LabRequestsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).fms29LabRequestDetailsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.labRequestUuid == item.idUuid,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$Fms20LabRequestsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $Fms20LabRequestsTable,
+      Fms20LabRequest,
+      $$Fms20LabRequestsTableFilterComposer,
+      $$Fms20LabRequestsTableOrderingComposer,
+      $$Fms20LabRequestsTableAnnotationComposer,
+      $$Fms20LabRequestsTableCreateCompanionBuilder,
+      $$Fms20LabRequestsTableUpdateCompanionBuilder,
+      (Fms20LabRequest, $$Fms20LabRequestsTableReferences),
+      Fms20LabRequest,
+      PrefetchHooks Function({bool fms29LabRequestDetailsRefs})
+    >;
+typedef $$Fms29LabRequestDetailsTableCreateCompanionBuilder =
+    Fms29LabRequestDetailsCompanion Function({
+      Value<int> labRequestDetailId,
+      Value<String> idUuid,
+      required String labRequestUuid,
+      Value<String?> sampleCode,
+      required String pondUuid,
+      required String sampleLabTypeUuid,
+      Value<int?> doc,
+      Value<String?> testTypeDetails,
+      Value<String?> notes,
+      Value<bool> isActive,
+      Value<String?> createdBy,
+      Value<DateTime> createdDate,
+      Value<String?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+typedef $$Fms29LabRequestDetailsTableUpdateCompanionBuilder =
+    Fms29LabRequestDetailsCompanion Function({
+      Value<int> labRequestDetailId,
+      Value<String> idUuid,
+      Value<String> labRequestUuid,
+      Value<String?> sampleCode,
+      Value<String> pondUuid,
+      Value<String> sampleLabTypeUuid,
+      Value<int?> doc,
+      Value<String?> testTypeDetails,
+      Value<String?> notes,
+      Value<bool> isActive,
+      Value<String?> createdBy,
+      Value<DateTime> createdDate,
+      Value<String?> lastUpdatedBy,
+      Value<DateTime?> lastUpdatedDate,
+    });
+
+final class $$Fms29LabRequestDetailsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $Fms29LabRequestDetailsTable,
+          Fms29LabRequestDetail
+        > {
+  $$Fms29LabRequestDetailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $Fms20LabRequestsTable _labRequestUuidTable(_$AppDatabase db) =>
+      db.fms20LabRequests.createAlias(
+        $_aliasNameGenerator(
+          db.fms29LabRequestDetails.labRequestUuid,
+          db.fms20LabRequests.idUuid,
+        ),
+      );
+
+  $$Fms20LabRequestsTableProcessedTableManager get labRequestUuid {
+    final $_column = $_itemColumn<String>('lab_request_uuid')!;
+
+    final manager = $$Fms20LabRequestsTableTableManager(
+      $_db,
+      $_db.fms20LabRequests,
+    ).filter((f) => f.idUuid.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_labRequestUuidTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$Fms29LabRequestDetailsTableFilterComposer
+    extends Composer<_$AppDatabase, $Fms29LabRequestDetailsTable> {
+  $$Fms29LabRequestDetailsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get labRequestDetailId => $composableBuilder(
+    column: $table.labRequestDetailId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleCode => $composableBuilder(
+    column: $table.sampleCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pondUuid => $composableBuilder(
+    column: $table.pondUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleLabTypeUuid => $composableBuilder(
+    column: $table.sampleLabTypeUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get doc => $composableBuilder(
+    column: $table.doc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testTypeDetails => $composableBuilder(
+    column: $table.testTypeDetails,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$Fms20LabRequestsTableFilterComposer get labRequestUuid {
+    final $$Fms20LabRequestsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.labRequestUuid,
+      referencedTable: $db.fms20LabRequests,
+      getReferencedColumn: (t) => t.idUuid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$Fms20LabRequestsTableFilterComposer(
+            $db: $db,
+            $table: $db.fms20LabRequests,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$Fms29LabRequestDetailsTableOrderingComposer
+    extends Composer<_$AppDatabase, $Fms29LabRequestDetailsTable> {
+  $$Fms29LabRequestDetailsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get labRequestDetailId => $composableBuilder(
+    column: $table.labRequestDetailId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idUuid => $composableBuilder(
+    column: $table.idUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleCode => $composableBuilder(
+    column: $table.sampleCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pondUuid => $composableBuilder(
+    column: $table.pondUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleLabTypeUuid => $composableBuilder(
+    column: $table.sampleLabTypeUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get doc => $composableBuilder(
+    column: $table.doc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testTypeDetails => $composableBuilder(
+    column: $table.testTypeDetails,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$Fms20LabRequestsTableOrderingComposer get labRequestUuid {
+    final $$Fms20LabRequestsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.labRequestUuid,
+      referencedTable: $db.fms20LabRequests,
+      getReferencedColumn: (t) => t.idUuid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$Fms20LabRequestsTableOrderingComposer(
+            $db: $db,
+            $table: $db.fms20LabRequests,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$Fms29LabRequestDetailsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $Fms29LabRequestDetailsTable> {
+  $$Fms29LabRequestDetailsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get labRequestDetailId => $composableBuilder(
+    column: $table.labRequestDetailId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get idUuid =>
+      $composableBuilder(column: $table.idUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get sampleCode => $composableBuilder(
+    column: $table.sampleCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get pondUuid =>
+      $composableBuilder(column: $table.pondUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get sampleLabTypeUuid => $composableBuilder(
+    column: $table.sampleLabTypeUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get doc =>
+      $composableBuilder(column: $table.doc, builder: (column) => column);
+
+  GeneratedColumn<String> get testTypeDetails => $composableBuilder(
+    column: $table.testTypeDetails,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastUpdatedBy => $composableBuilder(
+    column: $table.lastUpdatedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastUpdatedDate => $composableBuilder(
+    column: $table.lastUpdatedDate,
+    builder: (column) => column,
+  );
+
+  $$Fms20LabRequestsTableAnnotationComposer get labRequestUuid {
+    final $$Fms20LabRequestsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.labRequestUuid,
+      referencedTable: $db.fms20LabRequests,
+      getReferencedColumn: (t) => t.idUuid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$Fms20LabRequestsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fms20LabRequests,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$Fms29LabRequestDetailsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $Fms29LabRequestDetailsTable,
+          Fms29LabRequestDetail,
+          $$Fms29LabRequestDetailsTableFilterComposer,
+          $$Fms29LabRequestDetailsTableOrderingComposer,
+          $$Fms29LabRequestDetailsTableAnnotationComposer,
+          $$Fms29LabRequestDetailsTableCreateCompanionBuilder,
+          $$Fms29LabRequestDetailsTableUpdateCompanionBuilder,
+          (Fms29LabRequestDetail, $$Fms29LabRequestDetailsTableReferences),
+          Fms29LabRequestDetail,
+          PrefetchHooks Function({bool labRequestUuid})
+        > {
+  $$Fms29LabRequestDetailsTableTableManager(
+    _$AppDatabase db,
+    $Fms29LabRequestDetailsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$Fms29LabRequestDetailsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$Fms29LabRequestDetailsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$Fms29LabRequestDetailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> labRequestDetailId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                Value<String> labRequestUuid = const Value.absent(),
+                Value<String?> sampleCode = const Value.absent(),
+                Value<String> pondUuid = const Value.absent(),
+                Value<String> sampleLabTypeUuid = const Value.absent(),
+                Value<int?> doc = const Value.absent(),
+                Value<String?> testTypeDetails = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<String?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => Fms29LabRequestDetailsCompanion(
+                labRequestDetailId: labRequestDetailId,
+                idUuid: idUuid,
+                labRequestUuid: labRequestUuid,
+                sampleCode: sampleCode,
+                pondUuid: pondUuid,
+                sampleLabTypeUuid: sampleLabTypeUuid,
+                doc: doc,
+                testTypeDetails: testTypeDetails,
+                notes: notes,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> labRequestDetailId = const Value.absent(),
+                Value<String> idUuid = const Value.absent(),
+                required String labRequestUuid,
+                Value<String?> sampleCode = const Value.absent(),
+                required String pondUuid,
+                required String sampleLabTypeUuid,
+                Value<int?> doc = const Value.absent(),
+                Value<String?> testTypeDetails = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String?> createdBy = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+                Value<String?> lastUpdatedBy = const Value.absent(),
+                Value<DateTime?> lastUpdatedDate = const Value.absent(),
+              }) => Fms29LabRequestDetailsCompanion.insert(
+                labRequestDetailId: labRequestDetailId,
+                idUuid: idUuid,
+                labRequestUuid: labRequestUuid,
+                sampleCode: sampleCode,
+                pondUuid: pondUuid,
+                sampleLabTypeUuid: sampleLabTypeUuid,
+                doc: doc,
+                testTypeDetails: testTypeDetails,
+                notes: notes,
+                isActive: isActive,
+                createdBy: createdBy,
+                createdDate: createdDate,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedDate: lastUpdatedDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$Fms29LabRequestDetailsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({labRequestUuid = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (labRequestUuid) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.labRequestUuid,
+                                referencedTable:
+                                    $$Fms29LabRequestDetailsTableReferences
+                                        ._labRequestUuidTable(db),
+                                referencedColumn:
+                                    $$Fms29LabRequestDetailsTableReferences
+                                        ._labRequestUuidTable(db)
+                                        .idUuid,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$Fms29LabRequestDetailsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $Fms29LabRequestDetailsTable,
+      Fms29LabRequestDetail,
+      $$Fms29LabRequestDetailsTableFilterComposer,
+      $$Fms29LabRequestDetailsTableOrderingComposer,
+      $$Fms29LabRequestDetailsTableAnnotationComposer,
+      $$Fms29LabRequestDetailsTableCreateCompanionBuilder,
+      $$Fms29LabRequestDetailsTableUpdateCompanionBuilder,
+      (Fms29LabRequestDetail, $$Fms29LabRequestDetailsTableReferences),
+      Fms29LabRequestDetail,
+      PrefetchHooks Function({bool labRequestUuid})
+    >;
+typedef $$Fms09LabRequestHistoriesTableCreateCompanionBuilder =
+    Fms09LabRequestHistoriesCompanion Function({
+      Value<int> historyId,
+      required int requestId,
+      required String action,
+      Value<String?> oldStatus,
+      Value<String?> newStatus,
+      Value<String?> changeDetails,
+      Value<String?> changedFields,
+      required String changedBy,
+      Value<int?> employeeId,
+      Value<String?> ipAddress,
+      Value<String?> userAgent,
+      Value<DateTime> actionDateTime,
+    });
+typedef $$Fms09LabRequestHistoriesTableUpdateCompanionBuilder =
+    Fms09LabRequestHistoriesCompanion Function({
+      Value<int> historyId,
+      Value<int> requestId,
+      Value<String> action,
+      Value<String?> oldStatus,
+      Value<String?> newStatus,
+      Value<String?> changeDetails,
+      Value<String?> changedFields,
+      Value<String> changedBy,
+      Value<int?> employeeId,
+      Value<String?> ipAddress,
+      Value<String?> userAgent,
+      Value<DateTime> actionDateTime,
+    });
+
+class $$Fms09LabRequestHistoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestHistoriesTable> {
+  $$Fms09LabRequestHistoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get historyId => $composableBuilder(
+    column: $table.historyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get oldStatus => $composableBuilder(
+    column: $table.oldStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get newStatus => $composableBuilder(
+    column: $table.newStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changeDetails => $composableBuilder(
+    column: $table.changeDetails,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedFields => $composableBuilder(
+    column: $table.changedFields,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedBy => $composableBuilder(
+    column: $table.changedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get employeeId => $composableBuilder(
+    column: $table.employeeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ipAddress => $composableBuilder(
+    column: $table.ipAddress,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userAgent => $composableBuilder(
+    column: $table.userAgent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get actionDateTime => $composableBuilder(
+    column: $table.actionDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$Fms09LabRequestHistoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestHistoriesTable> {
+  $$Fms09LabRequestHistoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get historyId => $composableBuilder(
+    column: $table.historyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get oldStatus => $composableBuilder(
+    column: $table.oldStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get newStatus => $composableBuilder(
+    column: $table.newStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changeDetails => $composableBuilder(
+    column: $table.changeDetails,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedFields => $composableBuilder(
+    column: $table.changedFields,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedBy => $composableBuilder(
+    column: $table.changedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get employeeId => $composableBuilder(
+    column: $table.employeeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ipAddress => $composableBuilder(
+    column: $table.ipAddress,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userAgent => $composableBuilder(
+    column: $table.userAgent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get actionDateTime => $composableBuilder(
+    column: $table.actionDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$Fms09LabRequestHistoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestHistoriesTable> {
+  $$Fms09LabRequestHistoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get historyId =>
+      $composableBuilder(column: $table.historyId, builder: (column) => column);
+
+  GeneratedColumn<int> get requestId =>
+      $composableBuilder(column: $table.requestId, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get oldStatus =>
+      $composableBuilder(column: $table.oldStatus, builder: (column) => column);
+
+  GeneratedColumn<String> get newStatus =>
+      $composableBuilder(column: $table.newStatus, builder: (column) => column);
+
+  GeneratedColumn<String> get changeDetails => $composableBuilder(
+    column: $table.changeDetails,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changedFields => $composableBuilder(
+    column: $table.changedFields,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changedBy =>
+      $composableBuilder(column: $table.changedBy, builder: (column) => column);
+
+  GeneratedColumn<int> get employeeId => $composableBuilder(
+    column: $table.employeeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ipAddress =>
+      $composableBuilder(column: $table.ipAddress, builder: (column) => column);
+
+  GeneratedColumn<String> get userAgent =>
+      $composableBuilder(column: $table.userAgent, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get actionDateTime => $composableBuilder(
+    column: $table.actionDateTime,
+    builder: (column) => column,
+  );
+}
+
+class $$Fms09LabRequestHistoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $Fms09LabRequestHistoriesTable,
+          Fms09LabRequestHistory,
+          $$Fms09LabRequestHistoriesTableFilterComposer,
+          $$Fms09LabRequestHistoriesTableOrderingComposer,
+          $$Fms09LabRequestHistoriesTableAnnotationComposer,
+          $$Fms09LabRequestHistoriesTableCreateCompanionBuilder,
+          $$Fms09LabRequestHistoriesTableUpdateCompanionBuilder,
+          (
+            Fms09LabRequestHistory,
+            BaseReferences<
+              _$AppDatabase,
+              $Fms09LabRequestHistoriesTable,
+              Fms09LabRequestHistory
+            >,
+          ),
+          Fms09LabRequestHistory,
+          PrefetchHooks Function()
+        > {
+  $$Fms09LabRequestHistoriesTableTableManager(
+    _$AppDatabase db,
+    $Fms09LabRequestHistoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$Fms09LabRequestHistoriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$Fms09LabRequestHistoriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$Fms09LabRequestHistoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> historyId = const Value.absent(),
+                Value<int> requestId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String?> oldStatus = const Value.absent(),
+                Value<String?> newStatus = const Value.absent(),
+                Value<String?> changeDetails = const Value.absent(),
+                Value<String?> changedFields = const Value.absent(),
+                Value<String> changedBy = const Value.absent(),
+                Value<int?> employeeId = const Value.absent(),
+                Value<String?> ipAddress = const Value.absent(),
+                Value<String?> userAgent = const Value.absent(),
+                Value<DateTime> actionDateTime = const Value.absent(),
+              }) => Fms09LabRequestHistoriesCompanion(
+                historyId: historyId,
+                requestId: requestId,
+                action: action,
+                oldStatus: oldStatus,
+                newStatus: newStatus,
+                changeDetails: changeDetails,
+                changedFields: changedFields,
+                changedBy: changedBy,
+                employeeId: employeeId,
+                ipAddress: ipAddress,
+                userAgent: userAgent,
+                actionDateTime: actionDateTime,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> historyId = const Value.absent(),
+                required int requestId,
+                required String action,
+                Value<String?> oldStatus = const Value.absent(),
+                Value<String?> newStatus = const Value.absent(),
+                Value<String?> changeDetails = const Value.absent(),
+                Value<String?> changedFields = const Value.absent(),
+                required String changedBy,
+                Value<int?> employeeId = const Value.absent(),
+                Value<String?> ipAddress = const Value.absent(),
+                Value<String?> userAgent = const Value.absent(),
+                Value<DateTime> actionDateTime = const Value.absent(),
+              }) => Fms09LabRequestHistoriesCompanion.insert(
+                historyId: historyId,
+                requestId: requestId,
+                action: action,
+                oldStatus: oldStatus,
+                newStatus: newStatus,
+                changeDetails: changeDetails,
+                changedFields: changedFields,
+                changedBy: changedBy,
+                employeeId: employeeId,
+                ipAddress: ipAddress,
+                userAgent: userAgent,
+                actionDateTime: actionDateTime,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$Fms09LabRequestHistoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $Fms09LabRequestHistoriesTable,
+      Fms09LabRequestHistory,
+      $$Fms09LabRequestHistoriesTableFilterComposer,
+      $$Fms09LabRequestHistoriesTableOrderingComposer,
+      $$Fms09LabRequestHistoriesTableAnnotationComposer,
+      $$Fms09LabRequestHistoriesTableCreateCompanionBuilder,
+      $$Fms09LabRequestHistoriesTableUpdateCompanionBuilder,
+      (
+        Fms09LabRequestHistory,
+        BaseReferences<
+          _$AppDatabase,
+          $Fms09LabRequestHistoriesTable,
+          Fms09LabRequestHistory
+        >,
+      ),
+      Fms09LabRequestHistory,
+      PrefetchHooks Function()
+    >;
+typedef $$Fms09LabRequestNotificationsTableCreateCompanionBuilder =
+    Fms09LabRequestNotificationsCompanion Function({
+      Value<int> notificationId,
+      required int requestId,
+      required String notificationType,
+      required String notificationTrigger,
+      required String recipientType,
+      required String recipientName,
+      required String recipientContact,
+      required String messageContent,
+      required String messageTemplate,
+      Value<String?> templateVariables,
+      Value<DateTime?> scheduledDateTime,
+      Value<DateTime?> sentDateTime,
+      Value<String> deliveryStatus,
+      Value<String?> deliveryStatusDetail,
+      Value<String?> failureReason,
+      Value<int> retryCount,
+      Value<int> maxRetries,
+      Value<DateTime?> lastRetryDateTime,
+      Value<DateTime?> nextRetryDateTime,
+      Value<String?> messageId,
+      Value<String?> apiResponse,
+      Value<DateTime> createdDate,
+    });
+typedef $$Fms09LabRequestNotificationsTableUpdateCompanionBuilder =
+    Fms09LabRequestNotificationsCompanion Function({
+      Value<int> notificationId,
+      Value<int> requestId,
+      Value<String> notificationType,
+      Value<String> notificationTrigger,
+      Value<String> recipientType,
+      Value<String> recipientName,
+      Value<String> recipientContact,
+      Value<String> messageContent,
+      Value<String> messageTemplate,
+      Value<String?> templateVariables,
+      Value<DateTime?> scheduledDateTime,
+      Value<DateTime?> sentDateTime,
+      Value<String> deliveryStatus,
+      Value<String?> deliveryStatusDetail,
+      Value<String?> failureReason,
+      Value<int> retryCount,
+      Value<int> maxRetries,
+      Value<DateTime?> lastRetryDateTime,
+      Value<DateTime?> nextRetryDateTime,
+      Value<String?> messageId,
+      Value<String?> apiResponse,
+      Value<DateTime> createdDate,
+    });
+
+class $$Fms09LabRequestNotificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestNotificationsTable> {
+  $$Fms09LabRequestNotificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get notificationId => $composableBuilder(
+    column: $table.notificationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notificationType => $composableBuilder(
+    column: $table.notificationType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notificationTrigger => $composableBuilder(
+    column: $table.notificationTrigger,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipientType => $composableBuilder(
+    column: $table.recipientType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipientName => $composableBuilder(
+    column: $table.recipientName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipientContact => $composableBuilder(
+    column: $table.recipientContact,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get messageContent => $composableBuilder(
+    column: $table.messageContent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get messageTemplate => $composableBuilder(
+    column: $table.messageTemplate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateVariables => $composableBuilder(
+    column: $table.templateVariables,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get scheduledDateTime => $composableBuilder(
+    column: $table.scheduledDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get sentDateTime => $composableBuilder(
+    column: $table.sentDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deliveryStatus => $composableBuilder(
+    column: $table.deliveryStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deliveryStatusDetail => $composableBuilder(
+    column: $table.deliveryStatusDetail,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastRetryDateTime => $composableBuilder(
+    column: $table.lastRetryDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextRetryDateTime => $composableBuilder(
+    column: $table.nextRetryDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get messageId => $composableBuilder(
+    column: $table.messageId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get apiResponse => $composableBuilder(
+    column: $table.apiResponse,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$Fms09LabRequestNotificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestNotificationsTable> {
+  $$Fms09LabRequestNotificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get notificationId => $composableBuilder(
+    column: $table.notificationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get requestId => $composableBuilder(
+    column: $table.requestId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notificationType => $composableBuilder(
+    column: $table.notificationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notificationTrigger => $composableBuilder(
+    column: $table.notificationTrigger,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipientType => $composableBuilder(
+    column: $table.recipientType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipientName => $composableBuilder(
+    column: $table.recipientName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipientContact => $composableBuilder(
+    column: $table.recipientContact,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get messageContent => $composableBuilder(
+    column: $table.messageContent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get messageTemplate => $composableBuilder(
+    column: $table.messageTemplate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templateVariables => $composableBuilder(
+    column: $table.templateVariables,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get scheduledDateTime => $composableBuilder(
+    column: $table.scheduledDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get sentDateTime => $composableBuilder(
+    column: $table.sentDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deliveryStatus => $composableBuilder(
+    column: $table.deliveryStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deliveryStatusDetail => $composableBuilder(
+    column: $table.deliveryStatusDetail,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastRetryDateTime => $composableBuilder(
+    column: $table.lastRetryDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextRetryDateTime => $composableBuilder(
+    column: $table.nextRetryDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get messageId => $composableBuilder(
+    column: $table.messageId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get apiResponse => $composableBuilder(
+    column: $table.apiResponse,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$Fms09LabRequestNotificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $Fms09LabRequestNotificationsTable> {
+  $$Fms09LabRequestNotificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get notificationId => $composableBuilder(
+    column: $table.notificationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get requestId =>
+      $composableBuilder(column: $table.requestId, builder: (column) => column);
+
+  GeneratedColumn<String> get notificationType => $composableBuilder(
+    column: $table.notificationType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notificationTrigger => $composableBuilder(
+    column: $table.notificationTrigger,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recipientType => $composableBuilder(
+    column: $table.recipientType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recipientName => $composableBuilder(
+    column: $table.recipientName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recipientContact => $composableBuilder(
+    column: $table.recipientContact,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get messageContent => $composableBuilder(
+    column: $table.messageContent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get messageTemplate => $composableBuilder(
+    column: $table.messageTemplate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get templateVariables => $composableBuilder(
+    column: $table.templateVariables,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get scheduledDateTime => $composableBuilder(
+    column: $table.scheduledDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get sentDateTime => $composableBuilder(
+    column: $table.sentDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get deliveryStatus => $composableBuilder(
+    column: $table.deliveryStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get deliveryStatusDetail => $composableBuilder(
+    column: $table.deliveryStatusDetail,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastRetryDateTime => $composableBuilder(
+    column: $table.lastRetryDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get nextRetryDateTime => $composableBuilder(
+    column: $table.nextRetryDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get messageId =>
+      $composableBuilder(column: $table.messageId, builder: (column) => column);
+
+  GeneratedColumn<String> get apiResponse => $composableBuilder(
+    column: $table.apiResponse,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+    column: $table.createdDate,
+    builder: (column) => column,
+  );
+}
+
+class $$Fms09LabRequestNotificationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $Fms09LabRequestNotificationsTable,
+          Fms09LabRequestNotification,
+          $$Fms09LabRequestNotificationsTableFilterComposer,
+          $$Fms09LabRequestNotificationsTableOrderingComposer,
+          $$Fms09LabRequestNotificationsTableAnnotationComposer,
+          $$Fms09LabRequestNotificationsTableCreateCompanionBuilder,
+          $$Fms09LabRequestNotificationsTableUpdateCompanionBuilder,
+          (
+            Fms09LabRequestNotification,
+            BaseReferences<
+              _$AppDatabase,
+              $Fms09LabRequestNotificationsTable,
+              Fms09LabRequestNotification
+            >,
+          ),
+          Fms09LabRequestNotification,
+          PrefetchHooks Function()
+        > {
+  $$Fms09LabRequestNotificationsTableTableManager(
+    _$AppDatabase db,
+    $Fms09LabRequestNotificationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$Fms09LabRequestNotificationsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$Fms09LabRequestNotificationsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$Fms09LabRequestNotificationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> notificationId = const Value.absent(),
+                Value<int> requestId = const Value.absent(),
+                Value<String> notificationType = const Value.absent(),
+                Value<String> notificationTrigger = const Value.absent(),
+                Value<String> recipientType = const Value.absent(),
+                Value<String> recipientName = const Value.absent(),
+                Value<String> recipientContact = const Value.absent(),
+                Value<String> messageContent = const Value.absent(),
+                Value<String> messageTemplate = const Value.absent(),
+                Value<String?> templateVariables = const Value.absent(),
+                Value<DateTime?> scheduledDateTime = const Value.absent(),
+                Value<DateTime?> sentDateTime = const Value.absent(),
+                Value<String> deliveryStatus = const Value.absent(),
+                Value<String?> deliveryStatusDetail = const Value.absent(),
+                Value<String?> failureReason = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<int> maxRetries = const Value.absent(),
+                Value<DateTime?> lastRetryDateTime = const Value.absent(),
+                Value<DateTime?> nextRetryDateTime = const Value.absent(),
+                Value<String?> messageId = const Value.absent(),
+                Value<String?> apiResponse = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => Fms09LabRequestNotificationsCompanion(
+                notificationId: notificationId,
+                requestId: requestId,
+                notificationType: notificationType,
+                notificationTrigger: notificationTrigger,
+                recipientType: recipientType,
+                recipientName: recipientName,
+                recipientContact: recipientContact,
+                messageContent: messageContent,
+                messageTemplate: messageTemplate,
+                templateVariables: templateVariables,
+                scheduledDateTime: scheduledDateTime,
+                sentDateTime: sentDateTime,
+                deliveryStatus: deliveryStatus,
+                deliveryStatusDetail: deliveryStatusDetail,
+                failureReason: failureReason,
+                retryCount: retryCount,
+                maxRetries: maxRetries,
+                lastRetryDateTime: lastRetryDateTime,
+                nextRetryDateTime: nextRetryDateTime,
+                messageId: messageId,
+                apiResponse: apiResponse,
+                createdDate: createdDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> notificationId = const Value.absent(),
+                required int requestId,
+                required String notificationType,
+                required String notificationTrigger,
+                required String recipientType,
+                required String recipientName,
+                required String recipientContact,
+                required String messageContent,
+                required String messageTemplate,
+                Value<String?> templateVariables = const Value.absent(),
+                Value<DateTime?> scheduledDateTime = const Value.absent(),
+                Value<DateTime?> sentDateTime = const Value.absent(),
+                Value<String> deliveryStatus = const Value.absent(),
+                Value<String?> deliveryStatusDetail = const Value.absent(),
+                Value<String?> failureReason = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<int> maxRetries = const Value.absent(),
+                Value<DateTime?> lastRetryDateTime = const Value.absent(),
+                Value<DateTime?> nextRetryDateTime = const Value.absent(),
+                Value<String?> messageId = const Value.absent(),
+                Value<String?> apiResponse = const Value.absent(),
+                Value<DateTime> createdDate = const Value.absent(),
+              }) => Fms09LabRequestNotificationsCompanion.insert(
+                notificationId: notificationId,
+                requestId: requestId,
+                notificationType: notificationType,
+                notificationTrigger: notificationTrigger,
+                recipientType: recipientType,
+                recipientName: recipientName,
+                recipientContact: recipientContact,
+                messageContent: messageContent,
+                messageTemplate: messageTemplate,
+                templateVariables: templateVariables,
+                scheduledDateTime: scheduledDateTime,
+                sentDateTime: sentDateTime,
+                deliveryStatus: deliveryStatus,
+                deliveryStatusDetail: deliveryStatusDetail,
+                failureReason: failureReason,
+                retryCount: retryCount,
+                maxRetries: maxRetries,
+                lastRetryDateTime: lastRetryDateTime,
+                nextRetryDateTime: nextRetryDateTime,
+                messageId: messageId,
+                apiResponse: apiResponse,
+                createdDate: createdDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$Fms09LabRequestNotificationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $Fms09LabRequestNotificationsTable,
+      Fms09LabRequestNotification,
+      $$Fms09LabRequestNotificationsTableFilterComposer,
+      $$Fms09LabRequestNotificationsTableOrderingComposer,
+      $$Fms09LabRequestNotificationsTableAnnotationComposer,
+      $$Fms09LabRequestNotificationsTableCreateCompanionBuilder,
+      $$Fms09LabRequestNotificationsTableUpdateCompanionBuilder,
+      (
+        Fms09LabRequestNotification,
+        BaseReferences<
+          _$AppDatabase,
+          $Fms09LabRequestNotificationsTable,
+          Fms09LabRequestNotification
+        >,
+      ),
+      Fms09LabRequestNotification,
+      PrefetchHooks Function()
     >;
 typedef $$Fms10CapacityReferencesTableCreateCompanionBuilder =
     Fms10CapacityReferencesCompanion Function({
@@ -28242,52 +38720,54 @@ typedef $$Fms10HarvestSimulationsTableProcessedTableManager =
 typedef $$Fms10AgentSimulationsTableCreateCompanionBuilder =
     Fms10AgentSimulationsCompanion Function({
       Value<int> simulationId,
-      required String simulationUuid,
+      Value<String> simulationUuid,
       required String simulationCode,
       required String simulationName,
       required int employeeId,
       Value<int?> pondId,
       Value<String?> deviceUuid,
-      Value<String?> displayCurrency,
-      Value<String?> displayWeightUnit,
-      Value<String?> displayAreaUnit,
-      Value<int?> currentDoc,
-      Value<double?> currentBiomass,
-      Value<String?> currentBiomassUnit,
-      Value<int?> stockingCount,
-      Value<double?> targetSrPercent,
-      Value<int?> targetDoc,
-      Value<double?> feedPayment,
-      Value<String?> feedPaymentCurrency,
-      Value<double?> harvestPrice,
-      Value<String?> harvestPriceCurrency,
-      Value<double?> estimatedHarvest,
-      Value<String?> estimatedHarvestUnit,
-      Value<double?> estimatedFcr,
-      Value<double?> feedPrice,
-      Value<String?> feedPriceCurrency,
-      Value<double?> harvestGuarantee,
-      Value<String?> harvestGuaranteeCurrency,
-      Value<double?> ltvRatio,
-      Value<double?> progress,
-      Value<double?> currentAbw,
-      Value<String?> currentAbwUnit,
-      Value<double?> harvestAbw,
-      Value<String?> harvestAbwUnit,
-      Value<double?> feedNeed,
-      Value<String?> feedNeedUnit,
-      Value<double?> feedCost,
-      Value<String?> feedCostCurrency,
-      Value<double?> maxLoan,
-      Value<String?> maxLoanCurrency,
+      Value<String?> agentType,
+      Value<double?> loanAmount,
+      Value<String?> loanCurrency,
+      Value<double?> interestRatePercent,
+      Value<int?> loanTermMonths,
+      Value<double?> guaranteePercentage,
+      Value<double?> guaranteeAmount,
+      Value<String?> guaranteeCurrency,
+      Value<double?> collateralValue,
+      Value<String?> collateralCurrency,
+      Value<double?> pondArea,
+      Value<String?> pondAreaUnit,
+      Value<double?> estimatedProductionKg,
+      Value<String?> estimatedProductionUnit,
+      Value<double?> estimatedRevenue,
+      Value<String?> estimatedRevenueCurrency,
+      Value<double?> estimatedProfit,
+      Value<String?> estimatedProfitCurrency,
+      Value<double?> debtServiceCoverageRatio,
+      Value<double?> loanToValueRatio,
+      Value<double?> riskScore,
+      Value<String?> riskLevel,
+      Value<String?> approvalRecommendation,
+      Value<String?> simulationData,
       Value<String?> calculationDetails,
-      Value<bool?> isMaterialized,
+      Value<String?> riskAssessment,
+      Value<String?> monthlyPaymentSchedule,
+      Value<bool?> isApproved,
       Value<bool?> isSynced,
       Value<String?> simulationStatus,
+      Value<int?> approvedBy,
+      Value<DateTime?> approvedDate,
+      Value<String?> rejectionReason,
+      Value<String?> languagePreference,
+      Value<String?> unitSystem,
+      Value<String?> displayWeightUnit,
+      Value<String?> displayAreaUnit,
+      Value<String?> displayCurrency,
+      Value<String?> simulationVersion,
       Value<DateTime?> createdDate,
       Value<DateTime?> lastUpdatedDate,
       Value<DateTime?> syncedDate,
-      Value<DateTime?> materializedDate,
       Value<DateTime?> deletedDate,
       Value<int?> createdBy,
       Value<int?> lastUpdatedBy,
@@ -28301,46 +38781,48 @@ typedef $$Fms10AgentSimulationsTableUpdateCompanionBuilder =
       Value<int> employeeId,
       Value<int?> pondId,
       Value<String?> deviceUuid,
-      Value<String?> displayCurrency,
-      Value<String?> displayWeightUnit,
-      Value<String?> displayAreaUnit,
-      Value<int?> currentDoc,
-      Value<double?> currentBiomass,
-      Value<String?> currentBiomassUnit,
-      Value<int?> stockingCount,
-      Value<double?> targetSrPercent,
-      Value<int?> targetDoc,
-      Value<double?> feedPayment,
-      Value<String?> feedPaymentCurrency,
-      Value<double?> harvestPrice,
-      Value<String?> harvestPriceCurrency,
-      Value<double?> estimatedHarvest,
-      Value<String?> estimatedHarvestUnit,
-      Value<double?> estimatedFcr,
-      Value<double?> feedPrice,
-      Value<String?> feedPriceCurrency,
-      Value<double?> harvestGuarantee,
-      Value<String?> harvestGuaranteeCurrency,
-      Value<double?> ltvRatio,
-      Value<double?> progress,
-      Value<double?> currentAbw,
-      Value<String?> currentAbwUnit,
-      Value<double?> harvestAbw,
-      Value<String?> harvestAbwUnit,
-      Value<double?> feedNeed,
-      Value<String?> feedNeedUnit,
-      Value<double?> feedCost,
-      Value<String?> feedCostCurrency,
-      Value<double?> maxLoan,
-      Value<String?> maxLoanCurrency,
+      Value<String?> agentType,
+      Value<double?> loanAmount,
+      Value<String?> loanCurrency,
+      Value<double?> interestRatePercent,
+      Value<int?> loanTermMonths,
+      Value<double?> guaranteePercentage,
+      Value<double?> guaranteeAmount,
+      Value<String?> guaranteeCurrency,
+      Value<double?> collateralValue,
+      Value<String?> collateralCurrency,
+      Value<double?> pondArea,
+      Value<String?> pondAreaUnit,
+      Value<double?> estimatedProductionKg,
+      Value<String?> estimatedProductionUnit,
+      Value<double?> estimatedRevenue,
+      Value<String?> estimatedRevenueCurrency,
+      Value<double?> estimatedProfit,
+      Value<String?> estimatedProfitCurrency,
+      Value<double?> debtServiceCoverageRatio,
+      Value<double?> loanToValueRatio,
+      Value<double?> riskScore,
+      Value<String?> riskLevel,
+      Value<String?> approvalRecommendation,
+      Value<String?> simulationData,
       Value<String?> calculationDetails,
-      Value<bool?> isMaterialized,
+      Value<String?> riskAssessment,
+      Value<String?> monthlyPaymentSchedule,
+      Value<bool?> isApproved,
       Value<bool?> isSynced,
       Value<String?> simulationStatus,
+      Value<int?> approvedBy,
+      Value<DateTime?> approvedDate,
+      Value<String?> rejectionReason,
+      Value<String?> languagePreference,
+      Value<String?> unitSystem,
+      Value<String?> displayWeightUnit,
+      Value<String?> displayAreaUnit,
+      Value<String?> displayCurrency,
+      Value<String?> simulationVersion,
       Value<DateTime?> createdDate,
       Value<DateTime?> lastUpdatedDate,
       Value<DateTime?> syncedDate,
-      Value<DateTime?> materializedDate,
       Value<DateTime?> deletedDate,
       Value<int?> createdBy,
       Value<int?> lastUpdatedBy,
@@ -28425,6 +38907,28 @@ final class $$Fms10AgentSimulationsTableReferences
     );
   }
 
+  static $FmsMtEmployeesTable _approvedByTable(_$AppDatabase db) =>
+      db.fmsMtEmployees.createAlias(
+        $_aliasNameGenerator(
+          db.fms10AgentSimulations.approvedBy,
+          db.fmsMtEmployees.employeeId,
+        ),
+      );
+
+  $$FmsMtEmployeesTableProcessedTableManager? get approvedBy {
+    final $_column = $_itemColumn<int>('approved_by');
+    if ($_column == null) return null;
+    final manager = $$FmsMtEmployeesTableTableManager(
+      $_db,
+      $_db.fmsMtEmployees,
+    ).filter((f) => f.employeeId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_approvedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
   static $FmsMtEmployeesTable _createdByTable(_$AppDatabase db) =>
       db.fmsMtEmployees.createAlias(
         $_aliasNameGenerator(
@@ -28499,8 +39003,173 @@ class $$Fms10AgentSimulationsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get displayCurrency => $composableBuilder(
-    column: $table.displayCurrency,
+  ColumnFilters<String> get agentType => $composableBuilder(
+    column: $table.agentType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get loanAmount => $composableBuilder(
+    column: $table.loanAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get loanCurrency => $composableBuilder(
+    column: $table.loanCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get interestRatePercent => $composableBuilder(
+    column: $table.interestRatePercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get loanTermMonths => $composableBuilder(
+    column: $table.loanTermMonths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get guaranteePercentage => $composableBuilder(
+    column: $table.guaranteePercentage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get guaranteeAmount => $composableBuilder(
+    column: $table.guaranteeAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guaranteeCurrency => $composableBuilder(
+    column: $table.guaranteeCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get collateralValue => $composableBuilder(
+    column: $table.collateralValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get collateralCurrency => $composableBuilder(
+    column: $table.collateralCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get pondArea => $composableBuilder(
+    column: $table.pondArea,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pondAreaUnit => $composableBuilder(
+    column: $table.pondAreaUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedProductionKg => $composableBuilder(
+    column: $table.estimatedProductionKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estimatedProductionUnit => $composableBuilder(
+    column: $table.estimatedProductionUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedRevenue => $composableBuilder(
+    column: $table.estimatedRevenue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estimatedRevenueCurrency => $composableBuilder(
+    column: $table.estimatedRevenueCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedProfit => $composableBuilder(
+    column: $table.estimatedProfit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estimatedProfitCurrency => $composableBuilder(
+    column: $table.estimatedProfitCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get debtServiceCoverageRatio => $composableBuilder(
+    column: $table.debtServiceCoverageRatio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get loanToValueRatio => $composableBuilder(
+    column: $table.loanToValueRatio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get riskScore => $composableBuilder(
+    column: $table.riskScore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get riskLevel => $composableBuilder(
+    column: $table.riskLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get approvalRecommendation => $composableBuilder(
+    column: $table.approvalRecommendation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get simulationData => $composableBuilder(
+    column: $table.simulationData,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calculationDetails => $composableBuilder(
+    column: $table.calculationDetails,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get riskAssessment => $composableBuilder(
+    column: $table.riskAssessment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get monthlyPaymentSchedule => $composableBuilder(
+    column: $table.monthlyPaymentSchedule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isApproved => $composableBuilder(
+    column: $table.isApproved,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get simulationStatus => $composableBuilder(
+    column: $table.simulationStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get approvedDate => $composableBuilder(
+    column: $table.approvedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get languagePreference => $composableBuilder(
+    column: $table.languagePreference,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get unitSystem => $composableBuilder(
+    column: $table.unitSystem,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -28514,168 +39183,13 @@ class $$Fms10AgentSimulationsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get currentDoc => $composableBuilder(
-    column: $table.currentDoc,
+  ColumnFilters<String> get displayCurrency => $composableBuilder(
+    column: $table.displayCurrency,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get currentBiomass => $composableBuilder(
-    column: $table.currentBiomass,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get currentBiomassUnit => $composableBuilder(
-    column: $table.currentBiomassUnit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get stockingCount => $composableBuilder(
-    column: $table.stockingCount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get targetSrPercent => $composableBuilder(
-    column: $table.targetSrPercent,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get targetDoc => $composableBuilder(
-    column: $table.targetDoc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get feedPayment => $composableBuilder(
-    column: $table.feedPayment,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get feedPaymentCurrency => $composableBuilder(
-    column: $table.feedPaymentCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get harvestPrice => $composableBuilder(
-    column: $table.harvestPrice,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get harvestPriceCurrency => $composableBuilder(
-    column: $table.harvestPriceCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get estimatedHarvest => $composableBuilder(
-    column: $table.estimatedHarvest,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get estimatedHarvestUnit => $composableBuilder(
-    column: $table.estimatedHarvestUnit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get estimatedFcr => $composableBuilder(
-    column: $table.estimatedFcr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get feedPrice => $composableBuilder(
-    column: $table.feedPrice,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get feedPriceCurrency => $composableBuilder(
-    column: $table.feedPriceCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get harvestGuarantee => $composableBuilder(
-    column: $table.harvestGuarantee,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get harvestGuaranteeCurrency => $composableBuilder(
-    column: $table.harvestGuaranteeCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get ltvRatio => $composableBuilder(
-    column: $table.ltvRatio,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get progress => $composableBuilder(
-    column: $table.progress,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get currentAbw => $composableBuilder(
-    column: $table.currentAbw,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get currentAbwUnit => $composableBuilder(
-    column: $table.currentAbwUnit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get harvestAbw => $composableBuilder(
-    column: $table.harvestAbw,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get harvestAbwUnit => $composableBuilder(
-    column: $table.harvestAbwUnit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get feedNeed => $composableBuilder(
-    column: $table.feedNeed,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get feedNeedUnit => $composableBuilder(
-    column: $table.feedNeedUnit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get feedCost => $composableBuilder(
-    column: $table.feedCost,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get feedCostCurrency => $composableBuilder(
-    column: $table.feedCostCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get maxLoan => $composableBuilder(
-    column: $table.maxLoan,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get maxLoanCurrency => $composableBuilder(
-    column: $table.maxLoanCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get calculationDetails => $composableBuilder(
-    column: $table.calculationDetails,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isMaterialized => $composableBuilder(
-    column: $table.isMaterialized,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isSynced => $composableBuilder(
-    column: $table.isSynced,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get simulationStatus => $composableBuilder(
-    column: $table.simulationStatus,
+  ColumnFilters<String> get simulationVersion => $composableBuilder(
+    column: $table.simulationVersion,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -28691,11 +39205,6 @@ class $$Fms10AgentSimulationsTableFilterComposer
 
   ColumnFilters<DateTime> get syncedDate => $composableBuilder(
     column: $table.syncedDate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get materializedDate => $composableBuilder(
-    column: $table.materializedDate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -28764,6 +39273,29 @@ class $$Fms10AgentSimulationsTableFilterComposer
           }) => $$Fms10DevicesTableFilterComposer(
             $db: $db,
             $table: $db.fms10Devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableFilterComposer get approvedBy {
+    final $$FmsMtEmployeesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.approvedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableFilterComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -28849,8 +39381,173 @@ class $$Fms10AgentSimulationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get displayCurrency => $composableBuilder(
-    column: $table.displayCurrency,
+  ColumnOrderings<String> get agentType => $composableBuilder(
+    column: $table.agentType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get loanAmount => $composableBuilder(
+    column: $table.loanAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get loanCurrency => $composableBuilder(
+    column: $table.loanCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get interestRatePercent => $composableBuilder(
+    column: $table.interestRatePercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get loanTermMonths => $composableBuilder(
+    column: $table.loanTermMonths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get guaranteePercentage => $composableBuilder(
+    column: $table.guaranteePercentage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get guaranteeAmount => $composableBuilder(
+    column: $table.guaranteeAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guaranteeCurrency => $composableBuilder(
+    column: $table.guaranteeCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get collateralValue => $composableBuilder(
+    column: $table.collateralValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get collateralCurrency => $composableBuilder(
+    column: $table.collateralCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get pondArea => $composableBuilder(
+    column: $table.pondArea,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pondAreaUnit => $composableBuilder(
+    column: $table.pondAreaUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedProductionKg => $composableBuilder(
+    column: $table.estimatedProductionKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estimatedProductionUnit => $composableBuilder(
+    column: $table.estimatedProductionUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedRevenue => $composableBuilder(
+    column: $table.estimatedRevenue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estimatedRevenueCurrency => $composableBuilder(
+    column: $table.estimatedRevenueCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedProfit => $composableBuilder(
+    column: $table.estimatedProfit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estimatedProfitCurrency => $composableBuilder(
+    column: $table.estimatedProfitCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get debtServiceCoverageRatio => $composableBuilder(
+    column: $table.debtServiceCoverageRatio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get loanToValueRatio => $composableBuilder(
+    column: $table.loanToValueRatio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get riskScore => $composableBuilder(
+    column: $table.riskScore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get riskLevel => $composableBuilder(
+    column: $table.riskLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get approvalRecommendation => $composableBuilder(
+    column: $table.approvalRecommendation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get simulationData => $composableBuilder(
+    column: $table.simulationData,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calculationDetails => $composableBuilder(
+    column: $table.calculationDetails,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get riskAssessment => $composableBuilder(
+    column: $table.riskAssessment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get monthlyPaymentSchedule => $composableBuilder(
+    column: $table.monthlyPaymentSchedule,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isApproved => $composableBuilder(
+    column: $table.isApproved,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get simulationStatus => $composableBuilder(
+    column: $table.simulationStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get approvedDate => $composableBuilder(
+    column: $table.approvedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get languagePreference => $composableBuilder(
+    column: $table.languagePreference,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unitSystem => $composableBuilder(
+    column: $table.unitSystem,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -28864,168 +39561,13 @@ class $$Fms10AgentSimulationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get currentDoc => $composableBuilder(
-    column: $table.currentDoc,
+  ColumnOrderings<String> get displayCurrency => $composableBuilder(
+    column: $table.displayCurrency,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get currentBiomass => $composableBuilder(
-    column: $table.currentBiomass,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get currentBiomassUnit => $composableBuilder(
-    column: $table.currentBiomassUnit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get stockingCount => $composableBuilder(
-    column: $table.stockingCount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get targetSrPercent => $composableBuilder(
-    column: $table.targetSrPercent,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get targetDoc => $composableBuilder(
-    column: $table.targetDoc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get feedPayment => $composableBuilder(
-    column: $table.feedPayment,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get feedPaymentCurrency => $composableBuilder(
-    column: $table.feedPaymentCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get harvestPrice => $composableBuilder(
-    column: $table.harvestPrice,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get harvestPriceCurrency => $composableBuilder(
-    column: $table.harvestPriceCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get estimatedHarvest => $composableBuilder(
-    column: $table.estimatedHarvest,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get estimatedHarvestUnit => $composableBuilder(
-    column: $table.estimatedHarvestUnit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get estimatedFcr => $composableBuilder(
-    column: $table.estimatedFcr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get feedPrice => $composableBuilder(
-    column: $table.feedPrice,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get feedPriceCurrency => $composableBuilder(
-    column: $table.feedPriceCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get harvestGuarantee => $composableBuilder(
-    column: $table.harvestGuarantee,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get harvestGuaranteeCurrency => $composableBuilder(
-    column: $table.harvestGuaranteeCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get ltvRatio => $composableBuilder(
-    column: $table.ltvRatio,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get progress => $composableBuilder(
-    column: $table.progress,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get currentAbw => $composableBuilder(
-    column: $table.currentAbw,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get currentAbwUnit => $composableBuilder(
-    column: $table.currentAbwUnit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get harvestAbw => $composableBuilder(
-    column: $table.harvestAbw,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get harvestAbwUnit => $composableBuilder(
-    column: $table.harvestAbwUnit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get feedNeed => $composableBuilder(
-    column: $table.feedNeed,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get feedNeedUnit => $composableBuilder(
-    column: $table.feedNeedUnit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get feedCost => $composableBuilder(
-    column: $table.feedCost,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get feedCostCurrency => $composableBuilder(
-    column: $table.feedCostCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get maxLoan => $composableBuilder(
-    column: $table.maxLoan,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get maxLoanCurrency => $composableBuilder(
-    column: $table.maxLoanCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get calculationDetails => $composableBuilder(
-    column: $table.calculationDetails,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isMaterialized => $composableBuilder(
-    column: $table.isMaterialized,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isSynced => $composableBuilder(
-    column: $table.isSynced,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get simulationStatus => $composableBuilder(
-    column: $table.simulationStatus,
+  ColumnOrderings<String> get simulationVersion => $composableBuilder(
+    column: $table.simulationVersion,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -29041,11 +39583,6 @@ class $$Fms10AgentSimulationsTableOrderingComposer
 
   ColumnOrderings<DateTime> get syncedDate => $composableBuilder(
     column: $table.syncedDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get materializedDate => $composableBuilder(
-    column: $table.materializedDate,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -29114,6 +39651,29 @@ class $$Fms10AgentSimulationsTableOrderingComposer
           }) => $$Fms10DevicesTableOrderingComposer(
             $db: $db,
             $table: $db.fms10Devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FmsMtEmployeesTableOrderingComposer get approvedBy {
+    final $$FmsMtEmployeesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.approvedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableOrderingComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -29199,8 +39759,163 @@ class $$Fms10AgentSimulationsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get displayCurrency => $composableBuilder(
-    column: $table.displayCurrency,
+  GeneratedColumn<String> get agentType =>
+      $composableBuilder(column: $table.agentType, builder: (column) => column);
+
+  GeneratedColumn<double> get loanAmount => $composableBuilder(
+    column: $table.loanAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get loanCurrency => $composableBuilder(
+    column: $table.loanCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get interestRatePercent => $composableBuilder(
+    column: $table.interestRatePercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get loanTermMonths => $composableBuilder(
+    column: $table.loanTermMonths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get guaranteePercentage => $composableBuilder(
+    column: $table.guaranteePercentage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get guaranteeAmount => $composableBuilder(
+    column: $table.guaranteeAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get guaranteeCurrency => $composableBuilder(
+    column: $table.guaranteeCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get collateralValue => $composableBuilder(
+    column: $table.collateralValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get collateralCurrency => $composableBuilder(
+    column: $table.collateralCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get pondArea =>
+      $composableBuilder(column: $table.pondArea, builder: (column) => column);
+
+  GeneratedColumn<String> get pondAreaUnit => $composableBuilder(
+    column: $table.pondAreaUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get estimatedProductionKg => $composableBuilder(
+    column: $table.estimatedProductionKg,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get estimatedProductionUnit => $composableBuilder(
+    column: $table.estimatedProductionUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get estimatedRevenue => $composableBuilder(
+    column: $table.estimatedRevenue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get estimatedRevenueCurrency => $composableBuilder(
+    column: $table.estimatedRevenueCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get estimatedProfit => $composableBuilder(
+    column: $table.estimatedProfit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get estimatedProfitCurrency => $composableBuilder(
+    column: $table.estimatedProfitCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get debtServiceCoverageRatio => $composableBuilder(
+    column: $table.debtServiceCoverageRatio,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get loanToValueRatio => $composableBuilder(
+    column: $table.loanToValueRatio,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get riskScore =>
+      $composableBuilder(column: $table.riskScore, builder: (column) => column);
+
+  GeneratedColumn<String> get riskLevel =>
+      $composableBuilder(column: $table.riskLevel, builder: (column) => column);
+
+  GeneratedColumn<String> get approvalRecommendation => $composableBuilder(
+    column: $table.approvalRecommendation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get simulationData => $composableBuilder(
+    column: $table.simulationData,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get calculationDetails => $composableBuilder(
+    column: $table.calculationDetails,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get riskAssessment => $composableBuilder(
+    column: $table.riskAssessment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get monthlyPaymentSchedule => $composableBuilder(
+    column: $table.monthlyPaymentSchedule,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isApproved => $composableBuilder(
+    column: $table.isApproved,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<String> get simulationStatus => $composableBuilder(
+    column: $table.simulationStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get approvedDate => $composableBuilder(
+    column: $table.approvedDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get languagePreference => $composableBuilder(
+    column: $table.languagePreference,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get unitSystem => $composableBuilder(
+    column: $table.unitSystem,
     builder: (column) => column,
   );
 
@@ -29214,152 +39929,13 @@ class $$Fms10AgentSimulationsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get currentDoc => $composableBuilder(
-    column: $table.currentDoc,
+  GeneratedColumn<String> get displayCurrency => $composableBuilder(
+    column: $table.displayCurrency,
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get currentBiomass => $composableBuilder(
-    column: $table.currentBiomass,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get currentBiomassUnit => $composableBuilder(
-    column: $table.currentBiomassUnit,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get stockingCount => $composableBuilder(
-    column: $table.stockingCount,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get targetSrPercent => $composableBuilder(
-    column: $table.targetSrPercent,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get targetDoc =>
-      $composableBuilder(column: $table.targetDoc, builder: (column) => column);
-
-  GeneratedColumn<double> get feedPayment => $composableBuilder(
-    column: $table.feedPayment,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get feedPaymentCurrency => $composableBuilder(
-    column: $table.feedPaymentCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get harvestPrice => $composableBuilder(
-    column: $table.harvestPrice,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get harvestPriceCurrency => $composableBuilder(
-    column: $table.harvestPriceCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get estimatedHarvest => $composableBuilder(
-    column: $table.estimatedHarvest,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get estimatedHarvestUnit => $composableBuilder(
-    column: $table.estimatedHarvestUnit,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get estimatedFcr => $composableBuilder(
-    column: $table.estimatedFcr,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get feedPrice =>
-      $composableBuilder(column: $table.feedPrice, builder: (column) => column);
-
-  GeneratedColumn<String> get feedPriceCurrency => $composableBuilder(
-    column: $table.feedPriceCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get harvestGuarantee => $composableBuilder(
-    column: $table.harvestGuarantee,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get harvestGuaranteeCurrency => $composableBuilder(
-    column: $table.harvestGuaranteeCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get ltvRatio =>
-      $composableBuilder(column: $table.ltvRatio, builder: (column) => column);
-
-  GeneratedColumn<double> get progress =>
-      $composableBuilder(column: $table.progress, builder: (column) => column);
-
-  GeneratedColumn<double> get currentAbw => $composableBuilder(
-    column: $table.currentAbw,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get currentAbwUnit => $composableBuilder(
-    column: $table.currentAbwUnit,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get harvestAbw => $composableBuilder(
-    column: $table.harvestAbw,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get harvestAbwUnit => $composableBuilder(
-    column: $table.harvestAbwUnit,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get feedNeed =>
-      $composableBuilder(column: $table.feedNeed, builder: (column) => column);
-
-  GeneratedColumn<String> get feedNeedUnit => $composableBuilder(
-    column: $table.feedNeedUnit,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get feedCost =>
-      $composableBuilder(column: $table.feedCost, builder: (column) => column);
-
-  GeneratedColumn<String> get feedCostCurrency => $composableBuilder(
-    column: $table.feedCostCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get maxLoan =>
-      $composableBuilder(column: $table.maxLoan, builder: (column) => column);
-
-  GeneratedColumn<String> get maxLoanCurrency => $composableBuilder(
-    column: $table.maxLoanCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get calculationDetails => $composableBuilder(
-    column: $table.calculationDetails,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isMaterialized => $composableBuilder(
-    column: $table.isMaterialized,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isSynced =>
-      $composableBuilder(column: $table.isSynced, builder: (column) => column);
-
-  GeneratedColumn<String> get simulationStatus => $composableBuilder(
-    column: $table.simulationStatus,
+  GeneratedColumn<String> get simulationVersion => $composableBuilder(
+    column: $table.simulationVersion,
     builder: (column) => column,
   );
 
@@ -29375,11 +39951,6 @@ class $$Fms10AgentSimulationsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get syncedDate => $composableBuilder(
     column: $table.syncedDate,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get materializedDate => $composableBuilder(
-    column: $table.materializedDate,
     builder: (column) => column,
   );
 
@@ -29457,6 +40028,29 @@ class $$Fms10AgentSimulationsTableAnnotationComposer
     return composer;
   }
 
+  $$FmsMtEmployeesTableAnnotationComposer get approvedBy {
+    final $$FmsMtEmployeesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.approvedBy,
+      referencedTable: $db.fmsMtEmployees,
+      getReferencedColumn: (t) => t.employeeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FmsMtEmployeesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fmsMtEmployees,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$FmsMtEmployeesTableAnnotationComposer get createdBy {
     final $$FmsMtEmployeesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -29521,6 +40115,7 @@ class $$Fms10AgentSimulationsTableTableManager
             bool employeeId,
             bool pondId,
             bool deviceUuid,
+            bool approvedBy,
             bool createdBy,
             bool lastUpdatedBy,
           })
@@ -29556,46 +40151,48 @@ class $$Fms10AgentSimulationsTableTableManager
                 Value<int> employeeId = const Value.absent(),
                 Value<int?> pondId = const Value.absent(),
                 Value<String?> deviceUuid = const Value.absent(),
-                Value<String?> displayCurrency = const Value.absent(),
-                Value<String?> displayWeightUnit = const Value.absent(),
-                Value<String?> displayAreaUnit = const Value.absent(),
-                Value<int?> currentDoc = const Value.absent(),
-                Value<double?> currentBiomass = const Value.absent(),
-                Value<String?> currentBiomassUnit = const Value.absent(),
-                Value<int?> stockingCount = const Value.absent(),
-                Value<double?> targetSrPercent = const Value.absent(),
-                Value<int?> targetDoc = const Value.absent(),
-                Value<double?> feedPayment = const Value.absent(),
-                Value<String?> feedPaymentCurrency = const Value.absent(),
-                Value<double?> harvestPrice = const Value.absent(),
-                Value<String?> harvestPriceCurrency = const Value.absent(),
-                Value<double?> estimatedHarvest = const Value.absent(),
-                Value<String?> estimatedHarvestUnit = const Value.absent(),
-                Value<double?> estimatedFcr = const Value.absent(),
-                Value<double?> feedPrice = const Value.absent(),
-                Value<String?> feedPriceCurrency = const Value.absent(),
-                Value<double?> harvestGuarantee = const Value.absent(),
-                Value<String?> harvestGuaranteeCurrency = const Value.absent(),
-                Value<double?> ltvRatio = const Value.absent(),
-                Value<double?> progress = const Value.absent(),
-                Value<double?> currentAbw = const Value.absent(),
-                Value<String?> currentAbwUnit = const Value.absent(),
-                Value<double?> harvestAbw = const Value.absent(),
-                Value<String?> harvestAbwUnit = const Value.absent(),
-                Value<double?> feedNeed = const Value.absent(),
-                Value<String?> feedNeedUnit = const Value.absent(),
-                Value<double?> feedCost = const Value.absent(),
-                Value<String?> feedCostCurrency = const Value.absent(),
-                Value<double?> maxLoan = const Value.absent(),
-                Value<String?> maxLoanCurrency = const Value.absent(),
+                Value<String?> agentType = const Value.absent(),
+                Value<double?> loanAmount = const Value.absent(),
+                Value<String?> loanCurrency = const Value.absent(),
+                Value<double?> interestRatePercent = const Value.absent(),
+                Value<int?> loanTermMonths = const Value.absent(),
+                Value<double?> guaranteePercentage = const Value.absent(),
+                Value<double?> guaranteeAmount = const Value.absent(),
+                Value<String?> guaranteeCurrency = const Value.absent(),
+                Value<double?> collateralValue = const Value.absent(),
+                Value<String?> collateralCurrency = const Value.absent(),
+                Value<double?> pondArea = const Value.absent(),
+                Value<String?> pondAreaUnit = const Value.absent(),
+                Value<double?> estimatedProductionKg = const Value.absent(),
+                Value<String?> estimatedProductionUnit = const Value.absent(),
+                Value<double?> estimatedRevenue = const Value.absent(),
+                Value<String?> estimatedRevenueCurrency = const Value.absent(),
+                Value<double?> estimatedProfit = const Value.absent(),
+                Value<String?> estimatedProfitCurrency = const Value.absent(),
+                Value<double?> debtServiceCoverageRatio = const Value.absent(),
+                Value<double?> loanToValueRatio = const Value.absent(),
+                Value<double?> riskScore = const Value.absent(),
+                Value<String?> riskLevel = const Value.absent(),
+                Value<String?> approvalRecommendation = const Value.absent(),
+                Value<String?> simulationData = const Value.absent(),
                 Value<String?> calculationDetails = const Value.absent(),
-                Value<bool?> isMaterialized = const Value.absent(),
+                Value<String?> riskAssessment = const Value.absent(),
+                Value<String?> monthlyPaymentSchedule = const Value.absent(),
+                Value<bool?> isApproved = const Value.absent(),
                 Value<bool?> isSynced = const Value.absent(),
                 Value<String?> simulationStatus = const Value.absent(),
+                Value<int?> approvedBy = const Value.absent(),
+                Value<DateTime?> approvedDate = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> languagePreference = const Value.absent(),
+                Value<String?> unitSystem = const Value.absent(),
+                Value<String?> displayWeightUnit = const Value.absent(),
+                Value<String?> displayAreaUnit = const Value.absent(),
+                Value<String?> displayCurrency = const Value.absent(),
+                Value<String?> simulationVersion = const Value.absent(),
                 Value<DateTime?> createdDate = const Value.absent(),
                 Value<DateTime?> lastUpdatedDate = const Value.absent(),
                 Value<DateTime?> syncedDate = const Value.absent(),
-                Value<DateTime?> materializedDate = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
                 Value<int?> createdBy = const Value.absent(),
                 Value<int?> lastUpdatedBy = const Value.absent(),
@@ -29607,46 +40204,48 @@ class $$Fms10AgentSimulationsTableTableManager
                 employeeId: employeeId,
                 pondId: pondId,
                 deviceUuid: deviceUuid,
-                displayCurrency: displayCurrency,
-                displayWeightUnit: displayWeightUnit,
-                displayAreaUnit: displayAreaUnit,
-                currentDoc: currentDoc,
-                currentBiomass: currentBiomass,
-                currentBiomassUnit: currentBiomassUnit,
-                stockingCount: stockingCount,
-                targetSrPercent: targetSrPercent,
-                targetDoc: targetDoc,
-                feedPayment: feedPayment,
-                feedPaymentCurrency: feedPaymentCurrency,
-                harvestPrice: harvestPrice,
-                harvestPriceCurrency: harvestPriceCurrency,
-                estimatedHarvest: estimatedHarvest,
-                estimatedHarvestUnit: estimatedHarvestUnit,
-                estimatedFcr: estimatedFcr,
-                feedPrice: feedPrice,
-                feedPriceCurrency: feedPriceCurrency,
-                harvestGuarantee: harvestGuarantee,
-                harvestGuaranteeCurrency: harvestGuaranteeCurrency,
-                ltvRatio: ltvRatio,
-                progress: progress,
-                currentAbw: currentAbw,
-                currentAbwUnit: currentAbwUnit,
-                harvestAbw: harvestAbw,
-                harvestAbwUnit: harvestAbwUnit,
-                feedNeed: feedNeed,
-                feedNeedUnit: feedNeedUnit,
-                feedCost: feedCost,
-                feedCostCurrency: feedCostCurrency,
-                maxLoan: maxLoan,
-                maxLoanCurrency: maxLoanCurrency,
+                agentType: agentType,
+                loanAmount: loanAmount,
+                loanCurrency: loanCurrency,
+                interestRatePercent: interestRatePercent,
+                loanTermMonths: loanTermMonths,
+                guaranteePercentage: guaranteePercentage,
+                guaranteeAmount: guaranteeAmount,
+                guaranteeCurrency: guaranteeCurrency,
+                collateralValue: collateralValue,
+                collateralCurrency: collateralCurrency,
+                pondArea: pondArea,
+                pondAreaUnit: pondAreaUnit,
+                estimatedProductionKg: estimatedProductionKg,
+                estimatedProductionUnit: estimatedProductionUnit,
+                estimatedRevenue: estimatedRevenue,
+                estimatedRevenueCurrency: estimatedRevenueCurrency,
+                estimatedProfit: estimatedProfit,
+                estimatedProfitCurrency: estimatedProfitCurrency,
+                debtServiceCoverageRatio: debtServiceCoverageRatio,
+                loanToValueRatio: loanToValueRatio,
+                riskScore: riskScore,
+                riskLevel: riskLevel,
+                approvalRecommendation: approvalRecommendation,
+                simulationData: simulationData,
                 calculationDetails: calculationDetails,
-                isMaterialized: isMaterialized,
+                riskAssessment: riskAssessment,
+                monthlyPaymentSchedule: monthlyPaymentSchedule,
+                isApproved: isApproved,
                 isSynced: isSynced,
                 simulationStatus: simulationStatus,
+                approvedBy: approvedBy,
+                approvedDate: approvedDate,
+                rejectionReason: rejectionReason,
+                languagePreference: languagePreference,
+                unitSystem: unitSystem,
+                displayWeightUnit: displayWeightUnit,
+                displayAreaUnit: displayAreaUnit,
+                displayCurrency: displayCurrency,
+                simulationVersion: simulationVersion,
                 createdDate: createdDate,
                 lastUpdatedDate: lastUpdatedDate,
                 syncedDate: syncedDate,
-                materializedDate: materializedDate,
                 deletedDate: deletedDate,
                 createdBy: createdBy,
                 lastUpdatedBy: lastUpdatedBy,
@@ -29654,52 +40253,54 @@ class $$Fms10AgentSimulationsTableTableManager
           createCompanionCallback:
               ({
                 Value<int> simulationId = const Value.absent(),
-                required String simulationUuid,
+                Value<String> simulationUuid = const Value.absent(),
                 required String simulationCode,
                 required String simulationName,
                 required int employeeId,
                 Value<int?> pondId = const Value.absent(),
                 Value<String?> deviceUuid = const Value.absent(),
-                Value<String?> displayCurrency = const Value.absent(),
-                Value<String?> displayWeightUnit = const Value.absent(),
-                Value<String?> displayAreaUnit = const Value.absent(),
-                Value<int?> currentDoc = const Value.absent(),
-                Value<double?> currentBiomass = const Value.absent(),
-                Value<String?> currentBiomassUnit = const Value.absent(),
-                Value<int?> stockingCount = const Value.absent(),
-                Value<double?> targetSrPercent = const Value.absent(),
-                Value<int?> targetDoc = const Value.absent(),
-                Value<double?> feedPayment = const Value.absent(),
-                Value<String?> feedPaymentCurrency = const Value.absent(),
-                Value<double?> harvestPrice = const Value.absent(),
-                Value<String?> harvestPriceCurrency = const Value.absent(),
-                Value<double?> estimatedHarvest = const Value.absent(),
-                Value<String?> estimatedHarvestUnit = const Value.absent(),
-                Value<double?> estimatedFcr = const Value.absent(),
-                Value<double?> feedPrice = const Value.absent(),
-                Value<String?> feedPriceCurrency = const Value.absent(),
-                Value<double?> harvestGuarantee = const Value.absent(),
-                Value<String?> harvestGuaranteeCurrency = const Value.absent(),
-                Value<double?> ltvRatio = const Value.absent(),
-                Value<double?> progress = const Value.absent(),
-                Value<double?> currentAbw = const Value.absent(),
-                Value<String?> currentAbwUnit = const Value.absent(),
-                Value<double?> harvestAbw = const Value.absent(),
-                Value<String?> harvestAbwUnit = const Value.absent(),
-                Value<double?> feedNeed = const Value.absent(),
-                Value<String?> feedNeedUnit = const Value.absent(),
-                Value<double?> feedCost = const Value.absent(),
-                Value<String?> feedCostCurrency = const Value.absent(),
-                Value<double?> maxLoan = const Value.absent(),
-                Value<String?> maxLoanCurrency = const Value.absent(),
+                Value<String?> agentType = const Value.absent(),
+                Value<double?> loanAmount = const Value.absent(),
+                Value<String?> loanCurrency = const Value.absent(),
+                Value<double?> interestRatePercent = const Value.absent(),
+                Value<int?> loanTermMonths = const Value.absent(),
+                Value<double?> guaranteePercentage = const Value.absent(),
+                Value<double?> guaranteeAmount = const Value.absent(),
+                Value<String?> guaranteeCurrency = const Value.absent(),
+                Value<double?> collateralValue = const Value.absent(),
+                Value<String?> collateralCurrency = const Value.absent(),
+                Value<double?> pondArea = const Value.absent(),
+                Value<String?> pondAreaUnit = const Value.absent(),
+                Value<double?> estimatedProductionKg = const Value.absent(),
+                Value<String?> estimatedProductionUnit = const Value.absent(),
+                Value<double?> estimatedRevenue = const Value.absent(),
+                Value<String?> estimatedRevenueCurrency = const Value.absent(),
+                Value<double?> estimatedProfit = const Value.absent(),
+                Value<String?> estimatedProfitCurrency = const Value.absent(),
+                Value<double?> debtServiceCoverageRatio = const Value.absent(),
+                Value<double?> loanToValueRatio = const Value.absent(),
+                Value<double?> riskScore = const Value.absent(),
+                Value<String?> riskLevel = const Value.absent(),
+                Value<String?> approvalRecommendation = const Value.absent(),
+                Value<String?> simulationData = const Value.absent(),
                 Value<String?> calculationDetails = const Value.absent(),
-                Value<bool?> isMaterialized = const Value.absent(),
+                Value<String?> riskAssessment = const Value.absent(),
+                Value<String?> monthlyPaymentSchedule = const Value.absent(),
+                Value<bool?> isApproved = const Value.absent(),
                 Value<bool?> isSynced = const Value.absent(),
                 Value<String?> simulationStatus = const Value.absent(),
+                Value<int?> approvedBy = const Value.absent(),
+                Value<DateTime?> approvedDate = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> languagePreference = const Value.absent(),
+                Value<String?> unitSystem = const Value.absent(),
+                Value<String?> displayWeightUnit = const Value.absent(),
+                Value<String?> displayAreaUnit = const Value.absent(),
+                Value<String?> displayCurrency = const Value.absent(),
+                Value<String?> simulationVersion = const Value.absent(),
                 Value<DateTime?> createdDate = const Value.absent(),
                 Value<DateTime?> lastUpdatedDate = const Value.absent(),
                 Value<DateTime?> syncedDate = const Value.absent(),
-                Value<DateTime?> materializedDate = const Value.absent(),
                 Value<DateTime?> deletedDate = const Value.absent(),
                 Value<int?> createdBy = const Value.absent(),
                 Value<int?> lastUpdatedBy = const Value.absent(),
@@ -29711,46 +40312,48 @@ class $$Fms10AgentSimulationsTableTableManager
                 employeeId: employeeId,
                 pondId: pondId,
                 deviceUuid: deviceUuid,
-                displayCurrency: displayCurrency,
-                displayWeightUnit: displayWeightUnit,
-                displayAreaUnit: displayAreaUnit,
-                currentDoc: currentDoc,
-                currentBiomass: currentBiomass,
-                currentBiomassUnit: currentBiomassUnit,
-                stockingCount: stockingCount,
-                targetSrPercent: targetSrPercent,
-                targetDoc: targetDoc,
-                feedPayment: feedPayment,
-                feedPaymentCurrency: feedPaymentCurrency,
-                harvestPrice: harvestPrice,
-                harvestPriceCurrency: harvestPriceCurrency,
-                estimatedHarvest: estimatedHarvest,
-                estimatedHarvestUnit: estimatedHarvestUnit,
-                estimatedFcr: estimatedFcr,
-                feedPrice: feedPrice,
-                feedPriceCurrency: feedPriceCurrency,
-                harvestGuarantee: harvestGuarantee,
-                harvestGuaranteeCurrency: harvestGuaranteeCurrency,
-                ltvRatio: ltvRatio,
-                progress: progress,
-                currentAbw: currentAbw,
-                currentAbwUnit: currentAbwUnit,
-                harvestAbw: harvestAbw,
-                harvestAbwUnit: harvestAbwUnit,
-                feedNeed: feedNeed,
-                feedNeedUnit: feedNeedUnit,
-                feedCost: feedCost,
-                feedCostCurrency: feedCostCurrency,
-                maxLoan: maxLoan,
-                maxLoanCurrency: maxLoanCurrency,
+                agentType: agentType,
+                loanAmount: loanAmount,
+                loanCurrency: loanCurrency,
+                interestRatePercent: interestRatePercent,
+                loanTermMonths: loanTermMonths,
+                guaranteePercentage: guaranteePercentage,
+                guaranteeAmount: guaranteeAmount,
+                guaranteeCurrency: guaranteeCurrency,
+                collateralValue: collateralValue,
+                collateralCurrency: collateralCurrency,
+                pondArea: pondArea,
+                pondAreaUnit: pondAreaUnit,
+                estimatedProductionKg: estimatedProductionKg,
+                estimatedProductionUnit: estimatedProductionUnit,
+                estimatedRevenue: estimatedRevenue,
+                estimatedRevenueCurrency: estimatedRevenueCurrency,
+                estimatedProfit: estimatedProfit,
+                estimatedProfitCurrency: estimatedProfitCurrency,
+                debtServiceCoverageRatio: debtServiceCoverageRatio,
+                loanToValueRatio: loanToValueRatio,
+                riskScore: riskScore,
+                riskLevel: riskLevel,
+                approvalRecommendation: approvalRecommendation,
+                simulationData: simulationData,
                 calculationDetails: calculationDetails,
-                isMaterialized: isMaterialized,
+                riskAssessment: riskAssessment,
+                monthlyPaymentSchedule: monthlyPaymentSchedule,
+                isApproved: isApproved,
                 isSynced: isSynced,
                 simulationStatus: simulationStatus,
+                approvedBy: approvedBy,
+                approvedDate: approvedDate,
+                rejectionReason: rejectionReason,
+                languagePreference: languagePreference,
+                unitSystem: unitSystem,
+                displayWeightUnit: displayWeightUnit,
+                displayAreaUnit: displayAreaUnit,
+                displayCurrency: displayCurrency,
+                simulationVersion: simulationVersion,
                 createdDate: createdDate,
                 lastUpdatedDate: lastUpdatedDate,
                 syncedDate: syncedDate,
-                materializedDate: materializedDate,
                 deletedDate: deletedDate,
                 createdBy: createdBy,
                 lastUpdatedBy: lastUpdatedBy,
@@ -29768,6 +40371,7 @@ class $$Fms10AgentSimulationsTableTableManager
                 employeeId = false,
                 pondId = false,
                 deviceUuid = false,
+                approvedBy = false,
                 createdBy = false,
                 lastUpdatedBy = false,
               }) {
@@ -29835,6 +40439,21 @@ class $$Fms10AgentSimulationsTableTableManager
                                   )
                                   as T;
                         }
+                        if (approvedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.approvedBy,
+                                    referencedTable:
+                                        $$Fms10AgentSimulationsTableReferences
+                                            ._approvedByTable(db),
+                                    referencedColumn:
+                                        $$Fms10AgentSimulationsTableReferences
+                                            ._approvedByTable(db)
+                                            .employeeId,
+                                  )
+                                  as T;
+                        }
                         if (createdBy) {
                           state =
                               state.withJoin(
@@ -29893,6 +40512,7 @@ typedef $$Fms10AgentSimulationsTableProcessedTableManager =
         bool employeeId,
         bool pondId,
         bool deviceUuid,
+        bool approvedBy,
         bool createdBy,
         bool lastUpdatedBy,
       })
@@ -31825,6 +42445,156 @@ typedef $$Fms10SyncConflictsTableProcessedTableManager =
         bool relatedConflictId,
       })
     >;
+typedef $$MigrationsTableCreateCompanionBuilder =
+    MigrationsCompanion Function({
+      Value<int> id,
+      required int timestamp,
+      required String name,
+    });
+typedef $$MigrationsTableUpdateCompanionBuilder =
+    MigrationsCompanion Function({
+      Value<int> id,
+      Value<int> timestamp,
+      Value<String> name,
+    });
+
+class $$MigrationsTableFilterComposer
+    extends Composer<_$AppDatabase, $MigrationsTable> {
+  $$MigrationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MigrationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MigrationsTable> {
+  $$MigrationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MigrationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MigrationsTable> {
+  $$MigrationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+}
+
+class $$MigrationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MigrationsTable,
+          Migration,
+          $$MigrationsTableFilterComposer,
+          $$MigrationsTableOrderingComposer,
+          $$MigrationsTableAnnotationComposer,
+          $$MigrationsTableCreateCompanionBuilder,
+          $$MigrationsTableUpdateCompanionBuilder,
+          (
+            Migration,
+            BaseReferences<_$AppDatabase, $MigrationsTable, Migration>,
+          ),
+          Migration,
+          PrefetchHooks Function()
+        > {
+  $$MigrationsTableTableManager(_$AppDatabase db, $MigrationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MigrationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MigrationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MigrationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> timestamp = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) =>
+                  MigrationsCompanion(id: id, timestamp: timestamp, name: name),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int timestamp,
+                required String name,
+              }) => MigrationsCompanion.insert(
+                id: id,
+                timestamp: timestamp,
+                name: name,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MigrationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MigrationsTable,
+      Migration,
+      $$MigrationsTableFilterComposer,
+      $$MigrationsTableOrderingComposer,
+      $$MigrationsTableAnnotationComposer,
+      $$MigrationsTableCreateCompanionBuilder,
+      $$MigrationsTableUpdateCompanionBuilder,
+      (Migration, BaseReferences<_$AppDatabase, $MigrationsTable, Migration>),
+      Migration,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -31839,6 +42609,32 @@ class $AppDatabaseManager {
       $$FmsMtUnitsTableTableManager(_db, _db.fmsMtUnits);
   $$FmsMtExchangeRatesTableTableManager get fmsMtExchangeRates =>
       $$FmsMtExchangeRatesTableTableManager(_db, _db.fmsMtExchangeRates);
+  $$FmsMtLabTestTypesTableTableManager get fmsMtLabTestTypes =>
+      $$FmsMtLabTestTypesTableTableManager(_db, _db.fmsMtLabTestTypes);
+  $$FmsMtLabParametersTableTableManager get fmsMtLabParameters =>
+      $$FmsMtLabParametersTableTableManager(_db, _db.fmsMtLabParameters);
+  $$FmsMtLabTypesTableTableManager get fmsMtLabTypes =>
+      $$FmsMtLabTypesTableTableManager(_db, _db.fmsMtLabTypes);
+  $$FmsMtSampleLabTypesTableTableManager get fmsMtSampleLabTypes =>
+      $$FmsMtSampleLabTypesTableTableManager(_db, _db.fmsMtSampleLabTypes);
+  $$Fms20LabRequestsTableTableManager get fms20LabRequests =>
+      $$Fms20LabRequestsTableTableManager(_db, _db.fms20LabRequests);
+  $$Fms29LabRequestDetailsTableTableManager get fms29LabRequestDetails =>
+      $$Fms29LabRequestDetailsTableTableManager(
+        _db,
+        _db.fms29LabRequestDetails,
+      );
+  $$Fms09LabRequestHistoriesTableTableManager get fms09LabRequestHistories =>
+      $$Fms09LabRequestHistoriesTableTableManager(
+        _db,
+        _db.fms09LabRequestHistories,
+      );
+  $$Fms09LabRequestNotificationsTableTableManager
+  get fms09LabRequestNotifications =>
+      $$Fms09LabRequestNotificationsTableTableManager(
+        _db,
+        _db.fms09LabRequestNotifications,
+      );
   $$Fms10CapacityReferencesTableTableManager get fms10CapacityReferences =>
       $$Fms10CapacityReferencesTableTableManager(
         _db,
@@ -31857,4 +42653,6 @@ class $AppDatabaseManager {
       $$Fms10SyncLogsTableTableManager(_db, _db.fms10SyncLogs);
   $$Fms10SyncConflictsTableTableManager get fms10SyncConflicts =>
       $$Fms10SyncConflictsTableTableManager(_db, _db.fms10SyncConflicts);
+  $$MigrationsTableTableManager get migrations =>
+      $$MigrationsTableTableManager(_db, _db.migrations);
 }

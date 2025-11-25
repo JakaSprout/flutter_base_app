@@ -296,7 +296,7 @@ final pondListDataProvider = AutoDisposeFutureProvider<PondListData>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PondListDataRef = AutoDisposeFutureProviderRef<PondListData>;
-String _$farmListDataHash() => r'7459954e758621fdbb79d61c630284e63465295e';
+String _$farmListDataHash() => r'3bc198cc615a0e248b5fdebbd75ecec9f242d54c';
 
 /// Provider for farm list data.
 ///
@@ -321,6 +321,7 @@ final farmListDataProvider = AutoDisposeFutureProvider<FarmListData>.internal(
 typedef FarmListDataRef = AutoDisposeFutureProviderRef<FarmListData>;
 String _$headerDataHash() => r'e72b9e186035c3366fced6759441e5721d27fd19';
 
+/// Try to fetch farm data from API if online, return empty data if offline
 /// Provider for header data.
 ///
 /// Copied from [headerData].
@@ -378,14 +379,16 @@ final inputDataListDataProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef InputDataListDataRef = AutoDisposeFutureProviderRef<InputDataListData>;
-String _$farmListNotifierHash() => r'f7d54ca8a964dbf556430cf0f1a16b60df21e80a';
+String _$farmListNotifierHash() => r'c03e2be41fde50bfac9127fb7a5dd5ba14b5da72';
 
 /// Notifier for farm list operations (update selected farm).
+///
+/// Keeps state alive across navigation so farm selection persists.
 ///
 /// Copied from [FarmListNotifier].
 @ProviderFor(FarmListNotifier)
 final farmListNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<FarmListNotifier, FarmListData>.internal(
+    AsyncNotifierProvider<FarmListNotifier, FarmListData>.internal(
       FarmListNotifier.new,
       name: r'farmListNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -395,7 +398,7 @@ final farmListNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$FarmListNotifier = AutoDisposeAsyncNotifier<FarmListData>;
+typedef _$FarmListNotifier = AsyncNotifier<FarmListData>;
 String _$homeDataNotifierHash() => r'b2dd4a5cb76beed13185be35fd14515e6231f75d';
 
 /// Notifier for home data operations (refresh, update farm).

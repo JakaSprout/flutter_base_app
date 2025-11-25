@@ -8,18 +8,30 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
+part 'tables/fms_09_lab_request_histories.dart';
+part 'tables/fms_09_lab_request_notifications.dart';
 part 'tables/fms_10_agent_simulations.dart'; // Includes v_agent_simulation_daily
 part 'tables/fms_10_capacity_references.dart'; // Includes _en & _id views
 part 'tables/fms_10_devices.dart';
 part 'tables/fms_10_harvest_simulations.dart';
 part 'tables/fms_10_sync_conflicts.dart';
 part 'tables/fms_10_sync_logs.dart';
-// Table definitions (1 file per table, grouped if _en/_id variants)
+// Lab Request Tables
+part 'tables/fms_20_lab_request.dart';
+part 'tables/fms_29_lab_request_detail.dart';
+// Master Data Tables
 part 'tables/fms_mt_employees.dart';
 part 'tables/fms_mt_exchange_rates.dart';
 part 'tables/fms_mt_farms.dart';
+part 'tables/fms_mt_lab_parameters.dart';
+// Lab Master Data Tables
+part 'tables/fms_mt_lab_test_types.dart';
+part 'tables/fms_mt_lab_type.dart';
 part 'tables/fms_mt_ponds.dart';
+part 'tables/fms_mt_sample_lab_type.dart';
 part 'tables/fms_mt_units.dart';
+// Migration Tracking
+part 'tables/migrations.dart';
 // View SQL definitions
 part 'views/database_views.dart';
 
@@ -38,13 +50,28 @@ part 'views/database_views.dart';
     FmsMtUnits,
     FmsMtExchangeRates,
 
-    // Module Data (6 tables)
+    // Lab Master Data (4 tables)
+    FmsMtLabTestTypes,
+    FmsMtLabParameters,
+    FmsMtLabTypes,
+    FmsMtSampleLabTypes,
+
+    // Lab Request Module (4 tables)
+    Fms20LabRequests,
+    Fms29LabRequestDetails,
+    Fms09LabRequestHistories,
+    Fms09LabRequestNotifications,
+
+    // Simulation & Sync (6 tables)
     Fms10CapacityReferences,
     Fms10Devices,
     Fms10HarvestSimulations,
     Fms10AgentSimulations,
     Fms10SyncLogs,
     Fms10SyncConflicts,
+
+    // Migration Tracking (1 table)
+    Migrations,
   ],
   // Views created via custom SQL in onCreate (see migration strategy)
 )
@@ -66,13 +93,13 @@ class AppDatabase extends _$AppDatabase {
         // Enable foreign keys first
         await customStatement('PRAGMA foreign_keys = ON;');
 
-        // Create all 11 tables
+        // Create all 20 tables
         await m.createAll();
-        AppLogger.info('[DB] ✅ Created 11 tables');
+        AppLogger.info('[DB] ✅ Created 20 tables');
 
-        // Create all 4 views
+        // Create all 5 views
         await _createAllViews();
-        AppLogger.info('[DB] ✅ Created 4 views');
+        AppLogger.info('[DB] ✅ Created 5 views');
 
         // Register device
         await _registerCurrentDevice();
@@ -87,12 +114,13 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// Create all 4 database views
+  /// Create all 5 database views
   Future<void> _createAllViews() async {
     await customStatement(DatabaseViews.capacityReferencesEn);
     await customStatement(DatabaseViews.capacityReferencesId);
-    await customStatement(DatabaseViews.agentSimulationDaily);
+    await customStatement(DatabaseViews.simulationDaily);
     await customStatement(DatabaseViews.simulationHarvestDaily);
+    await customStatement(DatabaseViews.agentSimulationDaily);
   }
 
   /// Register current device on first launch.

@@ -11,6 +11,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/screens
 import 'package:app_mobile_afms/features/home/presentation/screens/home_screen.dart';
 import 'package:app_mobile_afms/features/input_data/presentation/screens/input_data_screen.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/screens/lab_request_form_screen.dart';
+import 'package:app_mobile_afms/features/lab_request/presentation/screens/lab_request_info_screen.dart';
 import 'package:app_mobile_afms/features/lab_request/presentation/screens/lab_request_list_screen.dart';
 import 'package:app_mobile_afms/features/pond/presentation/screens/pond_screen.dart';
 import 'package:app_mobile_afms/features/profile/presentation/screens/profile_screen.dart';
@@ -188,6 +189,11 @@ class AppRouter {
           name: Routes.labRequestFormName,
           builder: (context, state) => const LabRequestFormScreen(),
         ),
+        GoRoute(
+          path: Routes.labRequestInfo,
+          name: Routes.labRequestInfoName,
+          builder: (context, state) => const LabRequestInfoScreen(),
+        ),
         // Harvest Calculator routes (outside shell route, no bottom nav)
         GoRoute(
           path: Routes.harvestCalculatorHome,
@@ -246,7 +252,8 @@ class AppRouter {
     return path == Routes.login ||
         path == Routes.splash ||
         path == Routes.labRequestList ||
-        path == Routes.labRequestForm;
+        path == Routes.labRequestForm ||
+        path == Routes.labRequestInfo;
   }
 }
 

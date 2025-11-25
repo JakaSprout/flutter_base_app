@@ -1,12 +1,15 @@
+import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/design_system/components/buttons/stp_choice_chip_button.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_form_controls.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_registered_pond_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/pond_option.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/registered_ponds_provider.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/utils/form_validation_helper.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/forms/section_field_padding.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Section widget for selecting whether to use registered pond.
@@ -15,16 +18,17 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// - Question "Gunakan Kolam Terdaftar?"
 /// - Two options: "Ya, Gunakan" and "Isi Manual"
 /// - Dropdown "Pilih Kolam" (shown when "Ya, Gunakan" is selected)
-class UseRegisteredPondSection extends StatefulWidget {
+class UseRegisteredPondSection extends ConsumerStatefulWidget {
   /// Creates a new instance of [UseRegisteredPondSection].
   const UseRegisteredPondSection({super.key});
 
   @override
-  State<UseRegisteredPondSection> createState() =>
+  ConsumerState<UseRegisteredPondSection> createState() =>
       _UseRegisteredPondSectionState();
 }
 
-class _UseRegisteredPondSectionState extends State<UseRegisteredPondSection> {
+class _UseRegisteredPondSectionState
+    extends ConsumerState<UseRegisteredPondSection> {
   bool _hasPreFilled = false;
 
   /// Pre-fills pond capacity fields with data from selected pond.
@@ -222,6 +226,12 @@ class _UseRegisteredPondSectionState extends State<UseRegisteredPondSection> {
               final selectedPond = selectedPondControl.value;
 
               Future<void> openPicker() async {
+                // Invalidate pond options to ensure fresh data with current farm selection
+                AppLogger.debug(
+                  '[UseRegisteredPondSection] Invalidating pond options provider',
+                );
+                ref.invalidate(registeredPondOptionsProvider);
+
                 FocusScope.of(context).unfocus();
                 await showModalBottomSheet<void>(
                   context: context,

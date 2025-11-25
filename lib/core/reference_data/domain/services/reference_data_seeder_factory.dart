@@ -141,18 +141,10 @@ class SeedingConfiguration {
     this.defaultRetryAttempts = 3,
     this.defaultRetryDelay = const Duration(seconds: 1),
     this.enabledDataTypes = const [
-      'farms',
-      'ponds',
-      'employees',
-      'customers',
-      'lab_test_types',
+      'farms', // Only farms for initial seeding
     ],
     this.priorityOrder = const [
-      'farms', // Most important for company selection
-      'ponds', // Needed for harvest calculator
-      'employees', // User management
-      'customers', // Business relations
-      'lab_test_types', // Lab operations
+      'farms', // Only farms for initial seeding
     ],
   });
 

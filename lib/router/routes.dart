@@ -57,6 +57,12 @@ class Routes {
   /// Lab Request Form route name.
   static const String labRequestFormName = 'lab-request-form';
 
+  /// Lab Request Info route path.
+  static const String labRequestInfo = '/lab-request/info';
+
+  /// Lab Request Info route name.
+  static const String labRequestInfoName = 'lab-request-info';
+
   /// Harvest Calculator Home route path.
   static const String harvestCalculatorHome = '/harvest-calculator';
 

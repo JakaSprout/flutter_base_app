@@ -8,10 +8,17 @@ class LabRequestConstants {
 
   // Screen Titles
   /// Title for lab request list screen
-  static const String screenTitle = 'Permintaan Analisis Lab';
+  static const String screenTitle = 'Permintaan Lab';
 
   /// Title for lab request form screen
-  static const String formTitle = 'Request Form';
+  static const String formTitle = 'Buat Permintaan Lab';
+
+  // Info Banner
+  /// Farm success together label
+  static const String farmSuksesBersama = 'Farm Sukses Bersama';
+
+  /// Sender name template
+  static String senderNameLabel(String name) => 'Nama Pengirim: $name';
 
   // Form Fields
   /// Label for sender name field
@@ -40,6 +47,23 @@ class LabRequestConstants {
 
   /// Label for testing type field
   static const String fieldJenisTesting = 'Jenis Testing';
+
+  // Section Titles
+  /// Informasi Farm section title
+  static const String sectionInformasiFarm = 'Informasi Farm';
+
+  /// Sampel section title
+  static const String sectionSampel = 'Sampel';
+
+  // New Form Labels
+  /// Farm label (simplified)
+  static const String labelFarm = 'Farm';
+
+  /// Date label (simplified)
+  static const String labelTanggalKirim = 'Tanggal Kirim';
+
+  /// Add sample button text
+  static const String buttonAddSampel = 'Sampel';
 
   // Form Hints
   /// Hint for sender name field
@@ -82,6 +106,38 @@ class LabRequestConstants {
 
   /// Filter "to" label
   static const String filterTo = 's/d';
+
+  // Search, Filter, Sort
+  /// Search hint text
+  static const String hintSearchRequests = 'Cari request...';
+
+  /// Filter button text
+  static const String buttonFilter = 'Filter';
+
+  /// Sort button text
+  static const String buttonSort = 'Urutkan';
+
+  /// Reset filter button text
+  static const String buttonResetFilter = 'Reset';
+
+  /// Save button text
+  static const String buttonSave = 'Simpan';
+
+  // Sort Options
+  /// Sort by date newest first
+  static const String sortDateNewest = 'Tanggal Terbaru';
+
+  /// Sort by date oldest first
+  static const String sortDateOldest = 'Tanggal Terlama';
+
+  /// Sort by status
+  static const String sortStatus = 'Status';
+
+  /// Sort by customer name A-Z
+  static const String sortCustomerAZ = 'Customer A-Z';
+
+  /// Sort by customer name Z-A
+  static const String sortCustomerZA = 'Customer Z-A';
 
   // Validation Messages
   /// Error message when field is required

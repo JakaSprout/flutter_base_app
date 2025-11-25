@@ -1,6 +1,7 @@
 import 'package:app_mobile_afms/core/config/app_config.dart';
 import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/features/lab_request/data/models/lab_request_model.dart';
+import 'package:app_mobile_afms/features/lab_request/domain/entities/lab_request_status.dart';
 import 'package:dartz/dartz.dart';
 
 /// Remote data source interface for Lab Request feature.
@@ -49,7 +50,7 @@ class LabRequestRemoteDataSourceMock
       // Generate a mock ID for the created request
       final createdRequest = request.copyWith(
         id: 'req_${DateTime.now().millisecondsSinceEpoch}',
-        status: 'Request sedang dikerjakan',
+        status: LabRequestStatus.dikirim,
         tanggalRequest: DateTime.now(),
       );
 
@@ -83,7 +84,7 @@ class LabRequestRemoteDataSourceMock
           anamnesa: 'screening',
           keteranganSampel: '-',
           jenisTesting: 'PCR Konvensional',
-          status: 'Report sedang dikerjakan',
+          status: LabRequestStatus.dikirim,
           tanggalRequest: DateTime(2025, 11, 5),
           jumlahSampel: 5,
         ),
@@ -98,7 +99,7 @@ class LabRequestRemoteDataSourceMock
           anamnesa: 'screening',
           keteranganSampel: '-',
           jenisTesting: 'PCR Realtime',
-          status: 'Report sedang dikerjakan',
+          status: LabRequestStatus.diproses,
           tanggalRequest: DateTime(2025, 11, 5),
           jumlahSampel: 16,
         ),
@@ -113,9 +114,24 @@ class LabRequestRemoteDataSourceMock
           anamnesa: 'screening',
           keteranganSampel: '-',
           jenisTesting: 'Water Quality',
-          status: 'Report sedang dikerjakan',
+          status: LabRequestStatus.selesai,
           tanggalRequest: DateTime(2025, 11, 5),
           jumlahSampel: 4,
+        ),
+        LabRequestModel(
+          id: 'req_4',
+          namaPengirim: 'CV. Mina Jaya',
+          noTelp: '-',
+          email: '-',
+          tambakAsal: '3056',
+          customer: 'CV. Mina Jaya',
+          tanggalPengiriman: DateTime(2025, 11, 3),
+          anamnesa: 'diagnostik',
+          keteranganSampel: 'Sampel darurat',
+          jenisTesting: 'PCR Pockit',
+          status: LabRequestStatus.ditolak,
+          tanggalRequest: DateTime(2025, 11, 3),
+          jumlahSampel: 2,
         ),
       ];
 

@@ -261,4 +261,109 @@ class ReferenceDataRepositoryImpl implements ReferenceDataRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters(String employeeId) async {
+    try {
+      AppLogger.debug(
+        '[ReferenceDataRepository] Fetching lab parameters for employee: $employeeId',
+      );
+
+      final result = await remoteDatasource.getLabParameters();
+
+      return result.fold(
+        (failure) {
+          AppLogger.error(
+            '[ReferenceDataRepository] Failed to fetch lab parameters: $failure',
+          );
+          return Left(failure);
+        },
+        (labParameters) {
+          AppLogger.debug(
+            '[ReferenceDataRepository] Successfully fetched ${labParameters.length} lab parameters',
+          );
+          return Right(labParameters);
+        },
+      );
+    } catch (e, st) {
+      AppLogger.error(
+        '[ReferenceDataRepository] Unexpected error fetching lab parameters',
+        e,
+        st,
+      );
+      return Left(
+        NetworkFailure(message: 'Unexpected error while fetching lab parameters: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes(String employeeId) async {
+    try {
+      AppLogger.debug(
+        '[ReferenceDataRepository] Fetching lab types for employee: $employeeId',
+      );
+
+      final result = await remoteDatasource.getLabTypes();
+
+      return result.fold(
+        (failure) {
+          AppLogger.error(
+            '[ReferenceDataRepository] Failed to fetch lab types: $failure',
+          );
+          return Left(failure);
+        },
+        (labTypes) {
+          AppLogger.debug(
+            '[ReferenceDataRepository] Successfully fetched ${labTypes.length} lab types',
+          );
+          return Right(labTypes);
+        },
+      );
+    } catch (e, st) {
+      AppLogger.error(
+        '[ReferenceDataRepository] Unexpected error fetching lab types',
+        e,
+        st,
+      );
+      return Left(
+        NetworkFailure(message: 'Unexpected error while fetching lab types: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes(String employeeId) async {
+    try {
+      AppLogger.debug(
+        '[ReferenceDataRepository] Fetching sample lab types for employee: $employeeId',
+      );
+
+      final result = await remoteDatasource.getSampleLabTypes();
+
+      return result.fold(
+        (failure) {
+          AppLogger.error(
+            '[ReferenceDataRepository] Failed to fetch sample lab types: $failure',
+          );
+          return Left(failure);
+        },
+        (sampleLabTypes) {
+          AppLogger.debug(
+            '[ReferenceDataRepository] Successfully fetched ${sampleLabTypes.length} sample lab types',
+          );
+          return Right(sampleLabTypes);
+        },
+      );
+    } catch (e, st) {
+      AppLogger.error(
+        '[ReferenceDataRepository] Unexpected error fetching sample lab types',
+        e,
+        st,
+      );
+      return Left(
+        NetworkFailure(message: 'Unexpected error while fetching sample lab types: $e'),
+      );
+    }
+  }
 }

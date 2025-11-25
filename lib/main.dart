@@ -4,6 +4,7 @@ import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 /// Common initialization function that sets up the app with the given
 /// configuration.
@@ -22,6 +23,9 @@ void mainCommon(AppConfig config) {
 
   // Initialize logger with config
   AppLogger.initialize(config);
+
+  // Initialize date formatting for Indonesian locale
+  initializeDateFormatting('id_ID', null);
 
   runApp(ProviderScope(child: App(config: config)));
 }

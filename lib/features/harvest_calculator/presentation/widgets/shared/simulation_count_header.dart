@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 /// Header displaying the count of simulations.
 class SimulationCountHeader extends StatelessWidget {
   /// Creates a new instance of [SimulationCountHeader].
-  const SimulationCountHeader({
-    required this.count, super.key,
-  });
+  const SimulationCountHeader({required this.count, super.key});
 
   /// Number of simulations to display.
   final int count;
@@ -15,9 +13,11 @@ class SimulationCountHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: HarvestCalculatorDesignConstants.screenPaddingHorizontal,
-        vertical: HarvestCalculatorDesignConstants.spacingMedium,
+      padding: const EdgeInsets.fromLTRB(
+        HarvestCalculatorDesignConstants.screenPaddingHorizontal,
+        HarvestCalculatorDesignConstants.spacing12,
+        HarvestCalculatorDesignConstants.screenPaddingHorizontal,
+        0,
       ),
       child: Text(
         HarvestCalculatorConstants.simulationCount(count),

@@ -38,7 +38,8 @@ mixin _$LabRequestModel {
   String get keteranganSampel => throw _privateConstructorUsedError;
   @JsonKey(name: 'jenis_testing')
   String get jenisTesting => throw _privateConstructorUsedError;
-  String? get status => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+  LabRequestStatus? get status => throw _privateConstructorUsedError;
   @JsonKey(name: 'tanggal_request')
   DateTime? get tanggalRequest => throw _privateConstructorUsedError;
   @JsonKey(name: 'jumlah_sampel')
@@ -72,7 +73,8 @@ abstract class $LabRequestModelCopyWith<$Res> {
     String anamnesa,
     @JsonKey(name: 'keterangan_sampel') String keteranganSampel,
     @JsonKey(name: 'jenis_testing') String jenisTesting,
-    String? status,
+    @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+    LabRequestStatus? status,
     @JsonKey(name: 'tanggal_request') DateTime? tanggalRequest,
     @JsonKey(name: 'jumlah_sampel') int? jumlahSampel,
   });
@@ -152,7 +154,7 @@ class _$LabRequestModelCopyWithImpl<$Res, $Val extends LabRequestModel>
             status: freezed == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
-                      as String?,
+                      as LabRequestStatus?,
             tanggalRequest: freezed == tanggalRequest
                 ? _value.tanggalRequest
                 : tanggalRequest // ignore: cast_nullable_to_non_nullable
@@ -187,7 +189,8 @@ abstract class _$$LabRequestModelImplCopyWith<$Res>
     String anamnesa,
     @JsonKey(name: 'keterangan_sampel') String keteranganSampel,
     @JsonKey(name: 'jenis_testing') String jenisTesting,
-    String? status,
+    @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+    LabRequestStatus? status,
     @JsonKey(name: 'tanggal_request') DateTime? tanggalRequest,
     @JsonKey(name: 'jumlah_sampel') int? jumlahSampel,
   });
@@ -266,7 +269,7 @@ class __$$LabRequestModelImplCopyWithImpl<$Res>
         status: freezed == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as LabRequestStatus?,
         tanggalRequest: freezed == tanggalRequest
             ? _value.tanggalRequest
             : tanggalRequest // ignore: cast_nullable_to_non_nullable
@@ -294,7 +297,7 @@ class _$LabRequestModelImpl implements _LabRequestModel {
     required this.anamnesa,
     @JsonKey(name: 'keterangan_sampel') required this.keteranganSampel,
     @JsonKey(name: 'jenis_testing') required this.jenisTesting,
-    this.status,
+    @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson) this.status,
     @JsonKey(name: 'tanggal_request') this.tanggalRequest,
     @JsonKey(name: 'jumlah_sampel') this.jumlahSampel,
   });
@@ -330,7 +333,8 @@ class _$LabRequestModelImpl implements _LabRequestModel {
   @JsonKey(name: 'jenis_testing')
   final String jenisTesting;
   @override
-  final String? status;
+  @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+  final LabRequestStatus? status;
   @override
   @JsonKey(name: 'tanggal_request')
   final DateTime? tanggalRequest;
@@ -421,7 +425,8 @@ abstract class _LabRequestModel implements LabRequestModel {
     required final String anamnesa,
     @JsonKey(name: 'keterangan_sampel') required final String keteranganSampel,
     @JsonKey(name: 'jenis_testing') required final String jenisTesting,
-    final String? status,
+    @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+    final LabRequestStatus? status,
     @JsonKey(name: 'tanggal_request') final DateTime? tanggalRequest,
     @JsonKey(name: 'jumlah_sampel') final int? jumlahSampel,
   }) = _$LabRequestModelImpl;
@@ -456,7 +461,8 @@ abstract class _LabRequestModel implements LabRequestModel {
   @JsonKey(name: 'jenis_testing')
   String get jenisTesting;
   @override
-  String? get status;
+  @JsonKey(fromJson: _statusFromJson, toJson: _statusToJson)
+  LabRequestStatus? get status;
   @override
   @JsonKey(name: 'tanggal_request')
   DateTime? get tanggalRequest;

@@ -101,6 +101,9 @@ class $AssetsIconsGeneralGen {
   /// File path: assets/icons/general/growth.svg
   String get growth => 'assets/icons/general/growth.svg';
 
+  /// File path: assets/icons/general/list.svg
+  String get list => 'assets/icons/general/list.svg';
+
   /// File path: assets/icons/general/logo.svg
   String get logo => 'assets/icons/general/logo.svg';
 
@@ -134,6 +137,9 @@ class $AssetsIconsGeneralGen {
   /// File path: assets/icons/general/settings.svg
   String get settings => 'assets/icons/general/settings.svg';
 
+  /// File path: assets/icons/general/sign-help.svg
+  String get signHelp => 'assets/icons/general/sign-help.svg';
+
   /// File path: assets/icons/general/sign-info.svg
   String get signInfo => 'assets/icons/general/sign-info.svg';
 
@@ -158,6 +164,7 @@ class $AssetsIconsGeneralGen {
     earningsColor,
     feed,
     growth,
+    list,
     logo,
     microbiology,
     microscope,
@@ -169,6 +176,7 @@ class $AssetsIconsGeneralGen {
     pieChart,
     sectionIndicator,
     settings,
+    signHelp,
     signInfo,
     trash,
     waterQuality,

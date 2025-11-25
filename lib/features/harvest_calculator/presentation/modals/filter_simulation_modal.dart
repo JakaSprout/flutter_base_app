@@ -1,8 +1,7 @@
-import 'package:app_mobile_afms/design_system/components/forms/stp_date_picker.dart';
+import 'package:app_mobile_afms/design_system/components/inputs/stp_date_picker_dropdown.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_constants.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/constants/harvest_calculator_design_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class FilterOptions {
   FilterOptions({
@@ -21,7 +20,7 @@ class FilterOptions {
 
   int get count {
     // Refined count logic based on common behavior:
-    int itemCount = 0;
+    var itemCount = 0;
     if (startDate != null || endDate != null) itemCount++;
     itemCount += simulationTypes.length;
     itemCount += cycleTypes.length;
@@ -48,10 +47,7 @@ class FilterOptions {
 
 /// Modal bottom sheet for filtering simulations.
 class FilterSimulationModal extends StatefulWidget {
-  const FilterSimulationModal({
-    required this.currentOptions,
-    super.key,
-  });
+  const FilterSimulationModal({required this.currentOptions, super.key});
 
   final FilterOptions currentOptions;
 
@@ -86,38 +82,8 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
     });
   }
 
-  Future<void> _selectStartDate(BuildContext context) async {
-    final picked = await showSTPDatePicker(
-      context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        _startDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    final picked = await showSTPDatePicker(
-      context: context,
-      initialDate: _endDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        _endDate = picked;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy');
-
     return Container(
       decoration: const BoxDecoration(
         color: HarvestCalculatorDesignConstants.white,
@@ -146,7 +112,7 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
               child: Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       HarvestCalculatorConstants.filterTitle,
                       style:
@@ -166,7 +132,7 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                 ],
               ),
             ),
-            
+
             // Content
             Flexible(
               child: SingleChildScrollView(
@@ -177,7 +143,8 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                     // Date Range
                     Text(
                       HarvestCalculatorConstants.filterDateRange,
-                      style: HarvestCalculatorDesignConstants.sectionTitleTextStyle
+                      style: HarvestCalculatorDesignConstants
+                          .sectionTitleTextStyle
                           .copyWith(fontSize: 14),
                     ),
                     const SizedBox(height: 12),
@@ -185,98 +152,40 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                       children: [
                         // Start Date
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                HarvestCalculatorConstants.filterStartDate,
-                                style: HarvestCalculatorDesignConstants.labelTextStyle,
-                              ),
-                              const SizedBox(height: 8),
-                              InkWell(
-                                onTap: () => _selectStartDate(context),
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: HarvestCalculatorDesignConstants.borderGray),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today_outlined,
-                                        size: 18,
-                                        color: HarvestCalculatorDesignConstants.gray60,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        _startDate != null
-                                            ? dateFormat.format(_startDate!)
-                                            : 'dd/mm/yyyy',
-                                        style: _startDate != null
-                                            ? HarvestCalculatorDesignConstants.bodyTextStyle
-                                            : HarvestCalculatorDesignConstants.placeholderTextStyle,
-                                      ),
-                                      const Spacer(),
-                                      const Icon(Icons.keyboard_arrow_down, color: HarvestCalculatorDesignConstants.gray60, size: 20),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                          child: STPDatePickerDropdown(
+                            label: HarvestCalculatorConstants.filterStartDate,
+                            selectedDate: _startDate,
+                            onDateSelected: (date) {
+                              setState(() {
+                                _startDate = date;
+                              });
+                            },
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                            placeholder: 'dd/mm/yyyy',
                           ),
                         ),
                         const SizedBox(width: 12),
                         // End Date
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                HarvestCalculatorConstants.filterEndDate,
-                                style: HarvestCalculatorDesignConstants.labelTextStyle,
-                              ),
-                              const SizedBox(height: 8),
-                              InkWell(
-                                onTap: () => _selectEndDate(context),
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: HarvestCalculatorDesignConstants.borderGray),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today_outlined,
-                                        size: 18,
-                                        color: HarvestCalculatorDesignConstants.gray60,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        _endDate != null
-                                            ? dateFormat.format(_endDate!)
-                                            : 'dd/mm/yyyy',
-                                        style: _endDate != null
-                                            ? HarvestCalculatorDesignConstants.bodyTextStyle
-                                            : HarvestCalculatorDesignConstants.placeholderTextStyle,
-                                      ),
-                                      const Spacer(),
-                                      const Icon(Icons.keyboard_arrow_down, color: HarvestCalculatorDesignConstants.gray60, size: 20),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                          child: STPDatePickerDropdown(
+                            label: HarvestCalculatorConstants.filterEndDate,
+                            selectedDate: _endDate,
+                            onDateSelected: (date) {
+                              setState(() {
+                                _endDate = date;
+                              });
+                            },
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                            placeholder: 'dd/mm/yyyy',
                           ),
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Simulation Types
                     _buildCheckboxSection(
                       HarvestCalculatorConstants.filterSimulation,
@@ -288,14 +197,16 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                     ),
 
                     const SizedBox(height: 24),
-                    
+
                     // Cycle Types
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           HarvestCalculatorConstants.filterCycleType,
-                          style: HarvestCalculatorDesignConstants.sectionTitleTextStyle.copyWith(fontSize: 14),
+                          style: HarvestCalculatorDesignConstants
+                              .sectionTitleTextStyle
+                              .copyWith(fontSize: 14),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -305,32 +216,34 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                           },
                           child: Text(
                             'Reset',
-                            style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
-                              color: HarvestCalculatorDesignConstants.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: HarvestCalculatorDesignConstants
+                                .smallTextStyle
+                                .copyWith(
+                                  color:
+                                      HarvestCalculatorDesignConstants.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _buildCheckboxGroup(
-                      [
-                        HarvestCalculatorConstants.cycleTypeFull,
-                        HarvestCalculatorConstants.cycleTypeMid,
-                      ],
-                      _cycleTypes,
-                    ),
-                    
+                    _buildCheckboxGroup([
+                      HarvestCalculatorConstants.cycleTypeFull,
+                      HarvestCalculatorConstants.cycleTypeMid,
+                    ], _cycleTypes),
+
                     const SizedBox(height: 24),
-                    
+
                     // Commodities
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           HarvestCalculatorConstants.filterCommodity,
-                          style: HarvestCalculatorDesignConstants.sectionTitleTextStyle.copyWith(fontSize: 14),
+                          style: HarvestCalculatorDesignConstants
+                              .sectionTitleTextStyle
+                              .copyWith(fontSize: 14),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -340,22 +253,22 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                           },
                           child: Text(
                             'Reset',
-                            style: HarvestCalculatorDesignConstants.smallTextStyle.copyWith(
-                              color: HarvestCalculatorDesignConstants.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: HarvestCalculatorDesignConstants
+                                .smallTextStyle
+                                .copyWith(
+                                  color:
+                                      HarvestCalculatorDesignConstants.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _buildCheckboxGroup(
-                      [
-                        HarvestCalculatorConstants.filterShrimpGalah,
-                        HarvestCalculatorConstants.filterShrimpVaname,
-                      ],
-                      _commodities,
-                    ),
+                    _buildCheckboxGroup([
+                      HarvestCalculatorConstants.filterShrimpGalah,
+                      HarvestCalculatorConstants.filterShrimpVaname,
+                    ], _commodities),
 
                     const SizedBox(height: 24),
                   ],
@@ -386,9 +299,10 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                       ),
                       child: Text(
                         HarvestCalculatorConstants.buttonResetFilters,
-                        style: HarvestCalculatorDesignConstants.buttonTextStyle.copyWith(
-                          color: HarvestCalculatorDesignConstants.error,
-                        ),
+                        style: HarvestCalculatorDesignConstants.buttonTextStyle
+                            .copyWith(
+                              color: HarvestCalculatorDesignConstants.error,
+                            ),
                       ),
                     ),
                   ),
@@ -409,7 +323,8 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: HarvestCalculatorDesignConstants.primary,
+                        backgroundColor:
+                            HarvestCalculatorDesignConstants.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -418,9 +333,8 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                       ),
                       child: Text(
                         HarvestCalculatorConstants.buttonSave,
-                        style: HarvestCalculatorDesignConstants.buttonTextStyle.copyWith(
-                          color: Colors.white,
-                        ),
+                        style: HarvestCalculatorDesignConstants.buttonTextStyle
+                            .copyWith(color: Colors.white),
                       ),
                     ),
                   ),
@@ -433,13 +347,18 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
     );
   }
 
-  Widget _buildCheckboxSection(String title, List<String> options, List<String> selectedValues) {
+  Widget _buildCheckboxSection(
+    String title,
+    List<String> options,
+    List<String> selectedValues,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: HarvestCalculatorDesignConstants.sectionTitleTextStyle.copyWith(fontSize: 14),
+          style: HarvestCalculatorDesignConstants.sectionTitleTextStyle
+              .copyWith(fontSize: 14),
         ),
         const SizedBox(height: 12),
         _buildCheckboxGroup(options, selectedValues),
@@ -447,7 +366,10 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
     );
   }
 
-  Widget _buildCheckboxGroup(List<String> options, List<String> selectedValues) {
+  Widget _buildCheckboxGroup(
+    List<String> options,
+    List<String> selectedValues,
+  ) {
     return Column(
       children: options.map((option) {
         final isSelected = selectedValues.contains(option);
@@ -487,11 +409,7 @@ class _FilterSimulationModalState extends State<FilterSimulationModal> {
                         : Colors.transparent,
                   ),
                   child: isSelected
-                      ? const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        )
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
                       : null,
                 ),
               ],

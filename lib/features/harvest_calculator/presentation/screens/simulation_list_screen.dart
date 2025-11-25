@@ -6,7 +6,7 @@ import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/select_simulation_type_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/modals/sort_simulation_modal.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/models/harvest_simulation_summary.dart';
-import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/saved_simulations_provider.dart';
+import 'package:app_mobile_afms/features/harvest_calculator/presentation/providers/mock_simulations_provider.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/shared/simulations_content.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/states/empty_simulations_content.dart';
 import 'package:app_mobile_afms/features/harvest_calculator/presentation/widgets/states/error_simulations_content.dart';
@@ -77,8 +77,8 @@ class _SimulationListScreenState extends ConsumerState<SimulationListScreen> {
 
   /// Refreshes the simulations data.
   Future<void> _onRefresh() async {
-    // Invalidate the data provider to trigger fresh API call
-    ref.invalidate(savedSimulationsDataProvider);
+    // Invalidate the mock data provider to simulate refresh
+    ref.invalidate(mockSimulationsDataProvider);
   }
 
   /// Converts domain entities to presentation models and filters/sorts them.
@@ -167,19 +167,14 @@ class _SimulationListScreenState extends ConsumerState<SimulationListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch the saved simulations data provider (API-first strategy)
-    final savedSimulationsAsync = ref.watch(savedSimulationsDataProvider);
+    // Watch the mock simulations data provider for testing
+    final savedSimulationsAsync = ref.watch(mockSimulationsDataProvider);
 
     return Scaffold(
       backgroundColor: HarvestCalculatorDesignConstants.white,
       appBar: STPAppBar(
         title: HarvestCalculatorConstants.titleHarvestCalculator,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _onRefresh,
-            tooltip: 'Refresh simulations',
-          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {

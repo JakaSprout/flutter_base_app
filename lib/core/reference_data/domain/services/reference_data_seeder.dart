@@ -2,6 +2,7 @@ import 'package:app_mobile_afms/core/error/failures.dart';
 import 'package:app_mobile_afms/core/logging/logger.dart';
 import 'package:app_mobile_afms/core/reference_data/data/datasources/local/reference_data_local_datasource.dart';
 import 'package:app_mobile_afms/core/reference_data/data/datasources/remote/reference_data_remote_datasource.dart';
+import 'package:app_mobile_afms/core/reference_data/domain/services/reference_data_seeder_factory.dart';
 import 'package:dartz/dartz.dart';
 
 /// Result of reference data seeding operation.
@@ -78,6 +79,7 @@ abstract class ReferenceDataSeeder {
   /// Seed all reference data types.
   Future<ReferenceDataSeedResult> seedAll({
     required String userId,
+    required SeedingConfiguration seedingConfig,
     SeedConfig config = const SeedConfig(
       force: false,
       batchSize: 100,
@@ -103,6 +105,7 @@ class ReferenceDataSeederImpl implements ReferenceDataSeeder {
   @override
   Future<ReferenceDataSeedResult> seedAll({
     required String userId,
+    required SeedingConfiguration seedingConfig,
     SeedConfig config = const SeedConfig(
       force: false,
       batchSize: 100,
@@ -116,9 +119,23 @@ class ReferenceDataSeederImpl implements ReferenceDataSeeder {
     var totalProcessed = 0;
     var totalErrors = 0;
 
-    // Seed all data types
-    for (final entry in seeders.entries) {
-      final dataType = entry.key;
+    // Filter and sort data types based on configuration
+    final enabledDataTypes = seedingConfig.enabledDataTypes.toSet();
+    final priorityOrder = seedingConfig.priorityOrder;
+
+    // Sort enabled data types by priority order
+    final sortedDataTypes = priorityOrder
+        .where(enabledDataTypes.contains)
+        .toList();
+
+    // Seed enabled data types in priority order
+    for (final dataType in sortedDataTypes) {
+      if (!seeders.containsKey(dataType)) {
+        AppLogger.warning(
+          '[ReferenceDataSeeder] Seeder not found for enabled data type: $dataType',
+        );
+        continue;
+      }
 
       AppLogger.debug('[ReferenceDataSeeder] Seeding $dataType...');
 
@@ -250,16 +267,21 @@ class FarmsSeeder extends DataTypeSeeder {
           final saveResult = await localDatasource.saveFarms(farms);
 
           return saveResult.fold<Either<Failure, SeedResult>>(
-            (Failure failure) => Right(
-              SeedResult(
-                dataType: dataType,
-                success: false,
-                processedCount: 0,
-                errorCount: 1,
-                errors: [failure.message],
-                duration: DateTime.now().difference(startTime),
-              ),
-            ),
+            (Failure failure) {
+              AppLogger.error(
+                '[$dataType Seeder] Failed to save farms to database: ${failure.message}',
+              );
+              return Right(
+                SeedResult(
+                  dataType: dataType,
+                  success: false,
+                  processedCount: 0,
+                  errorCount: 1,
+                  errors: [failure.message],
+                  duration: DateTime.now().difference(startTime),
+                ),
+              );
+            },
             (int savedCount) => Right(
               SeedResult(
                 dataType: dataType,
@@ -333,16 +355,21 @@ class PondsSeeder extends DataTypeSeeder {
           final saveResult = await localDatasource.savePonds(ponds);
 
           return saveResult.fold<Either<Failure, SeedResult>>(
-            (Failure failure) => Right(
-              SeedResult(
-                dataType: dataType,
-                success: false,
-                processedCount: 0,
-                errorCount: 1,
-                errors: [failure.message],
-                duration: DateTime.now().difference(startTime),
-              ),
-            ),
+            (Failure failure) {
+              AppLogger.error(
+                '[$dataType Seeder] Failed to save ponds to database: ${failure.message}',
+              );
+              return Right(
+                SeedResult(
+                  dataType: dataType,
+                  success: false,
+                  processedCount: 0,
+                  errorCount: 1,
+                  errors: [failure.message],
+                  duration: DateTime.now().difference(startTime),
+                ),
+              );
+            },
             (int savedCount) => Right(
               SeedResult(
                 dataType: dataType,

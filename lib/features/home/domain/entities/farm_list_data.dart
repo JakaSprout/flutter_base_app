@@ -5,6 +5,7 @@ class FarmListData {
     required this.farms,
     this.selectedFarm,
     this.selectedFarmId,
+    this.selectedFarmUuid,
   });
 
   /// List of available farms (farm names)
@@ -15,4 +16,7 @@ class FarmListData {
 
   /// Currently selected farm ID (optional, for filtering ponds)
   final int? selectedFarmId;
+
+  /// Currently selected farm UUID (optional, for filtering ponds)
+  final String? selectedFarmUuid;
 }

@@ -28,7 +28,7 @@ abstract class ReferenceDataLocalDatasource {
   /// Gets all customers from local database.
   ///
   /// Returns [Either] containing [Failure] on error or [List<CustomerSummary>] on success.
-  // TODO: Re-enable when customers API is implemented
+  // TODO(user): Re-enable when customers API is implemented
   // Future<Either<Failure, List<CustomerSummary>>> getCustomers();
 
   /// Gets all lab test types from local database.
@@ -45,6 +45,21 @@ abstract class ReferenceDataLocalDatasource {
   ///
   /// Returns [Either] containing [Failure] on error or [List<UnitEntity>] on success.
   Future<Either<Failure, List<UnitEntity>>> getUnits();
+
+  /// Gets all lab parameters from local database.
+  ///
+  /// Returns [Either] containing [Failure] on error or [List<LabParameterEntity>] on success.
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters();
+
+  /// Gets all lab types from local database.
+  ///
+  /// Returns [Either] containing [Failure] on error or [List<LabTypeEntity>] on success.
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes();
+
+  /// Gets all sample lab types from local database.
+  ///
+  /// Returns [Either] containing [Failure] on error or [List<SampleLabTypeEntity>] on success.
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes();
 
   /// Saves farms to local database.
   ///
@@ -68,7 +83,7 @@ abstract class ReferenceDataLocalDatasource {
   ///
   /// [customers] List of customers to save.
   /// Returns [Either] containing [Failure] on error or [int] (count saved) on success.
-  // TODO: Re-enable when customers API is implemented
+  // TODO(user): Re-enable when customers API is implemented
   // Future<Either<Failure, int>> saveCustomers(List<CustomerSummary> customers);
 
   /// Saves lab test types to local database.
@@ -92,6 +107,28 @@ abstract class ReferenceDataLocalDatasource {
   /// [units] List of units to save.
   /// Returns [Either] containing [Failure] on error or [int] (count saved) on success.
   Future<Either<Failure, int>> saveUnits(List<UnitEntity> units);
+
+  /// Saves lab parameters to local database.
+  ///
+  /// [labParameters] List of lab parameters to save.
+  /// Returns [Either] containing [Failure] on error or [int] (count saved) on success.
+  Future<Either<Failure, int>> saveLabParameters(
+    List<LabParameterEntity> labParameters,
+  );
+
+  /// Saves lab types to local database.
+  ///
+  /// [labTypes] List of lab types to save.
+  /// Returns [Either] containing [Failure] on error or [int] (count saved) on success.
+  Future<Either<Failure, int>> saveLabTypes(List<LabTypeEntity> labTypes);
+
+  /// Saves sample lab types to local database.
+  ///
+  /// [sampleLabTypes] List of sample lab types to save.
+  /// Returns [Either] containing [Failure] on error or [int] (count saved) on success.
+  Future<Either<Failure, int>> saveSampleLabTypes(
+    List<SampleLabTypeEntity> sampleLabTypes,
+  );
 
   /// Clears all reference data from local database.
   ///
@@ -154,6 +191,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           id: farm.farmUuid,
           code: farm.farmCode,
           name: farm.farmName,
+          farmUuid: farm.farmUuid, // Explicitly set farmUuid field
           location: farm.farmLocation,
           latitude: farm.latitude,
           longitude: farm.longitude,
@@ -162,7 +200,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           ownerName: farm.ownerName,
           contactInfo: farm.contactInfo,
           establishedDate: farm.establishedDate,
-          isActive: farm.isActive ?? true,
+          isActive: farm.isActive,
         );
       }).toList();
       return Right(farmSummaries);
@@ -181,8 +219,9 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
         return PondSummary(
           id: pond.pondUuid,
           code: pond.pondCode,
-          name: pond.pondName ?? pond.pondCode,
-          farmId: pond.farmId?.toString(),
+          name: pond.pondName,
+          farmId: pond.farmId,
+          farmUuid: pond.farmUuid,
           size: pond.pondSize,
           sizeUnit: pond.pondSizeUnit,
           pwa: pond.pwa,
@@ -191,7 +230,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           depthUnit: pond.depthUnit,
           pondType: pond.pondType,
           pondStatus: pond.pondStatus,
-          isActive: pond.isActive ?? true,
+          isActive: pond.isActive,
         );
       }).toList();
       return Right(pondSummaries);
@@ -229,7 +268,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
     }
   }
 
-  // TODO: Re-enable when customers API is implemented
+  // TODO(user): Re-enable when customers API is implemented
   // @override
   // Future<Either<Failure, List<CustomerSummary>>> getCustomers() async {
   //   try {
@@ -248,9 +287,17 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
   @override
   Future<Either<Failure, List<LabTestTypeEntity>>> getLabTestTypes() async {
     try {
-      // TODO: Implement when local database tables are ready
-      // For now, return empty list
-      return const Right([]);
+      final labTestTypes = await database
+          .select(database.fmsMtLabTestTypes)
+          .get();
+      final entities = labTestTypes.map((testType) {
+        return LabTestTypeEntity(
+          code: testType.testTypeCode,
+          name: testType.testTypeName,
+          isActive: testType.isActive,
+        );
+      }).toList();
+      return Right(entities);
     } catch (e) {
       return Left(
         CacheFailure(
@@ -272,7 +319,9 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           batch.insert(
             database.fmsMtFarms,
             FmsMtFarmsCompanion(
-              farmUuid: drift.Value(farm.id),
+              farmUuid: farm.farmUuid != null
+                  ? drift.Value(farm.farmUuid!)
+                  : const drift.Value.absent(),
               farmCode: drift.Value(farm.code),
               farmName: drift.Value(farm.name),
               farmLocation: drift.Value(farm.location),
@@ -312,17 +361,17 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
 
       final pondFarmIds = <String, int?>{};
       for (final pond in ponds) {
-        if (pond.farmId != null) {
+        if (pond.farmUuid != null) {
           AppLogger.debug(
-            'Looking for farm with farmUuid: "${pond.farmId}" (type: ${pond.farmId.runtimeType}) for pond: ${pond.code}',
+            'Looking for farm with farmUuid: "${pond.farmUuid}" (type: ${pond.farmUuid.runtimeType}) for pond: ${pond.code}',
           );
 
           // Try a more explicit query
           final farms = await (database.select(
             database.fmsMtFarms,
-          )..where((f) => f.farmUuid.equals(pond.farmId!))).get();
+          )..where((f) => f.farmUuid.equals(pond.farmUuid!))).get();
           AppLogger.debug(
-            'Query returned ${farms.length} results for farmUuid "${pond.farmId}"',
+            'Query returned ${farms.length} results for farmUuid "${pond.farmUuid}"',
           );
 
           final farm = farms.isNotEmpty ? farms.first : null;
@@ -334,14 +383,14 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           // Debug logging
           if (farm == null) {
             AppLogger.warning(
-              'Failed to find farm with farmUuid: "${pond.farmId}" for pond: ${pond.code} - farm is null',
+              'Failed to find farm with farmUuid: "${pond.farmUuid}" for pond: ${pond.code} - farm is null',
             );
           } else
             AppLogger.debug(
-              'Successfully found farmId: ${farm.farmId} for farmUuid: "${pond.farmId}" and pond: ${pond.code}',
+              'Successfully found farmId: ${farm.farmId} for farmUuid: "${pond.farmUuid}" and pond: ${pond.code}',
             );
         } else {
-          AppLogger.warning('Pond ${pond.code} has null farmId');
+          AppLogger.warning('Pond ${pond.code} has null farmUuid');
           pondFarmIds[pond.id] = null;
         }
       }
@@ -364,9 +413,10 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
             database.fmsMtPonds,
             FmsMtPondsCompanion(
               pondUuid: drift.Value(pond.id),
-              farmId: drift.Value(farmId),
+              farmId: drift.Value(pond.farmId),
+              farmUuid: drift.Value(pond.farmUuid),
               pondCode: drift.Value(pond.code),
-              pondName: drift.Value(pond.name),
+              pondName: drift.Value(pond.name ?? pond.code),
               pondSize: drift.Value(pond.size),
               pondSizeUnit: drift.Value(pond.sizeUnit ?? 'sqm'),
               pwa: drift.Value(pond.pwa),
@@ -380,10 +430,10 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
               pondType: drift.Value(pond.pondType),
               pondShape: drift.Value(pond.pondShape),
               bottomType: drift.Value(pond.bottomType),
-              hasAerator: drift.Value(pond.hasAerator ?? false),
+              hasAerator: drift.Value(pond.hasAerator),
               aeratorCount: drift.Value(pond.aeratorCount),
               aeratorTotalHp: drift.Value(pond.aeratorTotalHp),
-              hasCentralDrain: drift.Value(pond.hasCentralDrain ?? false),
+              hasCentralDrain: drift.Value(pond.hasCentralDrain),
               waterSource: drift.Value(pond.waterSource),
               pondStatus: drift.Value(pond.pondStatus ?? 'Available'),
               currentCycleId: drift.Value(pond.currentCycleId),
@@ -393,8 +443,8 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
                 pond.recommendedStockingDensity,
               ),
               isActive: drift.Value(pond.isActive),
-              createdDate: drift.Value(pond.createdAt),
-              deletedDate: drift.Value(pond.deletedAt),
+              createdDate: drift.Value(pond.createdDate ?? DateTime.now()),
+              deletedDate: drift.Value(pond.deletedDate),
             ),
             mode: drift.InsertMode.insertOrReplace,
           );
@@ -409,7 +459,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
           database.fmsMtPonds,
         )..where((p) => p.pondUuid.equals(pond.id))).getSingleOrNull();
         AppLogger.debug(
-          'Saved pond ${pond.code}: farmId = ${savedPond?.farmId}',
+          'Saved pond ${pond.code}: farmUuid = ${savedPond?.farmUuid}',
         );
       }
 
@@ -463,7 +513,7 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
     }
   }
 
-  // TODO: Re-enable when customers API is implemented
+  // TODO(user): Re-enable when customers API is implemented
   // @override
   // Future<Either<Failure, int>> saveCustomers(
   //   List<CustomerSummary> customers,
@@ -486,10 +536,22 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
     List<LabTestTypeEntity> labTestTypes,
   ) async {
     try {
-      // TODO: Implement when local database tables are ready
-      // For now, return success with count
+      await database.batch((batch) {
+        for (final testType in labTestTypes) {
+          batch.insert(
+            database.fmsMtLabTestTypes,
+            FmsMtLabTestTypesCompanion(
+              testTypeCode: drift.Value(testType.code),
+              testTypeName: drift.Value(testType.name),
+              isActive: drift.Value(testType.isActive),
+            ),
+            mode: drift.InsertMode.insertOrReplace,
+          );
+        }
+      });
       return Right(labTestTypes.length);
     } catch (e) {
+      AppLogger.error('Failed to save lab test types to local database', e);
       return Left(
         CacheFailure.writeError(
           'Failed to save lab test types to local database: $e',
@@ -509,11 +571,10 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
         return CapacityReference(
           id: ref.capacityRefUuid,
           commodityCode: ref.commodityCode,
-          commodityName: ref.commodityNameEn ?? ref.commodityNameId ?? '',
-          possibleTechnology:
-              ref.possibleTechnologyEn ?? ref.possibleTechnologyId,
-          category: ref.categoryEn ?? ref.categoryId,
-          intensityLevel: ref.intensityLevelEn ?? ref.intensityLevelId,
+          commodityName: ref.commodityNameEn,
+          possibleTechnology: ref.possibleTechnologyEn,
+          category: ref.categoryEn,
+          intensityLevel: ref.intensityLevelEn,
           maxCapacity: ref.maxCapacity,
           maxCapacityUnit: ref.maxCapacityUnit,
           maxCapacityKgPerSqm: ref.maxCapacityKgPerSqm,
@@ -642,9 +703,179 @@ class ReferenceDataLocalDatasourceImpl implements ReferenceDataLocalDatasource {
   }
 
   @override
+  Future<Either<Failure, List<LabParameterEntity>>> getLabParameters() async {
+    try {
+      final labParameters = await database
+          .select(database.fmsMtLabParameters)
+          .get();
+      final entities = labParameters.map((param) {
+        return LabParameterEntity(
+          id: param.parameterUuid,
+          testTypeId: param.testTypeId,
+          parameterCode: param.parameterCode,
+          parameterName: param.parameterName,
+          standardOperator: param.standardOperator,
+          standardMin: param.standardMin,
+          standardMax: param.standardMax,
+          parameterUnit: param.parameterUnit,
+          isActive: param.isActive,
+        );
+      }).toList();
+      return Right(entities);
+    } catch (e) {
+      return Left(
+        CacheFailure(
+          message: 'Failed to fetch lab parameters from local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LabTypeEntity>>> getLabTypes() async {
+    try {
+      final labTypes = await database.select(database.fmsMtLabTypes).get();
+      final entities = labTypes.map((labType) {
+        return LabTypeEntity(
+          id: labType.idUuid,
+          labSampleTestType: labType.labSampleTestType,
+          standard: labType.standard,
+          testType: labType.testType,
+          testTypeDetail: labType.testTypeDetail,
+          isActive: labType.isActive,
+        );
+      }).toList();
+      return Right(entities);
+    } catch (e) {
+      return Left(
+        CacheFailure(
+          message: 'Failed to fetch lab types from local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<SampleLabTypeEntity>>> getSampleLabTypes() async {
+    try {
+      final sampleLabTypes = await database
+          .select(database.fmsMtSampleLabTypes)
+          .get();
+      final entities = sampleLabTypes.map((sampleType) {
+        return SampleLabTypeEntity(
+          id: sampleType.idUuid,
+          sampleLabType: sampleType.sampleLabType,
+          isActive: sampleType.isActive,
+        );
+      }).toList();
+      return Right(entities);
+    } catch (e) {
+      return Left(
+        CacheFailure(
+          message: 'Failed to fetch sample lab types from local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> saveLabParameters(
+    List<LabParameterEntity> labParameters,
+  ) async {
+    try {
+      await database.batch((batch) {
+        for (final param in labParameters) {
+          batch.insert(
+            database.fmsMtLabParameters,
+            FmsMtLabParametersCompanion(
+              testTypeId: drift.Value(param.testTypeId),
+              parameterCode: drift.Value(param.parameterCode),
+              parameterName: drift.Value(param.parameterName),
+              standardOperator: drift.Value(param.standardOperator),
+              standardMin: drift.Value(param.standardMin),
+              standardMax: drift.Value(param.standardMax),
+              parameterUnit: drift.Value(param.parameterUnit),
+              isActive: drift.Value(param.isActive),
+            ),
+            mode: drift.InsertMode.insertOrReplace,
+          );
+        }
+      });
+      return Right(labParameters.length);
+    } catch (e) {
+      AppLogger.error('Failed to save lab parameters to local database', e);
+      return Left(
+        CacheFailure.writeError(
+          'Failed to save lab parameters to local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> saveLabTypes(
+    List<LabTypeEntity> labTypes,
+  ) async {
+    try {
+      await database.batch((batch) {
+        for (final labType in labTypes) {
+          batch.insert(
+            database.fmsMtLabTypes,
+            FmsMtLabTypesCompanion(
+              labSampleTestType: drift.Value(labType.labSampleTestType),
+              standard: drift.Value(labType.standard),
+              testType: drift.Value(labType.testType),
+              testTypeDetail: drift.Value(labType.testTypeDetail),
+              isActive: drift.Value(labType.isActive),
+            ),
+            mode: drift.InsertMode.insertOrReplace,
+          );
+        }
+      });
+      return Right(labTypes.length);
+    } catch (e) {
+      AppLogger.error('Failed to save lab types to local database', e);
+      return Left(
+        CacheFailure.writeError(
+          'Failed to save lab types to local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> saveSampleLabTypes(
+    List<SampleLabTypeEntity> sampleLabTypes,
+  ) async {
+    try {
+      await database.batch((batch) {
+        for (final sampleType in sampleLabTypes) {
+          batch.insert(
+            database.fmsMtSampleLabTypes,
+            FmsMtSampleLabTypesCompanion(
+              idUuid: drift.Value(sampleType.id),
+              sampleLabType: drift.Value(sampleType.sampleLabType),
+              isActive: drift.Value(sampleType.isActive ?? true),
+            ),
+            mode: drift.InsertMode.insertOrReplace,
+          );
+        }
+      });
+      return Right(sampleLabTypes.length);
+    } catch (e) {
+      AppLogger.error('Failed to save sample lab types to local database', e);
+      return Left(
+        CacheFailure.writeError(
+          'Failed to save sample lab types to local database: $e',
+        ),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, bool>> clearAllData() async {
     try {
-      // TODO: Implement when local database tables are ready
+      // TODO(user): Implement when local database tables are ready
       // For now, return success
       return const Right(true);
     } catch (e) {

@@ -33,7 +33,7 @@ flutter_gen:
   # Colors configuration
   # Enable untuk color system dari Figma (Gray, Neutral, Destructive variants)
   colors:
-    enabled: true
+    enabled: false
     # Colors akan di-generate dari:
     # - Android: android/app/src/main/res/values/colors.xml
     # - iOS: Assets.xcassets/Colors/
